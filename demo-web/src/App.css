@@ -910,12 +910,12 @@
     0 0 34px rgba(255, 54, 54, 0.12);
   animation: hotspotPulse 2.8s ease-in-out infinite;
   transition:
-    width 2600ms cubic-bezier(0.22, 1, 0.36, 1),
-    height 2600ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 2400ms ease,
-    box-shadow 2200ms ease,
-    border-color 2200ms ease,
-    background 2200ms ease;
+    width 3000ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 3000ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 3000ms ease,
+    box-shadow 3000ms ease,
+    border-color 3000ms ease,
+    background 3000ms ease;
 }
 
 .hotspot.medium {
@@ -946,7 +946,7 @@
   color: #ffe6b6;
   font-size: 0.56rem;
   white-space: nowrap;
-  transition: opacity 1200ms ease 120ms;
+  transition: opacity 3000ms ease;
 }
 
 .hotspot.suppressed {
