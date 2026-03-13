@@ -1,0 +1,123 @@
+:root {
+  --bg: #030a12;
+  --bg-top: #0b1a2c;
+  --line: rgba(91, 145, 192, 0.28);
+  --text: #d8e5ec;
+  --muted: #8ea7ba;
+  --heading: #edf7ff;
+  --signal: #ffbe58;
+  --signal-soft: #ffd587;
+  --code-bg: rgba(255, 255, 255, 0.06);
+  --body-font:
+    'Bahnschrift', 'DIN Alternate', 'PingFang SC', 'Microsoft YaHei',
+    sans-serif;
+  --display-font:
+    'Bahnschrift SemiBold', 'DIN Alternate', 'PingFang SC',
+    'Microsoft YaHei', sans-serif;
+  --mono-font: 'Consolas', 'SFMono-Regular', monospace;
+  font: 16px/1.55 var(--body-font);
+  color: var(--text);
+  background:
+    radial-gradient(circle at top, rgba(24, 195, 214, 0.06), transparent 24%),
+    linear-gradient(180deg, var(--bg-top), var(--bg));
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #040d17;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.14;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent 80%);
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2 {
+  margin: 0;
+  color: var(--heading);
+  font-family: var(--display-font);
+  font-weight: 600;
+  line-height: 1.05;
+}
+
+h1 {
+  margin-bottom: 0;
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+h2 {
+  font-size: clamp(1rem, 1.4vw, 1.18rem);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+p {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+}
+
+code {
+  display: inline-block;
+  padding: 0.18rem 0.52rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0;
+  background: var(--code-bg);
+  color: #f6f2e8;
+  font-family: var(--mono-font);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 980px) {
+  :root {
+    font-size: 15px;
+  }
+
+  body {
+    overflow: auto;
+  }
+
+  #root {
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+  }
+}

@@ -16,3 +16,9 @@ bin-release/
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
 # should NOT be excluded as they contain compiler settings and other important
 # information for Eclipse / Flash Builder.
+
+# Local research materials not intended for website deployment
+代码依据/
+文本支持/
+相关图片提取/
+港口大屏Demo开工包.md
