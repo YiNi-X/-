@@ -4,6 +4,20 @@ import './App.css'
 
 type AlertLevel = 'high' | 'medium' | 'watch'
 
+type Recommendation = {
+  target: string
+  action: string
+  reason: string
+  effect: string
+}
+
+type BenefitMetric = {
+  label: string
+  before: string
+  after: string
+  unit?: string
+}
+
 type Scene = {
   id: string
   label: string
@@ -29,6 +43,17 @@ type Scene = {
     note: string
   }[]
   logs: string[]
+  strategyHeadline: string
+  strategySummary: string
+  recommendations: Recommendation[]
+  benefits: BenefitMetric[]
+  appliedFocus: {
+    current: number
+    future: number
+  }
+  appliedSummary: string
+  appliedHotspotScale?: number
+  appliedStatus?: string
 }
 
 type RouteLine = {
@@ -210,6 +235,27 @@ const scenes: Scene[] = [
       '23:00 东侧主通道保持持续高位。',
       '23:00 当前无明显峰值冲击信号。',
     ],
+    strategyHeadline: '西北入口预分流',
+    strategySummary: '西北入口将在下一窗口继续抬升，建议提前分批放行，避免入口流与中央交汇流同步叠加。',
+    recommendations: [
+      { target: '西北入口进港船组', action: '延后 1 个 10 分钟窗口进港', reason: '避开中部交汇预热段', effect: '入口峰值提前削减' },
+      { target: '中央交汇带 C12', action: '限制双向同时会遇', reason: '减轻 G25 交汇压力', effect: '冲突风险指数下降' },
+      { target: '南向离港线 C17', action: '优先释放离港船舶', reason: '为空间交汇腾挪通行带', effect: '主航道通过效率提升' },
+      { target: '东侧主通道 C03', action: '保持 1 个窗口的单向高通过', reason: '承接入口分流后的侧向通行需求', effect: '全局流量分配更均衡' },
+    ],
+    benefits: [
+      { label: '冲突风险指数', before: '0.71', after: '0.49' },
+      { label: '平均等待时间', before: '36', after: '28', unit: 'min' },
+      { label: '主航道通行效率', before: '82', after: '89', unit: '%' },
+      { label: '高压热点网格', before: '2', after: '0' },
+    ],
+    appliedFocus: {
+      current: 29,
+      future: 57,
+    },
+    appliedSummary: '协同策略已应用：入口侧进港节奏被拉开，西北入口与中部交汇的压力耦合明显减弱。',
+    appliedHotspotScale: 0.62,
+    appliedStatus: '协同已应用',
   },
   {
     id: 't1',
@@ -239,6 +285,27 @@ const scenes: Scene[] = [
       '00:00 G25 两小时后参考值提升至 93。',
       '00:00 预测模块进入持续跟踪状态。',
     ],
+    strategyHeadline: '中部交汇消峰',
+    strategySummary: 'G25 成为主焦点后，优先通过分批放行与入口后移控制交汇压力，避免中央会遇进一步堆积。',
+    recommendations: [
+      { target: '中央交汇区 G25', action: '分批释放进港船组', reason: '削减瞬时交汇密度', effect: '中央交汇峰值后移' },
+      { target: '西北入口 G03', action: '后移进港 8 分钟', reason: '为中央会遇留出消峰带', effect: '入口抬升速度下降' },
+      { target: '东侧主通道 C03', action: '优先保持单向高通过', reason: '减少横向冲突干扰', effect: '东侧主通道维持稳定' },
+      { target: '南向离港线 C17', action: '提前释放离港船组 1 批次', reason: '压缩中部水域持续占用时间', effect: '交汇区恢复速度提升' },
+    ],
+    benefits: [
+      { label: '冲突风险指数', before: '0.83', after: '0.56' },
+      { label: '平均等待时间', before: '39', after: '30', unit: 'min' },
+      { label: '主航道通行效率', before: '80', after: '88', unit: '%' },
+      { label: '高压热点网格', before: '3', after: '0' },
+    ],
+    appliedFocus: {
+      current: 31,
+      future: 68,
+    },
+    appliedSummary: '协同策略已应用：中央交汇区改为分批通行，G25 热度被压回可控区间，东侧主通道保持稳定高通过。',
+    appliedHotspotScale: 0.64,
+    appliedStatus: '协同已应用',
   },
   {
     id: 't2',
@@ -269,6 +336,27 @@ const scenes: Scene[] = [
       '01:00 南向主线热度提升，联动增强。',
       '01:00 热点传播呈现空间扩散趋势。',
     ],
+    strategyHeadline: '双通道分批放行',
+    strategySummary: '流量进入放大期后，重点控制 G25 与 G60 的同步增压，通过双通道分批放行维持主航路秩序。',
+    recommendations: [
+      { target: '东侧主通道 G60', action: '限制连续进港密度', reason: '避免与 G25 同时到峰', effect: '双核心热点不再同步抬升' },
+      { target: '中央交汇区 G25', action: '增加 1 个缓冲窗口', reason: '为跨向会遇留出安全距离', effect: '中央交汇峰值削减' },
+      { target: '南向离港线 C17', action: '优先疏散离港序列', reason: '释放中部水域占用', effect: '高压运行时段缩短' },
+      { target: '西北入口 G03', action: '启动入口预分流', reason: '避免入口流再次推高中央交汇带', effect: '热点扩散范围被截断' },
+    ],
+    benefits: [
+      { label: '冲突风险指数', before: '0.92', after: '0.61' },
+      { label: '平均等待时间', before: '44', after: '32', unit: 'min' },
+      { label: '主航道通行效率', before: '77', after: '87', unit: '%' },
+      { label: '高压热点网格', before: '4', after: '0' },
+    ],
+    appliedFocus: {
+      current: 54,
+      future: 66,
+    },
+    appliedSummary: '协同策略已应用：东侧主通道与中央交汇区被拆峰运行，双核心热点结构明显收缩。',
+    appliedHotspotScale: 0.58,
+    appliedStatus: '协同已应用',
   },
   {
     id: 't3',
@@ -299,6 +387,27 @@ const scenes: Scene[] = [
       '02:00 G60 保持稳定高位，未见明显回落。',
       '02:00 系统标记双核心热点结构。',
     ],
+    strategyHeadline: '高压时段协同控峰',
+    strategySummary: '在高压运行阶段，通过入口削峰、交汇消峰和离港优先三项动作，压缩 G25 与 G60 的持续高位时间。',
+    recommendations: [
+      { target: '中央交汇区 G25', action: '执行双窗口交替放行', reason: '降低双向会遇重叠', effect: '高峰维持时长缩短' },
+      { target: '西北入口船组', action: '延后进港并分散编队', reason: '减轻交汇区持续输入', effect: '入口冲击回落' },
+      { target: '离港船舶序列', action: '提升离港优先级', reason: '释放交汇带通行空间', effect: '主航道效率回升' },
+      { target: '东侧主通道 C03', action: '维持侧向单向高通过', reason: '分担交汇区与入口的外溢压力', effect: '双核心热点同步降温' },
+    ],
+    benefits: [
+      { label: '冲突风险指数', before: '0.96', after: '0.64' },
+      { label: '平均等待时间', before: '48', after: '35', unit: 'min' },
+      { label: '主航道通行效率', before: '74', after: '85', unit: '%' },
+      { label: '高压热点网格', before: '4', after: '0' },
+    ],
+    appliedFocus: {
+      current: 59,
+      future: 63,
+    },
+    appliedSummary: '协同策略已应用：高压时段被拆分为可控窗口，G25 与 G60 的高位重叠显著减弱。',
+    appliedHotspotScale: 0.56,
+    appliedStatus: '协同已应用',
   },
   {
     id: 't4',
@@ -328,6 +437,27 @@ const scenes: Scene[] = [
       '03:00 G25 仍维持交汇区高压状态。',
       '03:00 后续 1 小时预测开始出现回落信号。',
     ],
+    strategyHeadline: '入口与交汇双点缓释',
+    strategySummary: '峰值阶段的关键在于同时压低 G03 与 G25，两点缓释后可避免入口回压再次传导到中部交汇。',
+    recommendations: [
+      { target: '西北入口 G03', action: '执行临时分批进港', reason: '抑制入口瞬时峰值', effect: '入口高压快速回落' },
+      { target: '中央交汇区 G25', action: '维持交替通过策略', reason: '防止入口回压继续传导', effect: '交汇区稳定降温' },
+      { target: '东侧主通道 C03', action: '保持单向高通过运行', reason: '提供侧向分流能力', effect: '整体通行效率提升' },
+      { target: '南向离港线 C17', action: '提前释放尾部离港船列', reason: '减少峰值末段的水域占用', effect: '峰值回落更快完成' },
+    ],
+    benefits: [
+      { label: '冲突风险指数', before: '0.94', after: '0.66' },
+      { label: '平均等待时间', before: '46', after: '34', unit: 'min' },
+      { label: '主航道通行效率', before: '76', after: '84', unit: '%' },
+      { label: '高压热点网格', before: '3', after: '0' },
+    ],
+    appliedFocus: {
+      current: 62,
+      future: 54,
+    },
+    appliedSummary: '协同策略已应用：入口与交汇的双重点被同步缓释，峰值时段从连续高压转为可控回落。',
+    appliedHotspotScale: 0.6,
+    appliedStatus: '协同已应用',
   },
 ]
 
@@ -440,15 +570,6 @@ const hotspots: Hotspot[] = [
   { id: 'G15', ...geoToNumericPercent({ lon: 113.753232, lat: 22.444747 }), intensities: [0.36, 0.3, 0.55, 0.76, 0.78] },
 ]
 
-const operationTiles = [
-  { label: '轨迹修复', value: 'ATT-BILSTM', sub: '缺失轨迹补全' },
-  { label: '主航路识别', value: '17 类', sub: '自适应 DBSCAN' },
-  { label: '空间网格', value: '60 个', sub: '1 小时统计' },
-  { label: '预测模型', value: 'STGCN-C', sub: '相关性矩阵' },
-  { label: '预测窗口', value: '1-3h', sub: '连续输出' },
-  { label: '研究区域', value: '珠江口', sub: 'AIS 研究区' },
-]
-
 const feedViews: FeedView[] = [
   {
     title: '东侧主通道',
@@ -486,13 +607,6 @@ const feedViews: FeedView[] = [
     position: '44% 24%',
     subtitle: '对应西北入口高压进港监测窗口',
   },
-]
-
-const modelCards = [
-  { name: 'STGCN-D', horizon: '1h', mae: 3.469, rmse: 4.715, r2: 0.847 },
-  { name: 'STGCN-C', horizon: '1h', mae: 3.434, rmse: 4.667, r2: 0.85, featured: true },
-  { name: 'STGCN-C', horizon: '2h', mae: 3.8, rmse: 5.205, r2: 0.814 },
-  { name: 'STGCN-C', horizon: '3h', mae: 3.871, rmse: 5.299, r2: 0.807 },
 ]
 
 const totalFlowSeries = scenes.map((scene) => scene.totalFlow)
@@ -545,6 +659,7 @@ function feedRiskText(level: AlertLevel) {
 function App() {
   const [sceneIndex, setSceneIndex] = useState(1)
   const [autoplay, setAutoplay] = useState(true)
+  const [planApplied, setPlanApplied] = useState(false)
 
   useEffect(() => {
     if (!autoplay) return
@@ -563,24 +678,64 @@ function App() {
   const flowArea = createAreaPath(totalFlowSeries, flowMin, flowMax)
   const focusRoute =
     scene.focusGrid === 'G03' ? 'C08' : scene.focusGrid === 'G60' ? 'C03' : scene.focusGrid === 'G15' ? 'C17' : 'C12'
-  const focusAlert = scene.alerts.find((alert) => alert.grid === scene.focusGrid) ?? scene.alerts[0]
   const focusFeed = feedViews.find((feed) => feed.grid === scene.focusGrid) ?? feedViews[0]
   const sceneDate = scene.time.slice(0, 10)
   const sceneClock = scene.time.slice(11)
+  const displayedStatus = planApplied ? scene.appliedStatus ?? '协同已应用' : scene.status
+  const displayedAlerts = scene.alerts.map((alert) => {
+    if (!planApplied) return alert
+
+    const isFocus = alert.grid === scene.focusGrid
+    const current = isFocus ? scene.appliedFocus.current : Math.max(Math.round(alert.current * 0.74), 18)
+    const future = isFocus ? scene.appliedFocus.future : Math.max(Math.round(alert.future * 0.78), 24)
+    const level: AlertLevel = future >= 78 ? 'high' : future >= 58 ? 'medium' : 'watch'
+
+    return {
+      ...alert,
+      current,
+      future,
+      level,
+      note: isFocus ? `${scene.strategyHeadline}已执行，当前压力回落。` : '协同放行后，局部热度已出现下降。',
+    }
+  })
+  const focusAlert = displayedAlerts.find((alert) => alert.grid === scene.focusGrid) ?? displayedAlerts[0]
+  const hotspotScale = planApplied ? 0.01 : 1
+  const displayedHotspotCount = planApplied ? 0 : scene.hotspotCount
+
+  function handleApplyPlan() {
+    setPlanApplied(true)
+    setAutoplay(false)
+  }
+
+  function handleAutoplayToggle() {
+    if (autoplay) {
+      setAutoplay(false)
+      return
+    }
+
+    setPlanApplied(false)
+    setAutoplay(true)
+  }
+
+  function handleSceneSelect(index: number) {
+    setSceneIndex(index)
+    setPlanApplied(false)
+    setAutoplay(false)
+  }
 
   const headerLeftBlocks: HeaderBlock[] = [
     { label: '系统状态', value: 'ONLINE', note: 'AIS / GRID / STGCN' },
     {
       label: '场景序列',
       value: `SCN-${String(sceneIndex + 1).padStart(2, '0')}`,
-      note: `${scene.vessels} 船 / ${scene.hotspotCount} 热点`,
+      note: `${scene.vessels} 船 / ${displayedHotspotCount} 热点`,
     },
     { label: '焦点航路', value: focusRoute, note: `焦点网格 ${scene.focusGrid}` },
   ]
 
   const headerRightBlocks: HeaderBlock[] = [
     { label: '当前时刻', value: sceneClock, note: sceneDate },
-    { label: '运行阶段', value: scene.phase, note: scene.status },
+    { label: '运行阶段', value: scene.phase, note: displayedStatus },
     { label: '地图模式', value: '聚类 / 网格', note: '静态场景回放' },
   ]
 
@@ -588,38 +743,11 @@ function App() {
     () => [
       { label: '当前流量', value: scene.totalFlow, percent: Math.min(scene.totalFlow / 2000, 1) },
       { label: '1H 预测', value: scene.next1h, percent: Math.min(scene.next1h / 2000, 1) },
-      { label: '热点网格', value: scene.hotspotCount, percent: Math.min(scene.hotspotCount / 5, 1) },
+      { label: '热点网格', value: displayedHotspotCount, percent: Math.min(displayedHotspotCount / 5, 1) },
       { label: '展示船舶', value: scene.vessels, percent: Math.min(scene.vessels / 20, 1) },
     ],
-    [scene.hotspotCount, scene.next1h, scene.totalFlow, scene.vessels],
+    [displayedHotspotCount, scene.next1h, scene.totalFlow, scene.vessels],
   )
-
-  const donutSegments = useMemo(() => {
-    const values = [
-      { label: 'G25', value: scene.gridValues.g25, color: '#ffb547' },
-      { label: 'G60', value: scene.gridValues.g60, color: '#18bfd4' },
-      { label: 'G15', value: scene.gridValues.g15, color: '#67d393' },
-      {
-        label: '其他',
-        value: Math.max(scene.totalFlow - scene.gridValues.g25 - scene.gridValues.g60 - scene.gridValues.g15, 0),
-        color: 'rgba(255,255,255,0.12)',
-      },
-    ]
-
-    const total = values.reduce((sum, item) => sum + item.value, 0) || 1
-    let offset = 0
-
-    const gradient = values
-      .map((item) => {
-        const start = (offset / total) * 360
-        offset += item.value
-        const end = (offset / total) * 360
-        return `${item.color} ${start}deg ${end}deg`
-      })
-      .join(', ')
-
-    return { values, gradient }
-  }, [scene.gridValues.g15, scene.gridValues.g25, scene.gridValues.g60, scene.totalFlow])
 
   return (
     <main className="platform">
@@ -641,14 +769,14 @@ function App() {
           <div className="header-title-plaque">
             <span className="header-title-code">PEARL RIVER ESTUARY PORT TRAFFIC MONITOR</span>
             <h1>港口智慧管理平台</h1>
-            <p>珠江口船舶交通流量监测与预测演示界面</p>
+            <p>珠江口船舶交通状态识别与协同决策演示界面</p>
           </div>
 
           <div className="header-title-tags">
-            <span>ATT-BILSTM 轨迹修复</span>
-            <span>17 类主航路</span>
-            <span>60 个有效网格</span>
-            <span>STGCN-C 1-3h</span>
+            <span>轨迹修复</span>
+            <span>主航路识别</span>
+            <span>流量预测</span>
+            <span>协同管控</span>
           </div>
         </div>
 
@@ -663,7 +791,7 @@ function App() {
               </article>
             ))}
 
-            <button type="button" className="header-control" onClick={() => setAutoplay((current) => !current)}>
+            <button type="button" className="header-control" onClick={handleAutoplayToggle}>
               <span>轮播控制</span>
               <strong>{autoplay ? '自动回放中' : '已暂停'}</strong>
               <small>{autoplay ? '点击停止轮播' : '点击恢复轮播'}</small>
@@ -722,7 +850,7 @@ function App() {
                 </tr>
               </thead>
               <tbody>
-                {scene.alerts.map((alert) => (
+                {displayedAlerts.map((alert) => (
                   <tr key={`${scene.id}-${alert.grid}`}>
                     <td>{alert.grid}</td>
                     <td>{levelText(alert.level)}</td>
@@ -830,42 +958,49 @@ function App() {
               </div>
 
               <div className="map-right-rail">
-              <div className="map-hud focus-card">
-                <span className="focus-card-label">焦点对象</span>
-                <div className="focus-card-tags">
-                  <strong>{scene.focusGrid}</strong>
-                  <strong>{focusRoute}</strong>
-                  <strong>{focusFeed.tag}</strong>
+                <div className="map-hud focus-card">
+                  <div className="focus-card-head">
+                    <span className="focus-card-label">焦点对象</span>
+                    <span className={planApplied ? 'focus-card-state applied' : 'focus-card-state'}>{planApplied ? '已响应' : '待推演'}</span>
+                  </div>
+                  <div className="focus-card-tags">
+                    <strong>{scene.focusGrid}</strong>
+                    <strong>{focusRoute}</strong>
+                    <strong>{focusFeed.tag}</strong>
+                  </div>
+                  <div className="focus-card-metric">
+                    <small>当前值</small>
+                    <strong>
+                      {focusAlert.current} <span>→</span> {focusAlert.future}
+                    </strong>
+                  </div>
+                  <p className="focus-card-summary">{scene.strategySummary}</p>
+                  <button type="button" className={planApplied ? 'focus-card-action applied' : 'focus-card-action'} onClick={handleApplyPlan} disabled={planApplied}>
+                    {planApplied ? '已应用方案' : '应用方案'}
+                  </button>
                 </div>
-                <div className="focus-card-metric">
-                  <small>当前值</small>
-                  <strong>
-                    {focusAlert.current} <span>→</span> {focusAlert.future}
-                  </strong>
-                </div>
-              </div>
 
-              <div className="map-control-stack">
-                <div className="map-control-card">
-                  <span>当前状态</span>
-                  <strong>{scene.status}</strong>
-                  <small>{scene.phase}</small>
+                <div className="map-control-stack">
+                  <div className="map-control-card">
+                    <span>当前状态</span>
+                    <strong>{displayedStatus}</strong>
+                    <small>{scene.phase}</small>
+                  </div>
+                  <div className="map-control-card">
+                    <span>1H 预测</span>
+                    <strong>{metricNumber(scene.next1h)}</strong>
+                    <small>
+                      较当前 {scene.next1h - scene.totalFlow > 0 ? '+' : ''}
+                      {scene.next1h - scene.totalFlow}
+                    </small>
+                  </div>
+                  <div className="map-button-grid">
+                    <button type="button">主航路</button>
+                    <button type="button">热点网格</button>
+                    <button type="button">协同建议</button>
+                    <button type="button">收益对比</button>
+                  </div>
                 </div>
-                <div className="map-control-card">
-                  <span>1H 预测</span>
-                  <strong>{metricNumber(scene.next1h)}</strong>
-                  <small>
-                    较当前 {scene.next1h - scene.totalFlow > 0 ? '+' : ''}
-                    {scene.next1h - scene.totalFlow}
-                  </small>
-                </div>
-                <div className="map-button-grid">
-                  <button type="button">主航路</button>
-                  <button type="button">热点网格</button>
-                  <button type="button">预测曲线</button>
-                  <button type="button">模型结果</button>
-                </div>
-              </div>
               </div>
 
               <svg className="route-overlay" viewBox="0 0 1920 1080" preserveAspectRatio="none" aria-hidden="true">
@@ -911,17 +1046,23 @@ function App() {
 
               {hotspots.map((hotspot) => {
                 const intensity = hotspot.intensities[sceneIndex]
-                const size = 22 + intensity * 42
+                const size = (22 + intensity * 42) * hotspotScale
                 const style = {
                   left: `${hotspot.x}%`,
                   top: `${hotspot.y}%`,
                   width: `${size}px`,
                   height: `${size}px`,
-                  opacity: 0.25 + intensity * 0.75,
+                  opacity: (0.25 + intensity * 0.75) * (planApplied ? 0 : 1),
                 } satisfies CSSProperties
 
                 return (
-                  <div key={hotspot.id} className={intensity > 0.72 ? 'hotspot high' : intensity > 0.42 ? 'hotspot medium' : 'hotspot'} style={style}>
+                  <div
+                    key={hotspot.id}
+                    className={
+                      `${intensity > 0.72 ? 'hotspot high' : intensity > 0.42 ? 'hotspot medium' : 'hotspot'}${planApplied ? ' suppressed' : ''}`
+                    }
+                    style={style}
+                  >
                     <span>{hotspot.id}</span>
                   </div>
                 )
@@ -930,7 +1071,7 @@ function App() {
               <div className="map-bottom-strip">
                 <div className="map-bottom-summary">
                   <span>场景摘要</span>
-                  <strong>{scene.summary}</strong>
+                  <strong>{planApplied ? scene.appliedSummary : scene.summary}</strong>
                 </div>
 
                 <div className="map-bottom-focus">
@@ -943,7 +1084,7 @@ function App() {
 
                 <div className="map-bottom-timeline">
                   {scenes.map((item, index) => (
-                    <button key={item.id} type="button" className={index === sceneIndex ? 'map-timeline-node active' : 'map-timeline-node'} onClick={() => setSceneIndex(index)}>
+                    <button key={item.id} type="button" className={index === sceneIndex ? 'map-timeline-node active' : 'map-timeline-node'} onClick={() => handleSceneSelect(index)}>
                       <strong>{item.label}</strong>
                       <small>{item.phase}</small>
                     </button>
@@ -955,23 +1096,39 @@ function App() {
         </section>
 
         <aside className="right-rail">
-          <section className="frame panel-block module-panel">
+          <section className="frame panel-block strategy-panel">
             <div className="panel-title">
               <div>
-                <p className="panel-kicker">Core Modules</p>
-                <h2>平台模块</h2>
+                <p className="panel-kicker">Collaborative Strategy</p>
+                <h2>协同管控建议</h2>
               </div>
-              <span className="panel-code">MODULES</span>
+              <span className="panel-code">{planApplied ? 'APPLIED' : 'PENDING'}</span>
             </div>
 
-            <div className="module-grid">
-              {operationTiles.map((tile) => (
-                <article key={tile.label} className="module-tile">
-                  <span>{tile.label}</span>
-                  <strong>{tile.value}</strong>
-                  <small>{tile.sub}</small>
+            <div className="strategy-hero">
+              <strong>{scene.strategyHeadline}</strong>
+              <p>{scene.strategySummary}</p>
+            </div>
+
+            <div className="strategy-list">
+              {scene.recommendations.map((item) => (
+                <article key={`${scene.id}-${item.target}`} className={planApplied ? 'strategy-item applied' : 'strategy-item'}>
+                  <div className="strategy-item-head">
+                    <strong>{item.target}</strong>
+                    <span>{planApplied ? '已执行' : '待执行'}</span>
+                  </div>
+                  <p>{item.action}</p>
+                  <small>{item.reason}</small>
+                  <em>{item.effect}</em>
                 </article>
               ))}
+            </div>
+
+            <div className="strategy-footer">
+              <span>基于研究成果的协同策略推演</span>
+              <button type="button" className={planApplied ? 'panel-action applied' : 'panel-action'} onClick={handleApplyPlan} disabled={planApplied}>
+                {planApplied ? '已应用方案' : '应用方案'}
+              </button>
             </div>
           </section>
 
@@ -986,20 +1143,32 @@ function App() {
 
             <div className="feed-stack">
               {feedViews.map((feed) => {
-                const alert = scene.alerts.find((item) => item.grid === feed.grid)
+                const alert = displayedAlerts.find((item) => item.grid === feed.grid)
                 const style = {
                   backgroundPosition: feed.position,
                 } satisfies CSSProperties
 
                 return (
-                  <article key={feed.tag} className={feed.grid === scene.focusGrid ? 'feed-card active' : 'feed-card'} style={style}>
+                  <article
+                    key={feed.tag}
+                    className={
+                      planApplied && feed.grid === scene.focusGrid
+                        ? 'feed-card active resolved'
+                        : feed.grid === scene.focusGrid
+                          ? 'feed-card active'
+                          : 'feed-card'
+                    }
+                    style={style}
+                  >
                     <div className="feed-overlay"></div>
                     <div className="feed-head">
                       <div className="feed-ident">
                         <span className="feed-tag">{feed.tag}</span>
                         <strong>{feed.title}</strong>
                       </div>
-                      <span className="feed-state">{feed.grid === scene.focusGrid ? 'TRACK' : 'SCAN'}</span>
+                      <span className={planApplied && feed.grid === scene.focusGrid ? 'feed-state applied' : 'feed-state'}>
+                        {planApplied ? (feed.grid === scene.focusGrid ? 'ADJUSTED' : 'SYNC') : feed.grid === scene.focusGrid ? 'TRACK' : 'SCAN'}
+                      </span>
                     </div>
 
                     <div className="feed-meta">
@@ -1008,7 +1177,7 @@ function App() {
                       <span>{feed.grid}</span>
                     </div>
 
-                    <p className="feed-subtitle">{alert?.note ?? feed.subtitle}</p>
+                    <p className="feed-subtitle">{planApplied && feed.grid === scene.focusGrid ? scene.appliedSummary : alert?.note ?? feed.subtitle}</p>
 
                     <div className="feed-foot">
                       <div className="feed-bars">
@@ -1016,7 +1185,11 @@ function App() {
                         <i></i>
                         <i></i>
                       </div>
-                      <small>{alert ? `${feedRiskText(alert.level)}  ${alert.current} → ${alert.future}` : '持续监测中'}</small>
+                      <small>
+                        {alert
+                          ? `${planApplied && feed.grid === scene.focusGrid ? '已响应' : feedRiskText(alert.level)}  ${alert.current} → ${alert.future}`
+                          : '持续监测中'}
+                      </small>
                     </div>
                   </article>
                 )
@@ -1024,51 +1197,40 @@ function App() {
             </div>
           </section>
 
-          <section className="frame panel-block analysis-panel">
+          <section className="frame panel-block benefit-panel">
             <div className="panel-title">
               <div>
-                <p className="panel-kicker">Analysis Window</p>
-                <h2>分析视窗</h2>
+                <p className="panel-kicker">Benefit Comparison</p>
+                <h2>方案收益对比</h2>
               </div>
-              <span className="panel-code">{scene.focusGrid}</span>
+              <span className="panel-code">{planApplied ? 'APPLIED' : 'PREVIEW'}</span>
             </div>
 
-            <div className="analysis-top">
-              <div className="donut-panel compact">
-                <div className="donut-chart" style={{ backgroundImage: `conic-gradient(${donutSegments.gradient})` }}>
-                  <div className="donut-core">
-                    <span>当前总量</span>
-                    <strong>{metricNumber(scene.totalFlow)}</strong>
-                  </div>
-                </div>
-              </div>
+            <div className="benefit-intro">
+              <strong>{planApplied ? '协同策略已生效' : '等待应用协同方案'}</strong>
+              <p>以下结果为基于研究成果的场景化推演值，用于展示协同决策后的改善方向。</p>
+            </div>
 
-              <div className="digest-list compact">
-                {donutSegments.values.map((item) => (
-                  <div key={item.label} className="digest-item compact">
-                    <span className="digest-swatch" style={{ background: item.color }}></span>
-                    <div>
-                      <strong>{item.label}</strong>
-                      <small>{metricNumber(item.value)}</small>
+            <div className="benefit-grid">
+              {scene.benefits.map((item) => (
+                <article key={`${scene.id}-${item.label}`} className={planApplied ? 'benefit-card applied' : 'benefit-card'}>
+                  <span>{item.label}</span>
+                  <div className="benefit-values">
+                    <div className="benefit-value before">
+                      <small>Before</small>
+                      <strong>
+                        {item.before}
+                        {item.unit ? <em>{item.unit}</em> : null}
+                      </strong>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="analysis-divider"></div>
-
-            <div className="model-list compact">
-              {modelCards.map((card) => (
-                <article key={`${card.name}-${card.horizon}`} className={card.featured ? 'model-item featured compact' : 'model-item compact'}>
-                  <div className="model-top">
-                    <strong>{card.name}</strong>
-                    <span>{card.horizon}</span>
-                  </div>
-                  <div className="model-values">
-                    <small>MAE {card.mae}</small>
-                    <small>RMSE {card.rmse}</small>
-                    <small>R² {card.r2}</small>
+                    <div className="benefit-arrow">→</div>
+                    <div className="benefit-value after">
+                      <small>After</small>
+                      <strong>
+                        {item.after}
+                        {item.unit ? <em>{item.unit}</em> : null}
+                      </strong>
+                    </div>
                   </div>
                 </article>
               ))}
