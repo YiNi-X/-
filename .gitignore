@@ -24,3 +24,7 @@ bin-release/
 港口大屏Demo开工包.md
 
 .vercel
+.claude/
+__pycache__/
+*.py[cod]
+demo-web/analysis/*.png
