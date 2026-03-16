@@ -45,6 +45,42 @@ export type HotspotGeometry = {
   point: GeoPoint
 }
 
+export type MainCorridorTrackPoint = GeoPoint & {
+  time: string
+  cog: number | null
+}
+
+export type MainCorridorTrackEntry = {
+  id: string
+  trackId: number
+  corridorId: string
+  corridorRank: number | null
+  directionBin: number
+  directionLabel: string
+  pointCount: number
+  labelPoint: GeoPoint
+  points: MainCorridorTrackPoint[]
+}
+
+export type MainCorridorSummaryEntry = {
+  corridorId: string
+  trackCount: number
+  directionLabel: string
+  labelPoint: GeoPoint
+}
+
+export type MainCorridorTracksFile = {
+  source: string
+  summarySource: string
+  clusterMode: string
+  requestedClusterMode: string
+  trackCount: number
+  corridorCount: number
+  studyArea: StudyBounds
+  corridors: MainCorridorSummaryEntry[]
+  tracks: MainCorridorTrackEntry[]
+}
+
 export type GeometryConfig = {
   meta: {
     version: number

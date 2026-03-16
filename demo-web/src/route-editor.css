@@ -256,6 +256,13 @@
   overflow: auto;
 }
 
+.track-list {
+  display: grid;
+  gap: 0.45rem;
+  max-height: 18rem;
+  overflow: auto;
+}
+
 .corridor-row {
   appearance: none;
   display: grid;
@@ -289,6 +296,41 @@
 .corridor-row small {
   color: rgba(180, 206, 221, 0.82);
   font-size: 0.74rem;
+}
+
+.track-row {
+  appearance: none;
+  display: grid;
+  gap: 0.18rem;
+  width: 100%;
+  padding: 0.56rem 0.66rem;
+  border: 1px solid rgba(83, 144, 191, 0.16);
+  background: rgba(8, 23, 39, 0.88);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.track-row.active {
+  border-color: rgba(102, 225, 247, 0.4);
+  background: rgba(24, 191, 212, 0.12);
+}
+
+.track-row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.track-row-head strong,
+.track-row small {
+  font-family: var(--mono-font);
+}
+
+.track-row small {
+  color: rgba(180, 206, 221, 0.82);
+  font-size: 0.72rem;
 }
 
 .config-grid {
@@ -355,6 +397,10 @@
   resize: vertical;
 }
 
+.export-box-compact {
+  min-height: 8rem;
+}
+
 .hotspot-export-box {
   min-height: 8rem;
 }
@@ -402,6 +448,10 @@
   cursor: grab;
 }
 
+.editor-stage[data-active-layer='tracks'] {
+  cursor: grab;
+}
+
 .editor-stage.is-panning {
   cursor: grabbing;
 }
@@ -420,6 +470,7 @@
 .editor-canvas-base,
 .editor-satellite-layer,
 .editor-corridor-layer,
+.editor-track-layer,
 .editor-geometry-layer {
   position: absolute;
   inset: 0;
@@ -437,6 +488,10 @@
 }
 
 .editor-corridor-layer {
+  z-index: 3;
+}
+
+.editor-track-layer {
   z-index: 3;
 }
 
@@ -508,6 +563,26 @@
   filter: drop-shadow(0 0 16px rgba(83, 214, 240, 0.34));
 }
 
+.editor-cleaned-track {
+  fill: none;
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.14;
+}
+
+.editor-cleaned-track.corridor-focus {
+  stroke-width: 1.9;
+  opacity: 0.46;
+  filter: drop-shadow(0 0 8px rgba(83, 214, 240, 0.08));
+}
+
+.editor-cleaned-track.track-focus {
+  stroke-width: 3.2;
+  opacity: 0.96;
+  filter: drop-shadow(0 0 14px rgba(83, 214, 240, 0.28));
+}
+
 .editor-corridor-tag {
   position: absolute;
   display: grid;
@@ -534,6 +609,13 @@
 .editor-corridor-tag span {
   font-size: 0.64rem;
   color: rgba(180, 206, 221, 0.82);
+}
+
+.editor-corridor-tag small {
+  font-size: 0.58rem;
+  color: rgba(180, 206, 221, 0.72);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .editor-corridor-tag.active {
