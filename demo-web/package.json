@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "editor": "vite --open /route-editor.html",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "preview:editor": "vite preview --open /route-editor.html",
+    "generate:data": "python scripts/generate_first_version_data.py"
   },
   "dependencies": {
     "react": "^19.2.4",

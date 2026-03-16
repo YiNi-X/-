@@ -1,0 +1,12 @@
+{
+  "defaultDatasetId": "full-cleaned-ais",
+  "datasets": [
+    {
+      "id": "full-cleaned-ais",
+      "label": "Full cleaned AIS",
+      "description": "Full cleaned AIS playback and forecast timeline covering 2020-01-01 00:00 to 2020-01-03 00:00.",
+      "aisPlaybackPath": "data/ais-playback.json",
+      "flowForecastPath": "data/flow-forecast.json"
+    }
+  ]
+}

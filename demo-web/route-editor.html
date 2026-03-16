@@ -3,10 +3,94 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Route Editor</title>
+    <title>Route Motion Studio</title>
+    <style>
+      body {
+        margin: 0;
+        background: #07121d;
+        color: #e8f3f9;
+        font: 16px/1.5 "Segoe UI", sans-serif;
+      }
+
+      .editor-boot-note {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+
+      .editor-boot-card {
+        width: min(680px, 100%);
+        padding: 24px;
+        border: 1px solid rgba(102, 225, 247, 0.2);
+        background: rgba(6, 14, 24, 0.92);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+      }
+
+      .editor-boot-kicker {
+        margin: 0 0 8px;
+        color: rgba(183, 236, 247, 0.76);
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .editor-boot-card h1 {
+        margin: 0 0 12px;
+        font-size: 28px;
+        line-height: 1.1;
+      }
+
+      .editor-boot-card p {
+        margin: 0 0 14px;
+        color: rgba(214, 233, 243, 0.82);
+      }
+
+      .editor-boot-card ol {
+        margin: 0 0 16px;
+        padding-left: 20px;
+      }
+
+      .editor-boot-card a {
+        color: #8fefff;
+      }
+
+      .editor-boot-card code {
+        font-family: Consolas, "Courier New", monospace;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main class="editor-boot-note">
+        <section class="editor-boot-card">
+          <p class="editor-boot-kicker">Route Motion Studio</p>
+          <h1>正在打开可运行的编辑器页面</h1>
+          <p>如果你是直接打开源码页，页面会自动跳到构建后的编辑器。</p>
+          <ol>
+            <li>优先跳转到 <a href="./dist/route-editor.html">./dist/route-editor.html</a></li>
+            <li>如果你要开发态编辑器，再在 <code>demo-web</code> 目录运行 <code>npm run editor</code></li>
+          </ol>
+          <p>如果没有自动跳转，请直接点上面的构建版链接。</p>
+        </section>
+      </main>
+    </div>
+    <script>
+      window.setTimeout(() => {
+        const root = document.getElementById('root')
+        const bootVisible = root?.querySelector('.editor-boot-note')
+        const alreadyInDist = /[\\/]dist[\\/]/.test(window.location.pathname)
+        if (bootVisible && !alreadyInDist) {
+          const target = new URL('./dist/route-editor.html', window.location.href)
+          target.search = window.location.search
+          target.hash = window.location.hash
+          if (target.href !== window.location.href) {
+            window.location.replace(target.href)
+          }
+        }
+      }, 900)
+    </script>
     <script type="module" src="/src/route-editor.tsx"></script>
   </body>
-  </html>
+</html>

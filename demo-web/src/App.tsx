@@ -1,49 +1,41 @@
 import type { CSSProperties } from 'react'
 import { useEffect, useMemo, useState } from 'react'
-import type {
-  AlertLevel,
-  BenchmarkEntry,
-  FeedView,
-  GeoPoint,
-  HorizonKey,
-  HotspotId,
-  ModelName,
-  ResultTab,
-  RouteId,
-  ScenarioId,
-} from './scenarioPacks'
+import type { BenchmarkEntry, FeedView } from './scenarioPacks'
+import { feedViews, mapTagDefinitions, modelBenchmarkMatrix } from './scenarioPacks'
 import {
-  defaultScenarioId,
-  feedViews,
-  hotspotAnchors,
-  mapTagDefinitions,
-  modelBenchmarkMatrix,
-  routeBlueprints,
-  routeIds,
-  scenarioPacks,
-} from './scenarioPacks'
+  DEFAULT_DATASET_CATALOG,
+  formatDatasetPath,
+  loadDatasetCatalog,
+  persistDatasetSelection,
+  readPreferredDatasetId,
+  resolveRuntimeResource,
+  selectDatasetEntry,
+} from './datasetCatalog'
+import type {
+  AisPlaybackData,
+  AlertLevel,
+  FlowForecastData,
+  ForecastAlert,
+  GeoPoint,
+  GeometryConfig,
+  HorizonKey,
+  MapTag,
+  ModelName,
+  PlaybackFrame,
+  PlaybackTrack,
+  PlaybackTrackPoint,
+  PlaybackVessel,
+  ResultTab,
+  RouteLabel,
+  StudyBounds,
+  TimelineMoment,
+} from './sharedContracts'
+import { loadPublicJson } from './sharedContracts'
 import './App.css'
 
-type RouteLine = {
-  id: RouteId
-  d: string
-  x: string
-  y: string
-  markers: { id: string; dur: number; begin: number; radius: number }[]
-}
-
-type MapTag = {
-  id: string
-  label: string
-  x: string
-  y: string
-  focusGrid?: HotspotId
-}
-
 type Hotspot = {
-  id: HotspotId
-  x: number
-  y: number
+  id: string
+  point: GeoPoint
   intensity: number
   level: AlertLevel
 }
@@ -61,36 +53,46 @@ const STUDY_BOUNDS = {
   maxLat: 22.635739805,
 }
 
-const MAP_VIEWBOX = { width: 1920, height: 1080 }
 const CHART_WIDTH = 560
 const CHART_HEIGHT = 248
 const CHART_PAD_X = 22
 const CHART_PAD_Y = 18
 const DEFAULT_HOTSPOT_HIGH_THRESHOLD = 0.65
+const SHARED_GEOMETRY_PATH = 'data/shared-geometry.json'
+const DEFAULT_ROUTE_COUNTS: Record<string, number> = {
+  C16: 6,
+  C12: 17,
+  C08: 17,
+  C03: 5,
+  C14: 13,
+  C17: 1,
+}
 const PLAYBACK_SPEEDS = [
   { label: '慢速', value: 5000 },
   { label: '标准', value: 3000 },
   { label: '快速', value: 1800 },
 ] as const
-const DEFAULT_SCENARIO = scenarioPacks.find((item) => item.id === defaultScenarioId) ?? scenarioPacks[0]
 const TITLE_TAGS = ['轨迹修复', '主航路识别', '流量预测', '协同管控']
 
-function geoToPercent(point: GeoPoint) {
-  const x = ((point.lon - STUDY_BOUNDS.minLon) / (STUDY_BOUNDS.maxLon - STUDY_BOUNDS.minLon)) * 100
-  const y = ((STUDY_BOUNDS.maxLat - point.lat) / (STUDY_BOUNDS.maxLat - STUDY_BOUNDS.minLat)) * 100
+const EMPTY_PLAYBACK_FRAMES: PlaybackFrame[] = []
+const EMPTY_FORECAST_TIMELINE: FlowForecastData['timeline'] = []
+
+function geoToPercent(point: GeoPoint, bounds: StudyBounds = STUDY_BOUNDS) {
+  const x = ((point.lon - bounds.minLon) / (bounds.maxLon - bounds.minLon)) * 100
+  const y = ((bounds.maxLat - point.lat) / (bounds.maxLat - bounds.minLat)) * 100
   return { x: `${x.toFixed(1)}%`, y: `${y.toFixed(1)}%` }
 }
 
-function geoToNumericPercent(point: GeoPoint) {
-  const value = geoToPercent(point)
+function geoToNumericPercent(point: GeoPoint, bounds: StudyBounds = STUDY_BOUNDS) {
+  const value = geoToPercent(point, bounds)
   return { x: Number.parseFloat(value.x), y: Number.parseFloat(value.y) }
 }
 
-function geoToSvg(point: GeoPoint) {
-  return {
-    x: ((point.lon - STUDY_BOUNDS.minLon) / (STUDY_BOUNDS.maxLon - STUDY_BOUNDS.minLon)) * MAP_VIEWBOX.width,
-    y: ((STUDY_BOUNDS.maxLat - point.lat) / (STUDY_BOUNDS.maxLat - STUDY_BOUNDS.minLat)) * MAP_VIEWBOX.height,
-  }
+function geoDistanceMeters(a: GeoPoint, b: GeoPoint) {
+  const meanLat = (a.lat + b.lat) / 2
+  const dy = (b.lat - a.lat) * 111_000
+  const dx = (b.lon - a.lon) * Math.cos((meanLat * Math.PI) / 180) * 111_000
+  return Math.hypot(dx, dy)
 }
 
 function lineMetrics(a: { x: number; y: number }, b: { x: number; y: number }) {
@@ -112,26 +114,20 @@ function controlPoint(current: { x: number; y: number }, previous?: { x: number;
   }
 }
 
-function createSmoothPath(points: GeoPoint[]) {
-  const svgPoints = points.map(geoToSvg)
-  return svgPoints.reduce((path, point, index, array) => {
-    if (index === 0) return `M ${point.x.toFixed(1)} ${point.y.toFixed(1)}`
+function createSmoothPercentPath(points: Array<{ x: number; y: number }>) {
+  return points.reduce((path, point, index, array) => {
+    if (index === 0) return `M ${point.x.toFixed(2)} ${point.y.toFixed(2)}`
     const previous = array[index - 1]
     const previousPrevious = array[index - 2]
     const next = array[index + 1]
     const startControl = controlPoint(previous, previousPrevious, point)
     const endControl = controlPoint(point, previous, next, true)
-    return `${path} C ${startControl.x.toFixed(1)} ${startControl.y.toFixed(1)} ${endControl.x.toFixed(1)} ${endControl.y.toFixed(1)} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`
+    return `${path} C ${startControl.x.toFixed(2)} ${startControl.y.toFixed(2)} ${endControl.x.toFixed(2)} ${endControl.y.toFixed(2)} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`
   }, '')
 }
 
-function createMarkers(baseDur: number, count: number, radius: number) {
-  return Array.from({ length: count }, (_, index) => ({
-    id: `m${index + 1}`,
-    dur: Number((baseDur + index * 1.15).toFixed(1)),
-    begin: Number((-(baseDur / Math.max(count, 1)) * index).toFixed(1)),
-    radius: Number((radius - (index % 2) * 0.4).toFixed(1)),
-  }))
+function createSmoothGeoPath(points: GeoPoint[], bounds: StudyBounds) {
+  return createSmoothPercentPath(points.map((point) => geoToNumericPercent(point, bounds)))
 }
 
 function createLinePath(values: number[], min: number, max: number) {
@@ -181,19 +177,34 @@ function classifyLevel(score: number, highThreshold: number): AlertLevel {
   return 'watch'
 }
 
-function classifyHotspot(intensity: number, highThreshold: number): AlertLevel {
-  const mediumThreshold = Math.max(highThreshold - 0.2, 0.1)
-  if (intensity >= highThreshold) return 'high'
-  if (intensity >= mediumThreshold) return 'medium'
-  return 'watch'
+function clampCount(value: number) {
+  return Math.min(64, Math.max(0, value))
 }
 
-function clampCount(value: number) {
-  return Math.min(8, Math.max(0, value))
+function buildTimelineMoments(frames: PlaybackFrame[], bucketMinutes: number, markMinutes = 240): TimelineMoment[] {
+  if (!frames.length) return []
+  const marks = new Map<number, PlaybackFrame>()
+  const step = Math.max(1, Math.round(markMinutes / Math.max(bucketMinutes, 1)))
+
+  for (let index = 0; index < frames.length; index += step) {
+    marks.set(index, frames[index])
+  }
+
+  marks.set(frames.length - 1, frames[frames.length - 1])
+
+  return Array.from(marks.entries()).map(([frameIndex, frame]) => ({
+    id: frame.sceneId,
+    frameIndex,
+    time: frame.displayLabel,
+    date: frame.bucketTime.slice(5, 10),
+  }))
+}
+
+function formatTimelineStamp(value: string) {
+  return value.replace('T', ' ').slice(0, 16)
 }
 
 function App() {
-  const [selectedScenarioId, setSelectedScenarioId] = useState<ScenarioId>(DEFAULT_SCENARIO.id)
   const [sceneIndex, setSceneIndex] = useState(0)
   const [autoplay, setAutoplay] = useState(true)
   const [planApplied, setPlanApplied] = useState(false)
@@ -201,86 +212,314 @@ function App() {
   const [selectedHorizon, setSelectedHorizon] = useState<HorizonKey>('1h')
   const [selectedModel, setSelectedModel] = useState<ModelName>('STGCN')
   const [strategyEnabled, setStrategyEnabled] = useState(true)
-  const [playbackSpeed, setPlaybackSpeed] = useState(DEFAULT_SCENARIO.baseAutoplayMs)
-  const [routeCountsOverride, setRouteCountsOverride] = useState<Record<RouteId, number>>({ ...DEFAULT_SCENARIO.baseRouteCounts })
+  const [playbackSpeed, setPlaybackSpeed] = useState(3000)
+  const [routeCountsOverride, setRouteCountsOverride] = useState<Record<string, number>>({})
   const [hotspotHighThreshold, setHotspotHighThreshold] = useState(DEFAULT_HOTSPOT_HIGH_THRESHOLD)
   const [isControlDrawerOpen, setIsControlDrawerOpen] = useState(false)
+  const [aisPlayback, setAisPlayback] = useState<AisPlaybackData | null>(null)
+  const [flowForecast, setFlowForecast] = useState<FlowForecastData | null>(null)
+  const [geometryConfig, setGeometryConfig] = useState<GeometryConfig | null>(null)
+  const [datasetCatalog, setDatasetCatalog] = useState(DEFAULT_DATASET_CATALOG)
+  const [selectedDatasetId, setSelectedDatasetId] = useState(() => readPreferredDatasetId() ?? DEFAULT_DATASET_CATALOG.defaultDatasetId)
+  const [datasetLoadError, setDatasetLoadError] = useState('')
+  const [geometryLoadError, setGeometryLoadError] = useState('')
 
-  const selectedScenario = useMemo(
-    () => scenarioPacks.find((item) => item.id === selectedScenarioId) ?? DEFAULT_SCENARIO,
-    [selectedScenarioId],
+  const availableDatasets = useMemo(
+    () => datasetCatalog.datasets.filter((item) => item.aisPlaybackPath && item.flowForecastPath),
+    [datasetCatalog.datasets],
   )
-  const activeScenes = selectedScenario.timeSlices
-  const scene = activeScenes[sceneIndex] ?? activeScenes[0]
+  const selectedDataset = useMemo(
+    () => selectDatasetEntry(datasetCatalog, selectedDatasetId, ['ais', 'forecast']),
+    [datasetCatalog, selectedDatasetId],
+  )
+  const studyArea = geometryConfig?.meta.studyArea ?? aisPlayback?.meta.studyArea ?? STUDY_BOUNDS
+  const routeIds = useMemo(
+    () => geometryConfig?.meta.routeOrder ?? aisPlayback?.meta.routeIds ?? Object.keys(DEFAULT_ROUTE_COUNTS),
+    [aisPlayback?.meta.routeIds, geometryConfig],
+  )
   const mediumHotspotThreshold = Math.max(hotspotHighThreshold - 0.2, 0.1)
 
   useEffect(() => {
-    if (!autoplay) return
+    let cancelled = false
+
+    loadDatasetCatalog().then((catalog) => {
+      if (cancelled) return
+      setDatasetCatalog(catalog)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+
+    loadPublicJson<GeometryConfig>(resolveRuntimeResource(SHARED_GEOMETRY_PATH))
+      .then((geometryPayload) => {
+        if (cancelled) return
+        setGeometryConfig(geometryPayload)
+        setGeometryLoadError('')
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return
+        setGeometryLoadError(error instanceof Error ? error.message : 'Failed to load shared geometry config')
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+
+    Promise.all([
+      loadPublicJson<AisPlaybackData>(resolveRuntimeResource(selectedDataset.aisPlaybackPath)),
+      loadPublicJson<FlowForecastData>(resolveRuntimeResource(selectedDataset.flowForecastPath ?? 'data/flow-forecast.json')),
+    ])
+      .then(([playbackPayload, forecastPayload]) => {
+        if (cancelled) return
+        setAisPlayback(playbackPayload)
+        setFlowForecast(forecastPayload)
+        setDatasetLoadError('')
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return
+        setDatasetLoadError(error instanceof Error ? error.message : `Failed to load dataset ${selectedDataset.label}`)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [selectedDataset])
+
+  const mapTags = useMemo<MapTag[]>(() => mapTagDefinitions.map((tag) => ({ ...tag, ...geoToPercent(tag.point, studyArea) })), [studyArea])
+  const routeLabels = useMemo<RouteLabel[]>(
+    () => geometryConfig?.routes.map((route) => ({ id: route.id, ...geoToPercent(route.labelPoint, studyArea) })) ?? [],
+    [geometryConfig, studyArea],
+  )
+  const playbackFrames = aisPlayback?.frames ?? EMPTY_PLAYBACK_FRAMES
+  const forecastTimeline = flowForecast?.timeline ?? EMPTY_FORECAST_TIMELINE
+  const activeScenes = useMemo(
+    () =>
+      Array.from({ length: Math.max(playbackFrames.length, forecastTimeline.length) }, (_, index) => {
+        const playbackFrame = playbackFrames[index]
+        const forecastEntry = forecastTimeline[index]
+        const time = forecastEntry?.time ?? playbackFrame?.bucketTime ?? ''
+        return {
+          id: forecastEntry?.sceneId ?? playbackFrame?.sceneId ?? `frame-${index}`,
+          label: playbackFrame?.displayLabel ?? time.slice(11, 16) ?? '--:--',
+          time,
+          totalFlow: forecastEntry?.current.totalFlow ?? 0,
+        }
+      }),
+    [forecastTimeline, playbackFrames],
+  )
+  const totalSceneCount = activeScenes.length
+  const safeSceneIndex = totalSceneCount ? Math.min(sceneIndex, totalSceneCount - 1) : 0
+  const sceneTemplateIndex = safeSceneIndex
+  const sceneMarker = activeScenes[safeSceneIndex] ?? { id: 'frame-0', label: '--:--', time: '', totalFlow: 0 }
+  const forecastEntry = forecastTimeline[safeSceneIndex] ?? forecastTimeline.find((item) => item.sceneId === sceneMarker.id) ?? null
+  const playbackFrame = useMemo(
+    () => playbackFrames[safeSceneIndex] ?? playbackFrames.find((item) => item.sceneId === sceneMarker.id) ?? null,
+    [playbackFrames, safeSceneIndex, sceneMarker.id],
+  )
+  const scene = useMemo(() => {
+    const narrative = forecastEntry?.narrative
+    return {
+      id: forecastEntry?.sceneId ?? playbackFrame?.sceneId ?? sceneMarker.id,
+      time: forecastEntry?.time ?? playbackFrame?.bucketTime ?? sceneMarker.time,
+      phase: narrative?.phase ?? '数据加载中',
+      status: narrative?.status ?? '等待数据契约',
+      totalFlow: forecastEntry?.current.totalFlow ?? 0,
+      next1h: forecastEntry?.forecast['1h']?.totalFlow ?? 0,
+      hotspotCount: forecastEntry?.derived.hotspotCount ?? 0,
+      focusGrid: forecastEntry?.derived.focusGrid ?? geometryConfig?.hotspots[0]?.id ?? '',
+      summary: narrative?.summary ?? '页面正在等待离线预测结果。',
+      alerts: forecastEntry?.derived.alerts ?? [],
+      appliedAlerts: narrative?.appliedState.alerts ?? forecastEntry?.derived.alerts ?? [],
+      logs: narrative?.logs ?? ['离线推理数据加载中。'],
+      strategyHeadline: narrative?.strategy.headline ?? '离线推理准备中',
+      strategySummary: narrative?.strategy.summary ?? '页面将直接使用数据文件里的 narrative 字段，不再回退到静态场景模板。',
+      recommendations: narrative?.recommendations ?? [],
+      benefits: narrative?.benefits ?? [],
+      appliedSummary: narrative?.appliedState.summary ?? narrative?.summary ?? '等待策略应用态数据。',
+      appliedStatus: narrative?.appliedState.status ?? narrative?.status ?? '等待策略应用态数据。',
+      appliedHotspotScale: narrative?.appliedState.hotspotScale ?? 1,
+      appliedFocusGrid: narrative?.appliedState.focusGrid ?? forecastEntry?.derived.focusGrid ?? geometryConfig?.hotspots[0]?.id ?? '',
+      appliedFocusRoute: narrative?.appliedState.focusRoute ?? forecastEntry?.derived.focusRoute ?? '',
+    }
+  }, [forecastEntry, geometryConfig, playbackFrame, sceneMarker.id, sceneMarker.time])
+  const timelineMoments = useMemo(
+    () =>
+      playbackFrames.length
+        ? buildTimelineMoments(playbackFrames, aisPlayback?.meta.bucketMinutes ?? 5)
+        : activeScenes.map((item, index) => ({
+            id: item.id,
+            frameIndex: index,
+            time: item.time.slice(11, 16),
+            date: item.time.slice(5, 10),
+          })),
+    [activeScenes, aisPlayback?.meta.bucketMinutes, playbackFrames],
+  )
+  const activeTimelineMomentId =
+    timelineMoments.reduce<TimelineMoment | null>((closest, item) => {
+      if (!closest) return item
+      return Math.abs(item.frameIndex - safeSceneIndex) < Math.abs(closest.frameIndex - safeSceneIndex) ? item : closest
+    }, null)?.id ?? ''
+  const playbackWindowStart = playbackFrames[0]?.bucketTime ?? activeScenes[0]?.time ?? ''
+  const playbackWindowEnd = playbackFrames[playbackFrames.length - 1]?.bucketTime ?? activeScenes[activeScenes.length - 1]?.time ?? ''
+  const playbackWindowRangeLabel =
+    playbackWindowStart && playbackWindowEnd ? `${formatTimelineStamp(playbackWindowStart)} -> ${formatTimelineStamp(playbackWindowEnd)}` : 'Window unavailable'
+  const playbackFrameLabel = playbackFrame ? formatTimelineStamp(playbackFrame.bucketTime) : scene.time
+  const playbackFrameMeta = totalSceneCount
+    ? `Frame ${Math.min(safeSceneIndex + 1, totalSceneCount)} / ${totalSceneCount} · ${aisPlayback?.meta.bucketMinutes ?? 5} min step`
+    : 'No playback frames'
+
+  const visiblePlaybackVessels = useMemo(() => {
+    if (!playbackFrame) return [] as PlaybackVessel[]
+    const usedByRoute: Record<string, number> = Object.fromEntries(routeIds.map((routeId) => [routeId, 0]))
+    return playbackFrame.vessels.filter((vessel) => {
+      if ((usedByRoute[vessel.routeId] ?? 0) >= (routeCountsOverride[vessel.routeId] ?? DEFAULT_ROUTE_COUNTS[vessel.routeId] ?? 12)) return false
+      usedByRoute[vessel.routeId] += 1
+      return true
+    })
+  }, [playbackFrame, routeCountsOverride, routeIds])
+
+  const playbackTracks = useMemo<PlaybackTrack[]>(() => {
+    const groupedTracks = new Map<
+      string,
+      {
+        mmsi: string
+        routeId: string
+        isFocusArea: boolean
+        points: PlaybackTrackPoint[]
+      }
+    >()
+
+    playbackFrames.forEach((frame) => {
+      frame.vessels.forEach((vessel) => {
+        const existingTrack = groupedTracks.get(vessel.mmsi) ?? {
+          mmsi: vessel.mmsi,
+          routeId: vessel.routeId,
+          isFocusArea: vessel.isFocusArea,
+          points: [],
+        }
+        const nextPoint = { lon: vessel.lon, lat: vessel.lat, time: frame.bucketTime, sceneId: frame.sceneId }
+        const lastPoint = existingTrack.points[existingTrack.points.length - 1]
+
+        existingTrack.routeId = vessel.routeId
+        existingTrack.isFocusArea = existingTrack.isFocusArea || vessel.isFocusArea
+
+        if (!lastPoint || geoDistanceMeters(lastPoint, nextPoint) > 12) {
+          existingTrack.points.push(nextPoint)
+        }
+
+        groupedTracks.set(vessel.mmsi, existingTrack)
+      })
+    })
+
+    return Array.from(groupedTracks.values())
+      .filter((track) => track.points.length >= 2)
+      .map((track) => ({
+        ...track,
+        path: createSmoothGeoPath(track.points, studyArea),
+      }))
+  }, [playbackFrames, studyArea])
+
+  const displayedTrackIds = useMemo(() => {
+    return new Set(
+      routeIds.flatMap((routeId) =>
+        playbackTracks
+          .filter((track) => track.routeId === routeId)
+          .sort(
+            (a, b) =>
+              b.points.length - a.points.length ||
+              Number(b.isFocusArea) - Number(a.isFocusArea) ||
+              a.points[0].time.localeCompare(b.points[0].time) ||
+              a.mmsi.localeCompare(b.mmsi),
+          )
+          .slice(0, routeCountsOverride[routeId] ?? DEFAULT_ROUTE_COUNTS[routeId] ?? 12)
+          .map((track) => track.mmsi),
+      ),
+    )
+  }, [playbackTracks, routeCountsOverride, routeIds])
+
+  const activeTrackIds = useMemo(() => new Set(visiblePlaybackVessels.map((vessel) => vessel.mmsi)), [visiblePlaybackVessels])
+
+  useEffect(() => {
+    if (!autoplay || totalSceneCount <= 1) return
     const timer = window.setInterval(() => {
-      setSceneIndex((current) => (current + 1) % activeScenes.length)
+      setSceneIndex((current) => (Math.min(current, totalSceneCount - 1) + 1) % totalSceneCount)
       setPlanApplied(false)
     }, playbackSpeed)
     return () => window.clearInterval(timer)
-  }, [activeScenes.length, autoplay, playbackSpeed])
-
-  const mapTags = useMemo<MapTag[]>(() => mapTagDefinitions.map((tag) => ({ ...tag, ...geoToPercent(tag.point) })), [])
-
-  const routeLines = useMemo<RouteLine[]>(
-    () =>
-      routeBlueprints.map((route) => {
-        const label = geoToPercent(route.labelPoint)
-        return {
-          id: route.id,
-          d: createSmoothPath(route.points),
-          x: label.x,
-          y: label.y,
-          markers: createMarkers(route.markerBaseDur, routeCountsOverride[route.id], route.markerRadius),
-        }
-      }),
-    [routeCountsOverride],
-  )
+  }, [autoplay, playbackSpeed, totalSceneCount])
 
   const hotspots = useMemo<Hotspot[]>(
     () =>
-      hotspotAnchors.map((anchor) => ({
+      (geometryConfig?.hotspots ?? []).map((anchor) => ({
         id: anchor.id,
-        ...geoToNumericPercent(anchor.point),
-        intensity: selectedScenario.hotspotSeries[anchor.id][sceneIndex] ?? 0,
-        level: classifyHotspot(selectedScenario.hotspotSeries[anchor.id][sceneIndex] ?? 0, hotspotHighThreshold),
+        point: anchor.point,
+        intensity: forecastEntry?.derived.hotspots.find((item) => item.id === anchor.id)?.intensity ?? 0,
+        level: forecastEntry?.derived.hotspots.find((item) => item.id === anchor.id)?.level ?? 'watch',
       })),
-    [hotspotHighThreshold, sceneIndex, selectedScenario],
+    [forecastEntry, geometryConfig],
   )
 
-  const displayedAlerts = useMemo(() => {
-    return scene.alerts.map((alert) => {
-      if (!planApplied) return { ...alert, level: classifyLevel(alert.future, hotspotHighThreshold) }
-      const isFocus = alert.grid === scene.focusGrid
-      const current = isFocus ? scene.appliedFocus.current : Math.max(Math.round(alert.current * 0.72), 18)
-      const future = isFocus ? scene.appliedFocus.future : Math.max(Math.round(alert.future * 0.7), 22)
-      return {
-        ...alert,
-        current,
-        future,
-        level: classifyLevel(future, hotspotHighThreshold),
-        note: isFocus ? `${scene.strategyHeadline}已执行，焦点压力明显回落。` : '协同放行后，局部热度已出现下降。',
-      }
-    })
-  }, [hotspotHighThreshold, planApplied, scene])
+  const objectiveFocusGrid = planApplied ? scene.appliedFocusGrid : forecastEntry?.derived.focusGrid ?? scene.focusGrid
+  const displayedAlerts = useMemo<ForecastAlert[]>(() => (planApplied ? scene.appliedAlerts : scene.alerts), [planApplied, scene])
 
-  const focusFeed = feedViews.find((item) => item.grid === scene.focusGrid) ?? feedViews[0]
-  const focusRoute = focusFeed.route
-  const focusAlert = displayedAlerts.find((item) => item.grid === scene.focusGrid) ?? displayedAlerts[0]
+  const focusFeed = feedViews.find((item) => item.grid === objectiveFocusGrid) ?? feedViews[0]
+  const focusRoute = planApplied ? scene.appliedFocusRoute || focusFeed.route : forecastEntry?.derived.focusRoute ?? focusFeed.route
+  const displayedPlaybackTracks = useMemo(
+    () =>
+      playbackTracks
+        .filter((track) => displayedTrackIds.has(track.mmsi))
+        .sort((a, b) => {
+          const aPriority = Number(a.routeId === focusRoute) * 4 + Number(activeTrackIds.has(a.mmsi)) * 2 + Number(a.isFocusArea)
+          const bPriority = Number(b.routeId === focusRoute) * 4 + Number(activeTrackIds.has(b.mmsi)) * 2 + Number(b.isFocusArea)
+          if (aPriority !== bPriority) return aPriority - bPriority
+          return a.mmsi.localeCompare(b.mmsi)
+        }),
+    [activeTrackIds, displayedTrackIds, focusRoute, playbackTracks],
+  )
+  const visibleTrackMarkers = useMemo(
+    () =>
+      visiblePlaybackVessels
+        .filter((vessel) => displayedTrackIds.has(vessel.mmsi))
+        .sort((a, b) => {
+          const aPriority = Number(a.routeId === focusRoute) * 3 + Number(a.isFocusArea)
+          const bPriority = Number(b.routeId === focusRoute) * 3 + Number(b.isFocusArea)
+          if (aPriority !== bPriority) return aPriority - bPriority
+          return a.mmsi.localeCompare(b.mmsi)
+        }),
+    [displayedTrackIds, focusRoute, visiblePlaybackVessels],
+  )
+  const focusAlert =
+    displayedAlerts.find((item) => item.grid === objectiveFocusGrid) ??
+    displayedAlerts[0] ?? { grid: '--', level: 'watch' as AlertLevel, current: 0, future: 0, note: '' }
   const sceneDate = scene.time.slice(0, 10)
   const sceneClock = scene.time.slice(11)
-  const totalFlowSeries = activeScenes.map((item) => item.totalFlow)
-  const flowMin = Math.min(...totalFlowSeries) - 80
-  const flowMax = Math.max(...totalFlowSeries) + 80
-  const flowPath = createLinePath(totalFlowSeries, flowMin, flowMax)
-  const flowArea = createAreaPath(totalFlowSeries, flowMin, flowMax)
-  const currentVisibleVessels = Object.values(routeCountsOverride).reduce((sum, value) => sum + value, 0)
-  const displayedHotspotCount = planApplied ? 0 : hotspots.filter((item) => item.intensity >= hotspotHighThreshold).length
+  const totalFlowSeries = flowForecast?.series.totalFlow?.length ? flowForecast.series.totalFlow : activeScenes.map((item) => item.totalFlow)
+  const safeFlowSeries = totalFlowSeries.length >= 2 ? totalFlowSeries : [0, 0]
+  const flowMin = Math.min(...safeFlowSeries) - 80
+  const flowMax = Math.max(...safeFlowSeries) + 80
+  const flowPath = createLinePath(safeFlowSeries, flowMin, flowMax)
+  const flowArea = createAreaPath(safeFlowSeries, flowMin, flowMax)
+  const objectiveTotalFlow = forecastEntry?.current.totalFlow ?? scene.totalFlow
+  const objectiveNext1h = forecastEntry?.forecast['1h'].totalFlow ?? scene.next1h
+  const currentVisibleVessels = visibleTrackMarkers.length > 0 ? visibleTrackMarkers.length : displayedPlaybackTracks.length
+  const displayedHotspotCount = displayedAlerts.filter((item) => classifyLevel(item.future, hotspotHighThreshold) !== 'watch').length
   const displayedStatus = !strategyEnabled ? '策略关闭' : planApplied ? scene.appliedStatus ?? '协同已应用' : scene.status
   const hotspotScale = planApplied ? scene.appliedHotspotScale ?? 0.02 : 1
+  const liveDisplayTime = playbackFrame?.displayLabel ?? sceneClock
+  const liveDisplayDate = playbackFrame?.bucketTime.slice(0, 10) ?? sceneDate
+  const playbackWindowMinutes = aisPlayback?.meta.bucketMinutes ?? 5
+  const runtimeLoadError = geometryLoadError || datasetLoadError
+  const studyAreaLongitudeLabel = `${studyArea.minLon.toFixed(4)}E - ${studyArea.maxLon.toFixed(4)}E`
+  const studyAreaLatitudeLabel = `${studyArea.minLat.toFixed(4)}N - ${studyArea.maxLat.toFixed(4)}N`
 
   const flowTicks = useMemo(() => {
     const values = [flowMin, (flowMin + flowMax) / 2, flowMax]
@@ -290,20 +529,20 @@ function App() {
   }, [flowMax, flowMin])
 
   const headerLeftBlocks: HeaderBlock[] = [
-    { label: '系统状态', value: 'ONLINE', note: 'AIS / GRID / STGCN' },
-    { label: '场景模式', value: selectedScenario.shortLabel, note: `节点 ${sceneIndex + 1}/5` },
-    { label: '焦点航路', value: focusRoute, note: `焦点网格 ${scene.focusGrid}` },
+    { label: '系统状态', value: 'ONLINE', note: `AIS / ${flowForecast?.meta.model ?? 'STGCN'} / OFFLINE` },
+    { label: '数据时段', value: '连续时序', note: `${playbackWindowMinutes} 分钟滚动窗口` },
+    { label: '焦点航路', value: focusRoute, note: `焦点网格 ${objectiveFocusGrid}` },
   ]
 
   const headerRightBlocks: HeaderBlock[] = [
-    { label: '当前时刻', value: sceneClock, note: sceneDate },
+    { label: '当前时刻', value: liveDisplayTime, note: liveDisplayDate },
     { label: '运行阶段', value: scene.phase, note: displayedStatus },
-    { label: '地图模式', value: '聚类 / 网格', note: selectedScenario.description },
+    { label: '地图模式', value: '聚类 / 网格', note: '主航路与热点监测' },
   ]
 
   const dialCards = [
-    { label: '当前流量', value: scene.totalFlow, percent: Math.min(scene.totalFlow / 2200, 1) },
-    { label: '1H 预测', value: scene.next1h, percent: Math.min(scene.next1h / 2200, 1) },
+    { label: '当前流量', value: objectiveTotalFlow, percent: Math.min(objectiveTotalFlow / 2200, 1) },
+    { label: 'Next Window', value: objectiveNext1h, percent: Math.min(objectiveNext1h / 2200, 1) },
     { label: '热点网格', value: displayedHotspotCount, percent: Math.min(displayedHotspotCount / 5, 1) },
     { label: '展示船舶', value: currentVisibleVessels, percent: Math.min(currentVisibleVessels / 28, 1) },
   ]
@@ -329,23 +568,14 @@ function App() {
   }
 
   function handleSceneSelect(index: number) {
-    setSceneIndex(index)
+    setSceneIndex(totalSceneCount ? Math.min(Math.max(index, 0), totalSceneCount - 1) : 0)
     setPlanApplied(false)
     setAutoplay(false)
   }
 
-  function handleScenarioChange(id: ScenarioId) {
-    const nextScenario = scenarioPacks.find((item) => item.id === id)
-    if (!nextScenario) return
-    setSelectedScenarioId(id)
-    setSceneIndex(0)
-    setPlanApplied(false)
-    setAutoplay(false)
-    setRouteCountsOverride({ ...nextScenario.baseRouteCounts })
-  }
-
-  function handleRouteCountChange(routeId: RouteId, delta: number) {
-    setRouteCountsOverride((current) => ({ ...current, [routeId]: clampCount(current[routeId] + delta) }))
+  function handleRouteCountChange(routeId: string, delta: number) {
+    const currentValue = routeCountsOverride[routeId] ?? DEFAULT_ROUTE_COUNTS[routeId] ?? 12
+    setRouteCountsOverride((current) => ({ ...current, [routeId]: clampCount(currentValue + delta) }))
   }
 
   function handleStrategyToggle() {
@@ -356,12 +586,20 @@ function App() {
     })
   }
 
+  function handleDatasetChange(nextDatasetId: string) {
+    setSelectedDatasetId(nextDatasetId)
+    persistDatasetSelection(nextDatasetId)
+    setSceneIndex(0)
+    setPlanApplied(false)
+    setAutoplay(false)
+  }
+
   function resetControls() {
     setSceneIndex(0)
     setPlanApplied(false)
     setAutoplay(false)
-    setRouteCountsOverride({ ...selectedScenario.baseRouteCounts })
-    setPlaybackSpeed(selectedScenario.baseAutoplayMs)
+    setRouteCountsOverride({})
+    setPlaybackSpeed(3000)
     setHotspotHighThreshold(DEFAULT_HOTSPOT_HIGH_THRESHOLD)
     setStrategyEnabled(true)
     setActiveResultTab('benefit')
@@ -383,13 +621,18 @@ function App() {
               </article>
             ))}
           </div>
+
+          <p className="source-note">
+            {flowForecast?.meta.notice ??
+              '船舶轨迹来自历史 AIS，预测来自离线模型推理，本页面仍是演示版而非生产业务系统。'}
+          </p>
         </div>
 
         <div className="header-title-shell">
           <div className="header-title-plaque">
             <span className="header-title-code">PEARL RIVER ESTUARY PORT TRAFFIC MONITOR</span>
             <h1>港口智慧管理平台</h1>
-            <p>珠江口船舶交通监测与协同决策演示界面</p>
+            <p>珠江口船舶交通监测与协同决策控制台</p>
           </div>
 
           <div className="header-title-tags">
@@ -398,22 +641,11 @@ function App() {
             ))}
           </div>
 
-          <div className="header-scene-bar">
-            <div className="scenario-switcher">
-              {scenarioPacks.map((scenarioPack) => (
-                <button
-                  key={scenarioPack.id}
-                  type="button"
-                  className={scenarioPack.id === selectedScenarioId ? 'scenario-chip active' : 'scenario-chip'}
-                  onClick={() => handleScenarioChange(scenarioPack.id)}
-                >
-                  {scenarioPack.shortLabel}
-                </button>
-              ))}
+          <div className="header-live-bar">
+            <div className="live-summary-copy">
+              <span>当前态势说明</span>
+              <strong>{planApplied ? scene.appliedSummary : scene.summary}</strong>
             </div>
-
-            <span className="scene-description">{selectedScenario.description}</span>
-
             <button type="button" className="parameter-trigger" onClick={() => setIsControlDrawerOpen((current) => !current)}>
               {isControlDrawerOpen ? '关闭控制台' : '参数控制台'}
             </button>
@@ -421,7 +653,7 @@ function App() {
         </div>
 
         <div className="header-side header-side-right">
-          <div className="header-side-label">SCENE CONTROL</div>
+          <div className="header-side-label">LIVE CONTROL</div>
           <div className="header-block-grid header-block-grid-right">
             {headerRightBlocks.map((block) => (
               <article key={block.label} className="header-block">
@@ -453,6 +685,30 @@ function App() {
 
         <div className="control-section">
           <div className="control-section-head">
+            <strong>Data Source</strong>
+            <span>{selectedDataset.label}</span>
+          </div>
+          <label className="drawer-field">
+            <span>Dataset</span>
+            <select value={selectedDataset.id} onChange={(event) => handleDatasetChange(event.target.value)}>
+              {availableDatasets.map((dataset) => (
+                <option key={dataset.id} value={dataset.id}>
+                  {dataset.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <p className="control-note">{selectedDataset.description || 'Switch datasets from the shared catalog or open the page with ?dataset=<id>.'}</p>
+          <p className="control-paths">
+            AIS {formatDatasetPath(selectedDataset.aisPlaybackPath)}
+            <br />
+            Forecast {formatDatasetPath(selectedDataset.flowForecastPath)}
+          </p>
+          {runtimeLoadError ? <p className="control-warning">{runtimeLoadError}</p> : null}
+        </div>
+
+        <div className="control-section">
+          <div className="control-section-head">
             <strong>船舶数量</strong>
             <span>分航线调节</span>
           </div>
@@ -464,7 +720,7 @@ function App() {
                   <button type="button" onClick={() => handleRouteCountChange(routeId, -1)}>
                     -
                   </button>
-                  <strong>{routeCountsOverride[routeId]}</strong>
+                  <strong>{routeCountsOverride[routeId] ?? DEFAULT_ROUTE_COUNTS[routeId] ?? 12}</strong>
                   <button type="button" onClick={() => handleRouteCountChange(routeId, 1)}>
                     +
                   </button>
@@ -508,7 +764,7 @@ function App() {
 
         <div className="control-actions">
           <button type="button" className="drawer-reset" onClick={resetControls}>
-            恢复当前场景默认值
+            恢复默认参数
           </button>
           <button type="button" className="drawer-close secondary" onClick={() => setIsControlDrawerOpen(false)}>
             关闭面板
@@ -550,7 +806,7 @@ function App() {
                 <p className="panel-kicker">Hot Grid Table</p>
                 <h2>重点网格</h2>
               </div>
-              <span className="panel-code">{scene.focusGrid}</span>
+              <span className="panel-code">{objectiveFocusGrid}</span>
             </div>
 
             <table className="data-table">
@@ -597,7 +853,7 @@ function App() {
                 <p className="panel-kicker">Forecast Curve</p>
                 <h2>流量曲线</h2>
               </div>
-              <span className="panel-code">1H</span>
+              <span className="panel-code">NEXT</span>
             </div>
 
             <div className="chart-area compact-chart-area">
@@ -631,9 +887,14 @@ function App() {
                   const y = CHART_HEIGHT - CHART_PAD_Y - ratio * (CHART_HEIGHT - CHART_PAD_Y * 2)
                   return (
                     <g key={`point-${index}`}>
-                      <circle cx={x} cy={y} r={index === sceneIndex ? 5 : 3.5} className={index === sceneIndex ? 'chart-point active' : 'chart-point'} />
-                      <text x={x} y={CHART_HEIGHT - 8} className={index === sceneIndex ? 'chart-label active' : 'chart-label'}>
-                        {activeScenes[index].label}
+                      <circle
+                        cx={x}
+                        cy={y}
+                        r={index === sceneTemplateIndex ? 5 : 3.5}
+                        className={index === sceneTemplateIndex ? 'chart-point active' : 'chart-point'}
+                      />
+                      <text x={x} y={CHART_HEIGHT - 8} className={index === sceneTemplateIndex ? 'chart-label active' : 'chart-label'}>
+                        {activeScenes[index]?.label ?? `T${index + 1}`}
                       </text>
                     </g>
                   )
@@ -642,8 +903,8 @@ function App() {
             </div>
 
             <div className="chart-footer">
-              <span>当前 {metricNumber(scene.totalFlow)}</span>
-              <span>1H {metricNumber(scene.next1h)}</span>
+              <span>当前 {metricNumber(objectiveTotalFlow)}</span>
+              <span>Next {metricNumber(objectiveNext1h)}</span>
               <span>{scene.phase}</span>
             </div>
           </section>
@@ -665,8 +926,8 @@ function App() {
 
               <div className="map-hud map-hud-left">
                 <span>研究区域</span>
-                <strong>113.5583E - 113.9583E</strong>
-                <strong>22.1557N - 22.6357N</strong>
+                <strong>{studyAreaLongitudeLabel}</strong>
+                <strong>{studyAreaLatitudeLabel}</strong>
               </div>
 
               <div className="map-right-rail">
@@ -678,7 +939,7 @@ function App() {
                     </span>
                   </div>
                   <div className="focus-card-tags">
-                    <strong>{scene.focusGrid}</strong>
+                    <strong>{objectiveFocusGrid}</strong>
                     <strong>{focusRoute}</strong>
                     <strong>{focusFeed.tag}</strong>
                   </div>
@@ -703,11 +964,11 @@ function App() {
                     <small>{scene.phase}</small>
                   </div>
                   <div className="map-control-card">
-                    <span>1H 预测</span>
-                    <strong>{metricNumber(scene.next1h)}</strong>
+                    <span>Next Window</span>
+                    <strong>{metricNumber(objectiveNext1h)}</strong>
                     <small>
-                      较当前{scene.next1h - scene.totalFlow > 0 ? '+' : ''}
-                      {scene.next1h - scene.totalFlow}
+                      较当前{objectiveNext1h - objectiveTotalFlow > 0 ? '+' : ''}
+                      {objectiveNext1h - objectiveTotalFlow}
                     </small>
                   </div>
                   <div className="map-button-grid">
@@ -723,42 +984,92 @@ function App() {
                 </div>
               </div>
 
-              <svg className="route-overlay" viewBox="0 0 1920 1080" preserveAspectRatio="none" aria-hidden="true">
-                {routeLines.map((route) => (
-                  <g key={route.id}>
-                    <path id={`route-${route.id}`} d={route.d} className={route.id === focusRoute ? 'route-line route-base focus' : 'route-line route-base'} />
-                    <path d={route.d} className={route.id === focusRoute ? 'route-line route-flow focus' : 'route-line route-flow'} style={{ animationDuration: `${route.id === focusRoute ? 5.8 : 8.6}s` }} />
-                  </g>
-                ))}
+              <div className="vessel-route-layer" aria-hidden="true">
+                <svg className="vessel-route-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  {displayedPlaybackTracks.map((track) => {
+                    const startPoint = track.points[0]
+                    const startPosition = geoToNumericPercent(startPoint, studyArea)
+                    const pathClassName = [
+                      'vessel-route-path',
+                      track.routeId === focusRoute ? 'focus' : '',
+                      activeTrackIds.has(track.mmsi) ? 'active' : '',
+                      track.isFocusArea ? 'focus-area' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')
+                    const pointClassName = [
+                      'vessel-route-point',
+                      track.routeId === focusRoute ? 'focus' : '',
+                      activeTrackIds.has(track.mmsi) ? 'active' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')
+                    const startClassName = [
+                      'vessel-route-start',
+                      track.routeId === focusRoute ? 'focus' : '',
+                      activeTrackIds.has(track.mmsi) ? 'active' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')
 
-                {routeLines.flatMap((route) =>
-                  route.markers.map((marker) => (
-                    <g key={`${route.id}-${marker.id}`} className={route.id === focusRoute ? 'traffic-ship focus' : 'traffic-ship'}>
-                      <path d={`M ${(-(marker.radius * 1.68) - 4).toFixed(1)} ${(-(marker.radius * 1.68) * 0.74).toFixed(1)} L ${((marker.radius * 1.68) + 4).toFixed(1)} 0 L ${(-(marker.radius * 1.68) - 4).toFixed(1)} ${((marker.radius * 1.68) * 0.74).toFixed(1)} L ${(-(marker.radius * 1.68) * 0.18).toFixed(1)} 0 Z`} />
-                      <animateMotion dur={`${marker.dur}s`} begin={`${marker.begin}s`} repeatCount="indefinite" rotate="auto" path={route.d} />
-                    </g>
-                  )),
-                )}
-              </svg>
+                    return (
+                      <g key={track.mmsi}>
+                        <path d={track.path} className={pathClassName} />
+                        <circle cx={startPosition.x} cy={startPosition.y} r={track.routeId === focusRoute ? 0.58 : 0.46} className={startClassName} />
+                        {track.points.slice(1).map((point) => {
+                          const pointPosition = geoToNumericPercent(point, studyArea)
+                          return (
+                            <circle
+                              key={`${track.mmsi}-${point.sceneId}`}
+                              cx={pointPosition.x}
+                              cy={pointPosition.y}
+                              r={track.routeId === focusRoute ? 0.34 : 0.28}
+                              className={pointClassName}
+                            />
+                          )
+                        })}
+                      </g>
+                    )
+                  })}
+                </svg>
 
-              {routeLines.map((route) => (
+                {visibleTrackMarkers.map((vessel) => {
+                  const vesselPosition = geoToPercent({ lon: vessel.lon, lat: vessel.lat }, studyArea)
+                  return (
+                    <div
+                      key={`${scene.id}-${vessel.mmsi}`}
+                      className={vessel.routeId === focusRoute ? 'vessel-current focus' : vessel.isFocusArea ? 'vessel-current active' : 'vessel-current'}
+                      style={{
+                        left: vesselPosition.x,
+                        top: vesselPosition.y,
+                        transform: `translate(-50%, -50%) rotate(${vessel.heading}deg)`,
+                      }}
+                    >
+                      <span className="vessel-current-icon"></span>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {routeLabels.map((route) => (
                 <div key={route.id} className={route.id === focusRoute ? 'route-tag active' : 'route-tag'} style={{ left: route.x, top: route.y }}>
                   {route.id}
                 </div>
               ))}
 
               {mapTags.map((tag) => (
-                <div key={tag.id} className={tag.focusGrid === scene.focusGrid ? 'map-tag active' : 'map-tag'} style={{ left: tag.x, top: tag.y }}>
+                <div key={tag.id} className={tag.focusGrid === objectiveFocusGrid ? 'map-tag active' : 'map-tag'} style={{ left: tag.x, top: tag.y }}>
                   <strong>{tag.id}</strong>
                   <span>{tag.label}</span>
                 </div>
               ))}
 
               {hotspots.map((hotspot) => {
+                const hotspotPosition = geoToPercent(hotspot.point, studyArea)
                 const size = (22 + hotspot.intensity * 42) * hotspotScale
                 const style = {
-                  left: `${hotspot.x}%`,
-                  top: `${hotspot.y}%`,
+                  left: hotspotPosition.x,
+                  top: hotspotPosition.y,
                   width: `${size}px`,
                   height: `${size}px`,
                   opacity: (0.25 + hotspot.intensity * 0.75) * (planApplied ? 0 : 1),
@@ -774,7 +1085,7 @@ function App() {
 
               <div className="map-bottom-strip">
                 <div className="map-bottom-summary">
-                  <span>场景摘要</span>
+                  <span>当前态势说明</span>
                   <strong>{planApplied ? scene.appliedSummary : scene.summary}</strong>
                 </div>
 
@@ -782,17 +1093,51 @@ function App() {
                   <span>{focusFeed.tag}</span>
                   <span>{focusRoute}</span>
                   <span>
-                    {scene.focusGrid} {focusAlert.current}
+                    {objectiveFocusGrid} {focusAlert.current}
                   </span>
                 </div>
 
                 <div className="map-bottom-timeline">
-                  {activeScenes.map((item, index) => (
-                    <button key={item.id} type="button" className={index === sceneIndex ? 'map-timeline-node active' : 'map-timeline-node'} onClick={() => handleSceneSelect(index)}>
-                      <strong>{item.label}</strong>
-                      <small>{item.phase}</small>
-                    </button>
-                  ))}
+                  <div className="map-bottom-timeline-head">
+                    <div>
+                      <span>Observed Window</span>
+                      <strong>{playbackWindowRangeLabel}</strong>
+                    </div>
+                    <div>
+                      <span>Current Frame</span>
+                      <strong>{playbackFrameLabel}</strong>
+                    </div>
+                  </div>
+
+                  <div className="map-bottom-timeline-marks">
+                    {timelineMoments.map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className={item.id === activeTimelineMomentId ? 'map-timeline-node active' : 'map-timeline-node'}
+                        onClick={() => handleSceneSelect(item.frameIndex)}
+                      >
+                        <strong>{item.time}</strong>
+                        <small>{item.date}</small>
+                      </button>
+                    ))}
+                  </div>
+
+                  <input
+                    className="map-bottom-slider"
+                    type="range"
+                    min="0"
+                    max={Math.max(totalSceneCount - 1, 0)}
+                    step="1"
+                    value={Math.min(sceneIndex, Math.max(totalSceneCount - 1, 0))}
+                    onChange={(event) => handleSceneSelect(Number(event.target.value))}
+                    disabled={!totalSceneCount}
+                  />
+
+                  <div className="map-bottom-timeline-meta">
+                    <span>{playbackFrameMeta}</span>
+                    <span>{playbackFrame?.activeVesselCount ?? 0} visible ships</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -811,7 +1156,7 @@ function App() {
 
             <div className="strategy-hero">
               <strong>{scene.strategyHeadline}</strong>
-              <p>{!strategyEnabled ? '当前协同策略已关闭，建议项保留为场景推演参考。' : scene.strategySummary}</p>
+              <p>{!strategyEnabled ? '当前协同策略已关闭，建议项保留为决策推演参考。' : scene.strategySummary}</p>
             </div>
 
             <div className="strategy-list">
@@ -849,18 +1194,18 @@ function App() {
               {feedViews.map((feed: FeedView) => {
                 const alert = displayedAlerts.find((item) => item.grid === feed.grid)
                 const style = { backgroundPosition: feed.position } satisfies CSSProperties
-                const state = !strategyEnabled ? 'MANUAL' : planApplied && feed.grid === scene.focusGrid ? 'ADJUSTED' : feed.grid === scene.focusGrid ? 'TRACK' : 'SCAN'
-                const subtitle = !strategyEnabled ? `${feed.subtitle} 协同策略当前关闭。` : planApplied && feed.grid === scene.focusGrid ? scene.appliedSummary : alert?.note ?? feed.subtitle
+                const state = !strategyEnabled ? 'MANUAL' : planApplied && feed.grid === objectiveFocusGrid ? 'ADJUSTED' : feed.grid === objectiveFocusGrid ? 'TRACK' : 'SCAN'
+                const subtitle = !strategyEnabled ? `${feed.subtitle} 协同策略当前关闭。` : planApplied && feed.grid === objectiveFocusGrid ? scene.appliedSummary : alert?.note ?? feed.subtitle
 
                 return (
-                  <article key={feed.tag} className={planApplied && feed.grid === scene.focusGrid ? 'feed-card active resolved' : feed.grid === scene.focusGrid ? 'feed-card active' : 'feed-card'} style={style}>
+                  <article key={feed.tag} className={planApplied && feed.grid === objectiveFocusGrid ? 'feed-card active resolved' : feed.grid === objectiveFocusGrid ? 'feed-card active' : 'feed-card'} style={style}>
                     <div className="feed-overlay"></div>
                     <div className="feed-head">
                       <div className="feed-ident">
                         <span className="feed-tag">{feed.tag}</span>
                         <strong>{feed.title}</strong>
                       </div>
-                      <span className={planApplied && feed.grid === scene.focusGrid ? 'feed-state applied' : 'feed-state'}>{state}</span>
+                      <span className={planApplied && feed.grid === objectiveFocusGrid ? 'feed-state applied' : 'feed-state'}>{state}</span>
                     </div>
 
                     <div className="feed-meta">
@@ -907,7 +1252,7 @@ function App() {
               <>
                 <div className="benefit-intro">
                   <strong>{!strategyEnabled ? '协同策略当前已关闭' : planApplied ? '协同策略已生效' : '等待应用协同方案'}</strong>
-                  <p>{!strategyEnabled ? '当前收益卡显示静态推演口径，需重新启用策略后才能执行应用。' : '以下结果为基于研究成果的场景化决策结果，用于展示协同后的收益变化。'}</p>
+                  <p>{!strategyEnabled ? '当前收益卡显示静态推演口径，需重新启用策略后才能执行应用。' : '以下结果为基于研究成果的协同决策结果，用于展示应用方案后的收益变化。'}</p>
                 </div>
 
                 <div className="benefit-grid">

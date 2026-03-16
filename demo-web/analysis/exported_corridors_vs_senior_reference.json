@@ -1,0 +1,5 @@
+{
+  "referenceImage": "C:\\Users\\X\\Desktop\\服务外包网站设计\\代码依据\\轨迹聚类\\output_figs\\聚类前轨迹 .png",
+  "sourceCsv": "C:\\Users\\X\\Desktop\\服务外包网站设计\\demo-web\\analysis\\senior_main_corridors_cleaned_points.csv",
+  "outputImage": "C:\\Users\\X\\Desktop\\服务外包网站设计\\demo-web\\analysis\\exported_corridors_vs_senior_reference.png"
+}

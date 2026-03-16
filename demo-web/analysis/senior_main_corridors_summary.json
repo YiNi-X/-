@@ -1,0 +1,636 @@
+{
+  "params": {
+    "segmentsPkl": "C:\\Users\\X\\Desktop\\服务外包网站设计\\代码依据\\轨迹聚类\\compressed_segments(60,90,0.03).pkl",
+    "referenceImage": "C:\\Users\\X\\Desktop\\服务外包网站设计\\代码依据\\轨迹聚类\\output_figs\\聚类前轨迹 .png",
+    "clusterMode": "auto",
+    "requestedClusterMode": "auto",
+    "directionBinCount": 8,
+    "topKPerDirection": 2,
+    "minClusterSize": 12,
+    "minPoints": 4,
+    "minDisplacementMeters": 4000.0,
+    "signaturePoints": 9,
+    "globalAngleScale": 0.08,
+    "minRepresentativeLengthRatio": 0.35,
+    "maxCorridorWidthRatio": 0.85,
+    "maxCircularSpread": 0.18,
+    "meanLatitude": 22.430924
+  },
+  "rawSegments": 3827,
+  "candidateSegments": 2108,
+  "keptSegments": 1321,
+  "removedSegments": 2506,
+  "rawPoints": 18980,
+  "keptPoints": 9302,
+  "dropReasons": {
+    "dbscan_noise": 541,
+    "non_top_corridor": 246,
+    "too_few_points": 1633,
+    "too_short": 86
+  },
+  "topCorridors": [
+    {
+      "corridorId": "D07-C01",
+      "trackCount": 199,
+      "dominantDirections": {
+        "SouthEast": 199
+      }
+    },
+    {
+      "corridorId": "D06-C01",
+      "trackCount": 185,
+      "dominantDirections": {
+        "South": 185
+      }
+    },
+    {
+      "corridorId": "D06-C02",
+      "trackCount": 162,
+      "dominantDirections": {
+        "South": 162
+      }
+    },
+    {
+      "corridorId": "D02-C01",
+      "trackCount": 157,
+      "dominantDirections": {
+        "North": 157
+      }
+    },
+    {
+      "corridorId": "D03-C01",
+      "trackCount": 116,
+      "dominantDirections": {
+        "NorthWest": 116
+      }
+    },
+    {
+      "corridorId": "D02-C02",
+      "trackCount": 101,
+      "dominantDirections": {
+        "North": 101
+      }
+    },
+    {
+      "corridorId": "D01-C01",
+      "trackCount": 68,
+      "dominantDirections": {
+        "NorthEast": 68
+      }
+    },
+    {
+      "corridorId": "D04-C01",
+      "trackCount": 68,
+      "dominantDirections": {
+        "West": 68
+      }
+    },
+    {
+      "corridorId": "D05-C01",
+      "trackCount": 55,
+      "dominantDirections": {
+        "SouthWest": 55
+      }
+    },
+    {
+      "corridorId": "D00-C01",
+      "trackCount": 44,
+      "dominantDirections": {
+        "East": 44
+      }
+    },
+    {
+      "corridorId": "D04-C02",
+      "trackCount": 42,
+      "dominantDirections": {
+        "West": 42
+      }
+    },
+    {
+      "corridorId": "D05-C02",
+      "trackCount": 35,
+      "dominantDirections": {
+        "SouthWest": 35
+      }
+    },
+    {
+      "corridorId": "D00-C02",
+      "trackCount": 33,
+      "dominantDirections": {
+        "East": 33
+      }
+    },
+    {
+      "corridorId": "D01-C02",
+      "trackCount": 30,
+      "dominantDirections": {
+        "NorthEast": 30
+      }
+    },
+    {
+      "corridorId": "D03-C02",
+      "trackCount": 14,
+      "dominantDirections": {
+        "NorthWest": 14
+      }
+    },
+    {
+      "corridorId": "D07-C02",
+      "trackCount": 12,
+      "dominantDirections": {
+        "SouthEast": 12
+      }
+    }
+  ],
+  "clusterMode": "directional",
+  "directionSummaries": [
+    {
+      "directionBin": 0,
+      "directionLabel": "East",
+      "trackCount": 147,
+      "epsKm": 1.305,
+      "minSamples": 8,
+      "clusters": [
+        {
+          "clusterLabel": 1,
+          "trackCount": 44
+        },
+        {
+          "clusterLabel": 0,
+          "trackCount": 33
+        },
+        {
+          "clusterLabel": 2,
+          "trackCount": 27
+        }
+      ],
+      "keptClusters": [
+        1,
+        0
+      ]
+    },
+    {
+      "directionBin": 1,
+      "directionLabel": "NorthEast",
+      "trackCount": 171,
+      "epsKm": 1.533,
+      "minSamples": 8,
+      "clusters": [
+        {
+          "clusterLabel": 2,
+          "trackCount": 68
+        },
+        {
+          "clusterLabel": 3,
+          "trackCount": 30
+        },
+        {
+          "clusterLabel": 0,
+          "trackCount": 9
+        },
+        {
+          "clusterLabel": 4,
+          "trackCount": 9
+        },
+        {
+          "clusterLabel": 1,
+          "trackCount": 8
+        }
+      ],
+      "keptClusters": [
+        2,
+        3
+      ]
+    },
+    {
+      "directionBin": 2,
+      "directionLabel": "North",
+      "trackCount": 459,
+      "epsKm": 1.003,
+      "minSamples": 18,
+      "clusters": [
+        {
+          "clusterLabel": 1,
+          "trackCount": 157
+        },
+        {
+          "clusterLabel": 2,
+          "trackCount": 101
+        },
+        {
+          "clusterLabel": 0,
+          "trackCount": 88
+        }
+      ],
+      "keptClusters": [
+        1,
+        2
+      ]
+    },
+    {
+      "directionBin": 3,
+      "directionLabel": "NorthWest",
+      "trackCount": 198,
+      "epsKm": 0.974,
+      "minSamples": 8,
+      "clusters": [
+        {
+          "clusterLabel": 0,
+          "trackCount": 116
+        },
+        {
+          "clusterLabel": 2,
+          "trackCount": 14
+        },
+        {
+          "clusterLabel": 1,
+          "trackCount": 11
+        },
+        {
+          "clusterLabel": 3,
+          "trackCount": 11
+        }
+      ],
+      "keptClusters": [
+        0,
+        2
+      ]
+    },
+    {
+      "directionBin": 4,
+      "directionLabel": "West",
+      "trackCount": 180,
+      "epsKm": 1.208,
+      "minSamples": 8,
+      "clusters": [
+        {
+          "clusterLabel": 0,
+          "trackCount": 68
+        },
+        {
+          "clusterLabel": 2,
+          "trackCount": 42
+        },
+        {
+          "clusterLabel": 1,
+          "trackCount": 23
+        }
+      ],
+      "keptClusters": [
+        0,
+        2
+      ]
+    },
+    {
+      "directionBin": 5,
+      "directionLabel": "SouthWest",
+      "trackCount": 168,
+      "epsKm": 2.033,
+      "minSamples": 8,
+      "clusters": [
+        {
+          "clusterLabel": 0,
+          "trackCount": 55
+        },
+        {
+          "clusterLabel": 2,
+          "trackCount": 35
+        },
+        {
+          "clusterLabel": 1,
+          "trackCount": 10
+        }
+      ],
+      "keptClusters": [
+        0,
+        2
+      ]
+    },
+    {
+      "directionBin": 6,
+      "directionLabel": "South",
+      "trackCount": 510,
+      "epsKm": 1.094,
+      "minSamples": 20,
+      "clusters": [
+        {
+          "clusterLabel": 2,
+          "trackCount": 185
+        },
+        {
+          "clusterLabel": 0,
+          "trackCount": 162
+        },
+        {
+          "clusterLabel": 1,
+          "trackCount": 50
+        }
+      ],
+      "keptClusters": [
+        2,
+        0
+      ]
+    },
+    {
+      "directionBin": 7,
+      "directionLabel": "SouthEast",
+      "trackCount": 275,
+      "epsKm": 1.352,
+      "minSamples": 11,
+      "clusters": [
+        {
+          "clusterLabel": 0,
+          "trackCount": 199
+        },
+        {
+          "clusterLabel": 1,
+          "trackCount": 12
+        }
+      ],
+      "keptClusters": [
+        0,
+        1
+      ]
+    }
+  ],
+  "corridorQuality": [
+    {
+      "corridorId": "D00-C01",
+      "trackCount": 44,
+      "representativeLengthM": 40877.37,
+      "representativeDisplacementM": 37780.59,
+      "medianTrackLengthM": 46247.69,
+      "medianTrackDisplacementM": 38535.54,
+      "medianWidthM": 2324.77,
+      "p90WidthM": 6285.31,
+      "representativeLengthRatio": 1.0608,
+      "widthRatio": 0.1538,
+      "circularSpread": 0.0036,
+      "passesQuality": true,
+      "rejectionReason": ""
+    },
+    {
+      "corridorId": "D00-C02",
+      "trackCount": 33,
+      "representativeLengthM": 22029.82,
+      "representativeDisplacementM": 14967.99,
+      "medianTrackLengthM": 23659.52,
+      "medianTrackDisplacementM": 15119.74,
+      "medianWidthM": 1562.38,
+      "p90WidthM": 4417.35,
+      "representativeLengthRatio": 1.457,
+      "widthRatio": 0.2005,
+      "circularSpread": 0.0156,
+      "passesQuality": true,
+      "rejectionReason": ""
+    },
+    {
+      "corridorId": "D01-C01",
+      "trackCount": 68,
+      "representativeLengthM": 35393.32,
+      "representativeDisplacementM": 32900.65,
+      "medianTrackLengthM": 50390.68,
+      "medianTrackDisplacementM": 44517.97,
+      "medianWidthM": 6346.32,
+      "p90WidthM": 20347.46,
+      "representativeLengthRatio": 0.795,
+      "widthRatio": 0.5749,
+      "circularSpread": 0.0163,
+      "passesQuality": true,
+      "rejectionReason": ""
+    },
+    {
+      "corridorId": "D01-C02",
+      "trackCount": 30,
+      "representativeLengthM": 14518.23,
+      "representativeDisplacementM": 13046.31,
+      "medianTrackLengthM": 15911.66,
+      "medianTrackDisplacementM": 12619.55,
+      "medianWidthM": 1925.9,
+      "p90WidthM": 4725.37,
+      "representativeLengthRatio": 1.1505,
+      "widthRatio": 0.3255,
+      "circularSpread": 0.0304,
+      "passesQuality": true,
+      "rejectionReason": ""
+    },
+    {
+      "corridorId": "D02-C01",
+      "trackCount": 157,
+      "representativeLengthM": 50246.66,
+      "representativeDisplacementM": 50099.79,
+      "medianTrackLengthM": 55039.96,
+      "medianTrackDisplacementM": 54475.53,
+      "medianWidthM": 2135.16,
+      "p90WidthM": 7697.86,
+      "representativeLengthRatio": 0.9224,
+      "widthRatio": 0.1532,
+      "circularSpread": 0.0061,
+      "passesQuality": true,
+      "rejectionReason": ""
+    },
+    {
+      "corridorId": "D02-C02",
+      "trackCount": 101,
+      "representativeLengthM": 30727.2,
+      "representativeDisplacementM": 30426.66,
+      "medianTrackLengthM": 30648.85,
+      "medianTrackDisplacementM": 29569.88,
+      "medianWidthM": 1567.88,
+      "p90WidthM": 5872.96,
+      "representativeLengthRatio": 1.0391,
+      "widthRatio": 0.1911,
+      "circularSpread": 0.0006,
+      "passesQuality": true,
+      "rejectionReason": ""
+    },
+    {
+      "corridorId": "D03-C01",
+      "trackCount": 116,
+      "representativeLengthM": 23610.44,
+      "representativeDisplacementM": 23347.09,
+      "medianTrackLengthM": 24761.75,
+      "medianTrackDisplacementM": 22712.38,
+      "medianWidthM": 4888.18,
+      "p90WidthM": 13205.52,
+      "representativeLengthRatio": 1.0395,
+      "widthRatio": 0.5593,
+      "circularSpread": 0.0115,
+      "passesQuality": true,
+      "rejectionReason": ""
+    },
+    {
+      "corridorId": "D03-C02",
+      "trackCount": 14,
+      "representativeLengthM": 27608.84,
+      "representativeDisplacementM": 26972.99,
+      "medianTrackLengthM": 33592.57,
+      "medianTrackDisplacementM": 32882.77,
+      "medianWidthM": 4790.77,
+      "p90WidthM": 11234.18,
+      "representativeLengthRatio": 0.8396,
+      "widthRatio": 0.4069,
+      "circularSpread": 0.0216,
+      "passesQuality": true,
+      "rejectionReason": ""
+    },
+    {
+      "corridorId": "D04-C01",
+      "trackCount": 68,
+      "representativeLengthM": 12559.91,
+      "representativeDisplacementM": 12001.18,
+      "medianTrackLengthM": 16504.41,
+      "medianTrackDisplacementM": 11717.54,
+      "medianWidthM": 2452.07,
+      "p90WidthM": 5243.94,
+      "representativeLengthRatio": 1.0719,
+      "widthRatio": 0.4175,
+      "circularSpread": 0.0318,
+      "passesQuality": true,
+      "rejectionReason": ""
+    },
+    {
+      "corridorId": "D04-C02",
+      "trackCount": 42,
+      "representativeLengthM": 40766.55,
+      "representativeDisplacementM": 35673.16,
+      "medianTrackLengthM": 42306.25,
+      "medianTrackDisplacementM": 35371.65,
+      "medianWidthM": 1289.36,
+      "p90WidthM": 6123.76,
+      "representativeLengthRatio": 1.1525,
+      "widthRatio": 0.1502,
+      "circularSpread": 0.0015,
+      "passesQuality": true,
+      "rejectionReason": ""
+    },
+    {
+      "corridorId": "D05-C01",
+      "trackCount": 55,
+      "representativeLengthM": 36926.7,
+      "representativeDisplacementM": 34097.45,
+      "medianTrackLengthM": 43987.8,
+      "medianTrackDisplacementM": 38897.02,
+      "medianWidthM": 4012.44,
+      "p90WidthM": 14774.91,
+      "representativeLengthRatio": 0.9493,
+      "widthRatio": 0.4001,
+      "circularSpread": 0.0102,
+      "passesQuality": true,
+      "rejectionReason": ""
+    },
+    {
+      "corridorId": "D05-C02",
+      "trackCount": 35,
+      "representativeLengthM": 19232.56,
+      "representativeDisplacementM": 14218.96,
+      "medianTrackLengthM": 21233.88,
+      "medianTrackDisplacementM": 13058.03,
+      "medianWidthM": 1229.84,
+      "p90WidthM": 4066.49,
+      "representativeLengthRatio": 1.4729,
+      "widthRatio": 0.2114,
+      "circularSpread": 0.009,
+      "passesQuality": true,
+      "rejectionReason": ""
+    },
+    {
+      "corridorId": "D06-C01",
+      "trackCount": 185,
+      "representativeLengthM": 30100.98,
+      "representativeDisplacementM": 29809.16,
+      "medianTrackLengthM": 35681.96,
+      "medianTrackDisplacementM": 32636.95,
+      "medianWidthM": 3120.46,
+      "p90WidthM": 8080.74,
+      "representativeLengthRatio": 0.9223,
+      "widthRatio": 0.2685,
+      "circularSpread": 0.0026,
+      "passesQuality": true,
+      "rejectionReason": ""
+    },
+    {
+      "corridorId": "D06-C02",
+      "trackCount": 162,
+      "representativeLengthM": 49511.1,
+      "representativeDisplacementM": 49305.0,
+      "medianTrackLengthM": 54932.16,
+      "medianTrackDisplacementM": 53764.77,
+      "medianWidthM": 2361.68,
+      "p90WidthM": 7873.27,
+      "representativeLengthRatio": 0.9209,
+      "widthRatio": 0.159,
+      "circularSpread": 0.0063,
+      "passesQuality": true,
+      "rejectionReason": ""
+    },
+    {
+      "corridorId": "D07-C01",
+      "trackCount": 199,
+      "representativeLengthM": 21731.0,
+      "representativeDisplacementM": 21157.0,
+      "medianTrackLengthM": 22043.05,
+      "medianTrackDisplacementM": 20278.95,
+      "medianWidthM": 6724.98,
+      "p90WidthM": 12195.09,
+      "representativeLengthRatio": 1.0716,
+      "widthRatio": 0.5612,
+      "circularSpread": 0.0192,
+      "passesQuality": true,
+      "rejectionReason": ""
+    },
+    {
+      "corridorId": "D07-C02",
+      "trackCount": 12,
+      "representativeLengthM": 7681.09,
+      "representativeDisplacementM": 7060.09,
+      "medianTrackLengthM": 7935.15,
+      "medianTrackDisplacementM": 7376.9,
+      "medianWidthM": 563.73,
+      "p90WidthM": 1225.38,
+      "representativeLengthRatio": 1.0412,
+      "widthRatio": 0.1595,
+      "circularSpread": 0.0033,
+      "passesQuality": true,
+      "rejectionReason": ""
+    }
+  ],
+  "qualityFilter": {
+    "minRepresentativeLengthRatio": 0.35,
+    "maxCorridorWidthRatio": 0.85,
+    "maxWidthRatio": 0.85,
+    "maxCircularSpread": 0.18,
+    "rejectedCorridors": []
+  },
+  "requestedClusterMode": "auto",
+  "candidateModes": [
+    {
+      "clusterMode": "global",
+      "keptSegments": 0,
+      "keptCorridors": 0,
+      "qualityScore": [
+        0,
+        0,
+        -Infinity,
+        -Infinity
+      ],
+      "rejectedCorridors": [
+        "G01",
+        "G02",
+        "G03"
+      ]
+    },
+    {
+      "clusterMode": "directional",
+      "keptSegments": 1321,
+      "keptCorridors": 16,
+      "qualityScore": [
+        1321,
+        16,
+        -0.3249788039364118,
+        -0.010455488266464799
+      ],
+      "rejectedCorridors": []
+    }
+  ]
+}

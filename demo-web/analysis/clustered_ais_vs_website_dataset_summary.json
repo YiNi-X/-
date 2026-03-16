@@ -1,0 +1,37 @@
+{
+  "windowStart": "2020-01-01T00:00:00",
+  "windowEnd": "2020-01-03T00:00:00",
+  "bucketMinutes": 5,
+  "selection": {},
+  "sourcePoints": 208812,
+  "sourceVessels": 2451,
+  "selectedSourcePoints": 9450,
+  "selectedSourceVessels": 113,
+  "droppedSourcePoints": 199362,
+  "droppedSourceVessels": 2338,
+  "sampledPoints": 5332,
+  "sampledVessels": 113,
+  "websiteFrames": 577,
+  "websiteTrackVessels": 111,
+  "websiteFrontendPoints": 4068,
+  "selectedMmsiMatchesWebsite": false,
+  "mmsiOnlyInSelection": [
+    "413368030",
+    "413489460"
+  ],
+  "mmsiOnlyInWebsite": [],
+  "routeCounts": {
+    "C03": 7,
+    "C08": 61,
+    "C12": 19,
+    "C14": 12,
+    "C16": 13,
+    "C17": 1
+  },
+  "likelyReasons": [
+    "Website keeps only vessels that can be assigned to one of the six hard-coded route blueprints.",
+    "The route assignment uses the median distance of each vessel track to each blueprint and drops tracks above MAX_ROUTE_DISTANCE.",
+    "Website data is down-sampled to one latest point per vessel per 5-minute bucket before rendering.",
+    "The frontend removes near-duplicate points and then smooths the remaining points into SVG curves."
+  ]
+}
