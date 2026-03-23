@@ -8,6 +8,9 @@
     "editor": "vite --open /route-editor.html",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "smoke": "node --test tests/smoke.test.mjs",
+    "test": "npm run smoke",
+    "verify": "npm run lint && npm run test && npm run build",
     "preview": "vite preview",
     "preview:editor": "vite preview --open /route-editor.html",
     "generate:data": "python scripts/generate_first_version_data.py"

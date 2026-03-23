@@ -1,108 +1,122 @@
 # demo-web
 
-`demo-web` 是当前对外交付的前端演示项目，包含两个入口：
+`demo-web` 是当前对外演示的网站项目，包含两个入口：
 
-- 主页面：历史 AIS 回放 + 离线 STGCN 预测展示
-- RouteEditor：真实清洗后主航道轨迹查看与校准页面
+- 首页 Dashboard：历史 AIS 回放 + 离线模型结果展示
+- `RouteEditor`：已清洗主航道轨迹查看与微调页面
 
-项目的数据、构建和部署都收敛在 `demo-web/` 内完成。
+本阶段的运行基线以仓库中已提交的 `public/data/` 数据为准，目的是让开发者和演示人员在 Windows 环境下都能稳定安装、运行、校验和演示。`代码依据/` 是后续数据溯源和再加工的来源，但当前阶段不要求先从原始数据重新生成网站数据。
 
-## 当前数据入口
+## Quick Start
 
-- `public/data/ais-playback.json`
-  - 主页面使用的 AIS 回放数据
-- `public/data/flow-forecast.json`
-  - 主页面使用的预测数据
-- `public/data/model-config.json`
-  - 预测模型配置与元信息
-- `public/data/dataset-catalog.json`
-  - 主页面数据集目录
-- `public/data/shared-geometry.json`
-  - 主页面使用的共享几何配置
-- `public/data/main-corridor-tracks.json`
-  - RouteEditor 使用的真实清洗后航道轨迹数据
-
-## 脚本说明
-
-- `scripts/generate_first_version_data.py`
-  - 生成主页面需要的 AIS 回放、预测和共享几何数据
-- `scripts/extract_main_corridors_from_clustered_ais.py`
-  - 从聚类 AIS 结果中提取主航道，输出 RouteEditor 使用的真实清洗轨迹，以及 `analysis/` 下的结构化分析结果
-- `scripts/stgcn_runtime.py`
-  - 主页面预测相关运行时支持
-
-## analysis 目录
-
-`analysis/` 保留可复查的结构化分析结果：
-
-- `*.csv`
-- `*.json`
-
-对比图、验收图等 `*.png` 视为可再生成产物，不纳入版本控制。
-
-## 开发命令
-
-先进入项目目录：
+### 1. 进入目录
 
 ```bash
 cd demo-web
 ```
 
-安装依赖：
+### 2. 安装依赖
 
 ```bash
 npm install
 ```
 
-启动主页面：
+### 3. 启动首页 Dashboard
 
 ```bash
 npm run dev
 ```
 
-启动 RouteEditor：
+默认入口：
+
+- `http://localhost:5173/`
+
+### 4. 启动 RouteEditor
 
 ```bash
 npm run editor
 ```
 
-重新生成主页面数据：
+默认入口：
+
+- `http://localhost:5173/route-editor.html`
+
+如果你已经通过 `npm run dev` 启动了 Vite，也可以直接在同一个服务里手动打开 `/route-editor.html`。
+
+## Quality Gate
+
+### 单项命令
+
+- `npm run lint`：运行 ESLint
+- `npm run test`：运行轻量 smoke test
+- `npm run build`：执行 TypeScript build + Vite build
+
+### 统一校验命令
 
 ```bash
-npm run generate:data
+npm run verify
 ```
 
-重新提取真实清洗主航道：
+`verify` 会依次运行：
 
-```bash
-python scripts/extract_main_corridors_from_clustered_ais.py
-```
+1. `npm run lint`
+2. `npm run test`
+3. `npm run build`
 
-构建生产包：
+当前 Phase 1 的目标是：
 
-```bash
-npm run build
-```
+- lint 没有 error
+- test 可以真实运行并通过
+- build 可以稳定通过
 
-本地预览：
+## Runtime Data Baseline
 
-```bash
-npm run preview
-```
+当前网站运行依赖这些已提交数据文件：
 
-## RouteEditor 当前工作流
+- `public/data/ais-playback.json`
+- `public/data/flow-forecast.json`
+- `public/data/dataset-catalog.json`
+- `public/data/shared-geometry.json`
+- `public/data/main-corridor-tracks.json`
 
-- 入口：`/route-editor.html`
-- 主数据源：`public/data/main-corridor-tracks.json`
-- 显示内容：真实清洗后的 `lat/lon` 航迹
-- 页面保持等比例地理视口，不再依赖旧的代表线导出流程
+这些文件已经足够支持当前阶段的演示和开发基线。
 
-## 部署
+## 数据来源说明
 
-- 保持现有 Vercel 部署结构不变
-- 部署根目录为 `demo-web`
-- 建议部署前执行：
+- `public/data/`：当前阶段直接运行所依赖的提交数据
+- `代码依据/`：原始研究资料、中间文件、模型权重等来源背景
 
-```bash
-npm run build
-```
+当前阶段不要求通过 `代码依据/` 重新生成 `public/data/` 才能启动网站。完整的数据再生成与清洗链路属于后续 Phase 4 的范围。
+
+## 排障
+
+### `npm install` 失败
+
+- 先确认使用的是较新的 Node.js 版本
+- 建议在 Windows PowerShell 或命令提示符中执行
+- 如果有旧的 `node_modules/`，先删除后重装
+
+### `npm run lint` 失败
+
+- Phase 1 已将当前阻塞性 lint error 作为必须修复项
+- 如果新增 lint 报错，先回看本次改动是否引入了新的 Hook 依赖问题或 effect 同步问题
+
+### `npm run test` 失败
+
+- smoke test 会检查关键入口文件和已提交 JSON 数据
+- 优先确认 `public/data/` 中的数据文件没有被误删或损坏
+
+### `npm run build` 失败
+
+- 先确认 `npm install` 已成功
+- 再确认没有手动改坏 `src/` 下的入口文件或类型定义
+
+### 页面能打开，但数据没显示
+
+- 优先检查浏览器控制台
+- 再确认 `public/data/` 中 JSON 文件仍然存在
+- 当前阶段默认使用已清洗和已提交的数据，不建议在演示前临时切换到原始数据链路
+
+## 与演示相关的额外材料
+
+- 演示前检查清单：[`DEMO_CHECKLIST.md`](./DEMO_CHECKLIST.md)

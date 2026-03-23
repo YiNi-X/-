@@ -29,6 +29,8 @@ const BACKGROUND_PRESETS = [
 ]
 const CORRIDOR_COLORS = ['#3a86ff', '#00bbf9', '#06d6a0', '#80ed99', '#ffd166', '#f4a261', '#ef476f', '#9b5de5', '#4cc9f0', '#f72585']
 const METERS_PER_DEGREE = 111_000
+const EMPTY_CORRIDOR_SUMMARIES: MainCorridorTracksFile['corridors'] = []
+const EMPTY_TRACKS: MainCorridorTrackEntry[] = []
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 const roundCoord = (value: number) => Number(value.toFixed(6))
@@ -147,8 +149,18 @@ export function RouteEditor() {
   const studyBounds = tracksFile?.studyArea ?? STUDY_BOUNDS
   const geoViewport = useMemo(() => buildGeoViewport(studyBounds), [studyBounds])
   const fallbackPoint = { lon: studyBounds.minLon, lat: studyBounds.minLat }
-  const corridorSummaries = tracksFile?.corridors ?? []
-  const selectedCorridor = corridorSummaries.find((corridor) => corridor.corridorId === selectedCorridorId) ?? corridorSummaries[0] ?? null
+  const corridorSummaries = useMemo(() => tracksFile?.corridors ?? EMPTY_CORRIDOR_SUMMARIES, [tracksFile])
+  const effectiveSelectedCorridorId = useMemo(
+    () =>
+      corridorSummaries.some((corridor) => corridor.corridorId === selectedCorridorId)
+        ? selectedCorridorId
+        : corridorSummaries[0]?.corridorId ?? '',
+    [corridorSummaries, selectedCorridorId],
+  )
+  const selectedCorridor = useMemo(
+    () => corridorSummaries.find((corridor) => corridor.corridorId === effectiveSelectedCorridorId) ?? null,
+    [corridorSummaries, effectiveSelectedCorridorId],
+  )
   const canvasSource = uploadedCanvasUrl || canvasUrlInput.trim()
   const mapPreset = BACKGROUND_PRESETS.find((item) => item.id === mapPresetId) ?? BACKGROUND_PRESETS[0]
   const mapSource = uploadedMapUrl || mapUrlInput.trim() || (mapPreset.src ? resolvePageAsset(mapPreset.src) : '')
@@ -165,10 +177,33 @@ export function RouteEditor() {
     return grouped
   }, [corridorSummaries, tracks])
 
-  const selectedCorridorTracks = selectedCorridor ? tracksByCorridor[selectedCorridor.corridorId] ?? [] : []
-  const selectedTrack = selectedCorridorTracks.find((track) => track.id === selectedTrackId) ?? selectedCorridorTracks[0] ?? null
-  const activeHandle =
-    selectedHandle ?? (selectedTrack ? ({ kind: 'point', trackId: selectedTrack.id, index: 0 } satisfies SelectedHandle) : null)
+  const selectedCorridorTracks = useMemo(
+    () => (selectedCorridor ? tracksByCorridor[selectedCorridor.corridorId] ?? EMPTY_TRACKS : EMPTY_TRACKS),
+    [selectedCorridor, tracksByCorridor],
+  )
+  const effectiveSelectedTrackId = useMemo(
+    () =>
+      selectedCorridorTracks.some((track) => track.id === selectedTrackId)
+        ? selectedTrackId
+        : selectedCorridorTracks[0]?.id ?? '',
+    [selectedCorridorTracks, selectedTrackId],
+  )
+  const selectedTrack = useMemo(
+    () => selectedCorridorTracks.find((track) => track.id === effectiveSelectedTrackId) ?? null,
+    [effectiveSelectedTrackId, selectedCorridorTracks],
+  )
+  const activeHandle = useMemo(() => {
+    if (!selectedTrack) return null
+    if (!selectedHandle || selectedHandle.trackId !== selectedTrack.id) {
+      return { kind: 'point', trackId: selectedTrack.id, index: 0 } satisfies SelectedHandle
+    }
+    if (selectedHandle.kind !== 'point') return selectedHandle
+    return {
+      kind: 'point',
+      trackId: selectedTrack.id,
+      index: clamp(selectedHandle.index, 0, Math.max(selectedTrack.points.length - 1, 0)),
+    } satisfies SelectedHandle
+  }, [selectedHandle, selectedTrack])
   const selectedPoint =
     activeHandle?.kind === 'point' && selectedTrack && activeHandle.trackId === selectedTrack.id
       ? selectedTrack.points[activeHandle.index] ?? selectedTrack.labelPoint
@@ -278,32 +313,6 @@ export function RouteEditor() {
       cancelled = true
     }
   }, [])
-
-  useEffect(() => {
-    if (!corridorSummaries.length) {
-      setSelectedCorridorId('')
-      setSelectedTrackId('')
-      setSelectedHandle(null)
-      return
-    }
-
-    const nextCorridorId = corridorSummaries.some((corridor) => corridor.corridorId === selectedCorridorId)
-      ? selectedCorridorId
-      : corridorSummaries[0]?.corridorId ?? ''
-    const nextCorridorTracks = tracksByCorridor[nextCorridorId] ?? []
-    const nextTrack = nextCorridorTracks.find((track) => track.id === selectedTrackId) ?? nextCorridorTracks[0] ?? null
-
-    if (nextCorridorId !== selectedCorridorId) setSelectedCorridorId(nextCorridorId)
-    if ((nextTrack?.id ?? '') !== selectedTrackId) setSelectedTrackId(nextTrack?.id ?? '')
-
-    setSelectedHandle((current) => {
-      if (!nextTrack) return null
-      if (!current || current.trackId !== nextTrack.id) return { kind: 'point', trackId: nextTrack.id, index: 0 }
-      return current.kind === 'point'
-        ? { kind: 'point', trackId: nextTrack.id, index: clamp(current.index, 0, Math.max(nextTrack.points.length - 1, 0)) }
-        : current
-    })
-  }, [corridorSummaries, selectedCorridorId, selectedTrackId, tracksByCorridor])
 
   useEffect(() => {
     if (!copyStatus) return

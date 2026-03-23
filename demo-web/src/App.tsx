@@ -67,6 +67,7 @@ const DEFAULT_ROUTE_COUNTS: Record<string, number> = {
   C14: 13,
   C17: 1,
 }
+const DEFAULT_ROUTE_IDS = Object.keys(DEFAULT_ROUTE_COUNTS)
 const PLAYBACK_SPEEDS = [
   { label: '慢速', value: 5000 },
   { label: '标准', value: 3000 },
@@ -233,10 +234,7 @@ function App() {
     [datasetCatalog, selectedDatasetId],
   )
   const studyArea = geometryConfig?.meta.studyArea ?? aisPlayback?.meta.studyArea ?? STUDY_BOUNDS
-  const routeIds = useMemo(
-    () => geometryConfig?.meta.routeOrder ?? aisPlayback?.meta.routeIds ?? Object.keys(DEFAULT_ROUTE_COUNTS),
-    [aisPlayback?.meta.routeIds, geometryConfig],
-  )
+  const routeIds = geometryConfig?.meta.routeOrder ?? aisPlayback?.meta.routeIds ?? DEFAULT_ROUTE_IDS
   const mediumHotspotThreshold = Math.max(hotspotHighThreshold - 0.2, 0.1)
 
   useEffect(() => {
