@@ -4,7 +4,7 @@
 
 See: .planning/PROJECT.md (updated 2026-03-23)
 
-**Core value:** The demo must remain a credible, stable, and explainable representation of historical AIS activity plus offline forecast insights so we can iterate on it with confidence.
+**Core value:** The demo must clearly, credibly, and stably present our algorithms and model outputs on the website using existing historical and cleaned AIS datasets.
 **Current focus:** Phase 1 preparation
 
 ## Current Position
@@ -17,7 +17,7 @@ See: .planning/PROJECT.md (updated 2026-03-23)
 **Status:** Ready to plan
 **Progress:** 0%
 **Last Activity:** 2026-03-23
-**Last Activity Description:** Project initialized with PROJECT, config, requirements, roadmap, and state files
+**Last Activity Description:** Project scope refined toward an operable offline algorithm/model demo based on archived AIS data
 
 ## Performance Metrics
 
@@ -40,8 +40,9 @@ See: .planning/PROJECT.md (updated 2026-03-23)
 
 | Phase | Summary | Rationale |
 |-------|---------|-----------|
-| Init | Stabilize the existing offline demo before adding realtime scope | Current risk is maintainability and reproducibility, not missing presentation features |
+| Init | Use archived AIS files and cleaned subsets as the canonical demo input source | These are the reliable inputs we actually have today |
 | Init | Keep static JSON delivery for the current milestone | It matches the working deployment model while contracts and tooling are hardened |
+| Init | Remove realtime AIS/backend pressure from current planning | The mission is website presentation of algorithms and models, not live data ingestion |
 
 ## Blockers
 
@@ -50,5 +51,5 @@ See: .planning/PROJECT.md (updated 2026-03-23)
 ## Session
 
 **Last Date:** 2026-03-23 00:00
-**Stopped At:** Initialization complete; Phase 1 ready for discussion or planning
+**Stopped At:** Scope updated for offline archived-data demo; Phase 1 ready for discussion or planning
 **Resume File:** None

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This roadmap treats the current repository as a working offline demo that now needs engineering hardening. The sequence starts by restoring a trustworthy local quality baseline, then adds runtime data safety, reduces frontend monolith risk, hardens the Python data pipeline, and finally adds regression coverage plus a documented bridge to the future realtime architecture.
+This roadmap treats the current repository as a working offline demo whose job is to present algorithms and model outputs with archived AIS data. The sequence starts by restoring a trustworthy local quality baseline, then adds runtime data safety, reduces frontend monolith risk, hardens the Python data pipeline around the local source files we actually have, and finally adds regression coverage plus clearer presentation of the demo narrative.
 
 ## Phases
 
@@ -13,8 +13,8 @@ This roadmap treats the current repository as a working offline demo that now ne
 - [ ] **Phase 1: Baseline Quality Gate** - Make the existing demo reproducible and establish a trustworthy verification baseline
 - [ ] **Phase 2: Runtime Data Contracts** - Protect dashboard and RouteEditor against malformed or missing runtime datasets
 - [ ] **Phase 3: UI Maintainability Refactor** - Break monolithic frontend surfaces into safer seams without changing product behavior
-- [ ] **Phase 4: Data Pipeline Hardening** - Make offline data generation reproducible, configurable, and fail-fast
-- [ ] **Phase 5: Regression Coverage and V2 Handoff** - Add automated guards and capture the future realtime upgrade path
+- [ ] **Phase 4: Data Pipeline Hardening** - Make offline data generation from archived source files reproducible, configurable, and fail-fast
+- [ ] **Phase 5: Regression Coverage and Presentation Clarity** - Add automated guards and make the algorithm/model demo story explicit and repeatable
 
 ## Phase Details
 
@@ -64,7 +64,7 @@ Plans:
 - [ ] 03-03: Consolidate shared contracts and utilities to preserve behavior while reducing coupling
 
 ### Phase 4: Data Pipeline Hardening
-**Goal:** Make the offline Python workflow reproducible and safer to operate when datasets or model assets change
+**Goal:** Make the offline Python workflow around archived AIS files and cleaned subsets reproducible and safer to operate
 **Depends on:** Phase 3
 **Requirements**: [PIPE-01, PIPE-02, PIPE-03]
 **Success Criteria** (what must be TRUE):
@@ -76,21 +76,22 @@ Plans:
 Plans:
 - [ ] 04-01: Document Python environment, inputs, and regeneration commands
 - [ ] 04-02: Add fail-fast checks and centralized config to the generation and extraction scripts
-- [ ] 04-03: Verify regenerated outputs and update pipeline handoff notes
+- [ ] 04-03: Verify regenerated outputs against the archived demo scenarios and update pipeline notes
 
-### Phase 5: Regression Coverage and V2 Handoff
-**Goal:** Add lightweight automated regression protection and leave a clear engineering handoff for future realtime work
+### Phase 5: Regression Coverage and Presentation Clarity
+**Goal:** Add lightweight automated regression protection and make the offline algorithm/model showcase clearer and more repeatable
 **Depends on:** Phase 4
-**Requirements**: [QUAL-01, QUAL-02, FUTR-01]
+**Requirements**: [PRES-01, PRES-02, PRES-03, QUAL-01, QUAL-02]
 **Success Criteria** (what must be TRUE):
 1. Automated tests cover validation logic and at least one critical path in both the dashboard and RouteEditor
 2. Future refactors have an executable quality gate instead of manual-only verification
-3. The repo includes a concrete written plan for evolving from static demo datasets to backend-served AIS forecasting
+3. Demo viewers can understand what comes from archived AIS playback, cleaned corridor processing, and offline model output
+4. The site presents a stable, repeatable algorithm/model showcase without implying realtime capability
 **Plans:** 2 plans
 
 Plans:
 - [ ] 05-01: Add automated regression coverage for validation and critical UI or domain paths
-- [ ] 05-02: Write the v2 realtime architecture handoff and finalize readiness notes
+- [ ] 05-02: Improve demo narrative, labels, and scenario readiness around archived-data presentation
 
 ## Progress
 
@@ -103,4 +104,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 2. Runtime Data Contracts | 0/3 | Not started | - |
 | 3. UI Maintainability Refactor | 0/3 | Not started | - |
 | 4. Data Pipeline Hardening | 0/3 | Not started | - |
-| 5. Regression Coverage and V2 Handoff | 0/2 | Not started | - |
+| 5. Regression Coverage and Presentation Clarity | 0/2 | Not started | - |

@@ -1,7 +1,7 @@
 # Requirements: Port Traffic AIS Demo Web
 
 **Defined:** 2026-03-23
-**Core Value:** The demo must remain a credible, stable, and explainable representation of historical AIS activity plus offline forecast insights so we can iterate on it with confidence.
+**Core Value:** The demo must clearly, credibly, and stably present our algorithms and model outputs on the website using existing historical and cleaned AIS datasets.
 
 ## v1 Requirements
 
@@ -31,29 +31,30 @@
 - [ ] **PIPE-02**: Data-generation scripts fail fast with clear messages when required raw AIS files, clustering artifacts, or model files are missing
 - [ ] **PIPE-03**: Corridor extraction and demo-data generation thresholds or paths are centralized in versioned config or constants instead of hidden magic values
 
+### Presentation and Narrative
+
+- [ ] **PRES-01**: Demo viewer can understand which layers come from archived AIS playback, which views come from cleaned corridor extraction, and which panels come from offline model output
+- [ ] **PRES-02**: Website presents algorithm and model results using committed historical datasets without implying that the system is operating on live AIS data
+- [ ] **PRES-03**: Team can curate and present stable demo scenarios from archived datasets so algorithm and model behavior is repeatable during demos
+
 ### Verification
 
 - [ ] **QUAL-01**: Automated tests cover dataset/resource resolution and runtime schema validation paths
 - [ ] **QUAL-02**: Automated tests cover at least one critical dashboard path and one critical RouteEditor path
 
-### Future Handoff
-
-- [ ] **FUTR-01**: Team has a concrete written v2 upgrade path for stable AIS ingestion and backend-served forecasting without expanding the current milestone into realtime delivery
-
 ## v2 Requirements
 
-### Realtime System
+### Scenario Expansion
 
-- **REAL-01**: Operator can ingest refreshed AIS data without rebuilding the frontend bundle
-- **REAL-02**: Backend can map incoming AIS events into model-ready grid windows compatible with trained STGCN assets
-- **REAL-03**: Frontend can request current flow and forecast summaries from API endpoints instead of static JSON files
-- **REAL-04**: System can run scheduled or streaming inference and publish refreshed forecast outputs
+- **SCEN-01**: Team can add more archived AIS scenarios from local source files without restructuring the app
+- **SCEN-02**: Demo can compare multiple model runs, parameters, or derived outputs on the same historical dataset
+- **SCEN-03**: Website can export or present richer explanation material for presentations, reports, or defense sessions
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Realtime AIS backend in the current milestone | Deferred to the later system evolution once the shipped demo is stable |
+| Realtime AIS backend, streaming feed, or live inference | No practical data source and not required for the current mission |
 | Auth, RBAC, or business operations workflows | Not required for the current demo/research product |
 | Full UI redesign | Reliability and maintainability come first for this milestone |
 | Retraining or replacing the STGCN model | Current need is reproducibility and handoff, not model R&D expansion |
@@ -76,15 +77,17 @@
 | PIPE-01 | Phase 4 | Pending |
 | PIPE-02 | Phase 4 | Pending |
 | PIPE-03 | Phase 4 | Pending |
+| PRES-01 | Phase 5 | Pending |
+| PRES-02 | Phase 5 | Pending |
+| PRES-03 | Phase 5 | Pending |
 | QUAL-01 | Phase 5 | Pending |
 | QUAL-02 | Phase 5 | Pending |
-| FUTR-01 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 17 total
-- Mapped to phases: 17
+- v1 requirements: 19 total
+- Mapped to phases: 19
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-23*
-*Last updated: 2026-03-23 after initial definition*
+*Last updated: 2026-03-23 after scope refinement*
