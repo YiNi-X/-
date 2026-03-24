@@ -1,93 +1,121 @@
 # Requirements: Port Traffic AIS Demo Web
 
-**Defined:** 2026-03-23
-**Core Value:** The demo must clearly, credibly, and stably present our algorithms and model outputs on the website using existing historical and cleaned AIS datasets.
+**Defined:** 2026-03-24
+**Core Value:** The website must clearly, credibly, and repeatably present our algorithms and model outputs using archived AIS data plus offline-computed results, while preserving a convincing quasi-realtime demo experience.
 
 ## v1 Requirements
 
-### Reliability and Tooling
+### Showcase Foundation
 
-- [ ] **RELY-01**: Developer can install project dependencies and build both the dashboard and RouteEditor from documented commands on a fresh machine
-- [ ] **RELY-02**: Developer can run lint locally without known React hook/compiler violations blocking the current codebase
-- [ ] **RELY-03**: Developer can run one documented quality command set (`build`, `lint`, and `test`) before merging or demoing changes
+- [ ] **BASE-01**: Demo viewer can navigate between overview, flow prediction, trajectory repair, trajectory clustering, collaborative decision, and evaluation from one coherent website shell
+- [ ] **BASE-02**: Website loads module data from committed static artifacts derived from archived local research outputs instead of requiring a live backend or online inference
+- [ ] **BASE-03**: Demo viewer can switch scenarios or time slices without broken module state or missing data contracts
+- [ ] **BASE-04**: Website lazy-loads module or scenario artifacts so new datasets do not force one monolithic initial payload
+- [ ] **BASE-05**: Team can regenerate website-facing showcase artifacts from `代码依据` and existing cleaned outputs through one documented offline pipeline
+- [ ] **BASE-06**: Team can run one repeatable verification flow that checks buildability and critical module data contracts before demoing the site
 
-### Runtime Data Contracts
+### Flow Prediction
 
-- [ ] **DATA-01**: Dashboard rejects malformed dataset catalog entries with a clear error instead of silently selecting bad paths
-- [ ] **DATA-02**: Dashboard validates AIS playback payload structure before rendering map or timeline state
-- [ ] **DATA-03**: Dashboard validates flow forecast payload structure before rendering forecast panels
-- [ ] **DATA-04**: RouteEditor validates main corridor track payload structure before rendering or exporting corridors
-- [ ] **DATA-05**: Demo viewer sees actionable fallback messaging when required runtime JSON is missing or invalid instead of a broken screen
+- [ ] **FLOW-01**: Demo viewer can switch among STGCN, LSTM, and BiLSTM prediction results for the same archived scenario
+- [ ] **FLOW-02**: Demo viewer can switch forecast horizon between 1h, 2h, and 3h
+- [ ] **FLOW-03**: Demo viewer can inspect key prediction metrics for the selected model and horizon, including MAE, RMSE, and R²
+- [ ] **FLOW-04**: Demo viewer can inspect hotspot grid ranking and total flow trends during historical playback
 
-### Maintainability
+### Trajectory Repair
 
-- [ ] **MAINT-01**: Developer can change dashboard data loading and derived state without editing one large `App.tsx` file
-- [ ] **MAINT-02**: Developer can change RouteEditor interaction logic without editing one large `RouteEditor.tsx` block
-- [ ] **MAINT-03**: Shared dataset and resource loading logic is reused through focused modules or hooks with clear boundaries between UI orchestration and domain logic
+- [ ] **REPR-01**: Demo viewer can choose from curated sample trajectories that contain missing or damaged segments
+- [ ] **REPR-02**: Demo viewer can compare original ground truth, missing trajectory, and repaired trajectory on the same visual surface
+- [ ] **REPR-03**: Demo viewer can switch among ATT-BILSTM, BiLSTM, LSTM, and at least one classical baseline for the selected repair sample
+- [ ] **REPR-04**: Demo viewer can inspect longitude and latitude error charts for the selected repair result
+- [ ] **REPR-05**: Demo viewer can inspect a repair metric summary that includes MAE, RMSE, DTW, R², and Hausdorff distance
 
-### Data Pipeline
+### Trajectory Clustering
 
-- [ ] **PIPE-01**: Developer can recreate committed demo payloads using documented Python setup and commands
-- [ ] **PIPE-02**: Data-generation scripts fail fast with clear messages when required raw AIS files, clustering artifacts, or model files are missing
-- [ ] **PIPE-03**: Corridor extraction and demo-data generation thresholds or paths are centralized in versioned config or constants instead of hidden magic values
+- [ ] **CLUS-01**: Demo viewer can switch between original trajectories, segmented trajectories, compressed trajectories, clustering results, and extracted main corridors
+- [ ] **CLUS-02**: Demo viewer can inspect cluster count statistics and noise proportion for the selected clustering run
+- [ ] **CLUS-03**: Demo viewer can compare first-pass clustering with noise re-clustering results
+- [ ] **CLUS-04**: Demo viewer can inspect main corridor extraction results and link them back to dashboard or map entities used elsewhere in the site
 
-### Presentation and Narrative
+### Collaborative Decision
 
-- [ ] **PRES-01**: Demo viewer can understand which layers come from archived AIS playback, which views come from cleaned corridor extraction, and which panels come from offline model output
-- [ ] **PRES-02**: Website presents algorithm and model results using committed historical datasets without implying that the system is operating on live AIS data
-- [ ] **PRES-03**: Team can curate and present stable demo scenarios from archived datasets so algorithm and model behavior is repeatable during demos
+- [ ] **DECI-01**: Demo viewer can see the current focus route and focus grid for a selected frame or scenario
+- [ ] **DECI-02**: Demo viewer can inspect strategy suggestions associated with the selected frame or scenario
+- [ ] **DECI-03**: Demo viewer can toggle between before-strategy and after-strategy states and compare benefit changes
+- [ ] **DECI-04**: Demo viewer can read explanation copy showing which forecast or clustering evidence drove the suggested strategy
 
-### Verification
+### Evaluation Center
 
-- [ ] **QUAL-01**: Automated tests cover dataset/resource resolution and runtime schema validation paths
-- [ ] **QUAL-02**: Automated tests cover at least one critical dashboard path and one critical RouteEditor path
+- [ ] **EVAL-01**: Demo viewer can inspect unified metric cards or tables across prediction and repair tasks using the metrics appropriate to each task
+- [ ] **EVAL-02**: Demo viewer can rank flow prediction models by selected horizon and metric
+- [ ] **EVAL-03**: Demo viewer can rank trajectory repair models by selected sample and metric
+- [ ] **EVAL-04**: Demo viewer can inspect parameter optimization history and parameter importance for supported offline models
+- [ ] **EVAL-05**: Team can trace displayed evaluation numbers back to committed offline result artifacts
+
+### Project Overview
+
+- [ ] **OVER-01**: Overview page explains the end-to-end business loop from archived AIS playback through clustering or repair, prediction, and collaborative decision
+- [ ] **OVER-02**: Overview page surfaces data scale, scenario entry points, and direct links into each algorithm module instead of low-value system logs
+- [ ] **OVER-03**: Overview page clearly frames the product as archived playback plus offline inference rather than live AIS
 
 ## v2 Requirements
 
-### Scenario Expansion
+### Live and Dynamic Capabilities
 
-- **SCEN-01**: Team can add more archived AIS scenarios from local source files without restructuring the app
-- **SCEN-02**: Demo can compare multiple model runs, parameters, or derived outputs on the same historical dataset
-- **SCEN-03**: Website can export or present richer explanation material for presentations, reports, or defense sessions
+- **LIVE-01**: Website can ingest or query realtime AIS data from a dependable external source
+- **LIVE-02**: Website can execute prediction or repair inference online for newly arriving data
+- **LIVE-03**: Website can manage scenarios, runs, and result history through a backend service instead of committed static artifacts
+- **LIVE-04**: User can upload custom trajectory files and receive on-demand analysis
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Realtime AIS backend, streaming feed, or live inference | No practical data source and not required for the current mission |
-| Auth, RBAC, or business operations workflows | Not required for the current demo/research product |
-| Full UI redesign | Reliability and maintainability come first for this milestone |
-| Retraining or replacing the STGCN model | Current need is reproducibility and handoff, not model R&D expansion |
+| Realtime AIS backend and streaming inference | No dependable live source and not necessary for this milestone |
+| Full framework rewrite to Next.js, micro-frontends, or a backend-heavy architecture | Architectural cleanup is needed, but the current stack is sufficient for an offline showcase |
+| Arbitrary user uploads and long-running compute jobs | The milestone should use curated offline artifacts, not become a generic analysis platform |
+| Retraining research models from scratch | The immediate need is packaging and presenting existing outputs credibly |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| RELY-01 | Phase 1 | Pending |
-| RELY-02 | Phase 1 | Pending |
-| RELY-03 | Phase 1 | Pending |
-| DATA-01 | Phase 2 | Pending |
-| DATA-02 | Phase 2 | Pending |
-| DATA-03 | Phase 2 | Pending |
-| DATA-04 | Phase 2 | Pending |
-| DATA-05 | Phase 2 | Pending |
-| MAINT-01 | Phase 3 | Pending |
-| MAINT-02 | Phase 3 | Pending |
-| MAINT-03 | Phase 3 | Pending |
-| PIPE-01 | Phase 4 | Pending |
-| PIPE-02 | Phase 4 | Pending |
-| PIPE-03 | Phase 4 | Pending |
-| PRES-01 | Phase 5 | Pending |
-| PRES-02 | Phase 5 | Pending |
-| PRES-03 | Phase 5 | Pending |
-| QUAL-01 | Phase 5 | Pending |
-| QUAL-02 | Phase 5 | Pending |
+| BASE-01 | Phase 6 | Pending |
+| BASE-02 | Phase 6 | Pending |
+| BASE-03 | Phase 6 | Pending |
+| BASE-04 | Phase 6 | Pending |
+| BASE-05 | Phase 6 | Pending |
+| BASE-06 | Phase 6 | Pending |
+| FLOW-01 | Phase 7 | Pending |
+| FLOW-02 | Phase 7 | Pending |
+| FLOW-03 | Phase 7 | Pending |
+| FLOW-04 | Phase 7 | Pending |
+| REPR-01 | Phase 8 | Pending |
+| REPR-02 | Phase 8 | Pending |
+| REPR-03 | Phase 8 | Pending |
+| REPR-04 | Phase 8 | Pending |
+| REPR-05 | Phase 8 | Pending |
+| CLUS-01 | Phase 9 | Pending |
+| CLUS-02 | Phase 9 | Pending |
+| CLUS-03 | Phase 9 | Pending |
+| CLUS-04 | Phase 9 | Pending |
+| DECI-01 | Phase 10 | Pending |
+| DECI-02 | Phase 10 | Pending |
+| DECI-03 | Phase 10 | Pending |
+| DECI-04 | Phase 10 | Pending |
+| EVAL-01 | Phase 11 | Pending |
+| EVAL-02 | Phase 11 | Pending |
+| EVAL-03 | Phase 11 | Pending |
+| EVAL-04 | Phase 11 | Pending |
+| EVAL-05 | Phase 11 | Pending |
+| OVER-01 | Phase 11 | Pending |
+| OVER-02 | Phase 11 | Pending |
+| OVER-03 | Phase 11 | Pending |
 
 **Coverage:**
-- v1 requirements: 19 total
-- Mapped to phases: 19
+- v1 requirements: 31 total
+- Mapped to phases: 31
 - Unmapped: 0
 
 ---
-*Requirements defined: 2026-03-23*
-*Last updated: 2026-03-23 after scope refinement*
+*Requirements defined: 2026-03-24*
+*Last updated: 2026-03-24 after defining milestone v1.1 Offline Showcase Expansion*
