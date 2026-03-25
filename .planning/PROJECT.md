@@ -1,4 +1,4 @@
-# Port Traffic AIS Demo Web
+﻿# Port Traffic AIS Demo Web
 
 ## What This Is
 
@@ -33,6 +33,7 @@ The website must clearly, credibly, and repeatably present our algorithms and mo
 
 ### Active
 
+- [ ] Complete the missing data products and lineage decisions before freezing frontend contracts or page composition
 - [ ] Build a module-oriented showcase shell that links overview, flow prediction, trajectory repair, trajectory clustering, collaborative decision, and evaluation
 - [ ] Package website-facing static artifacts for each module directly from the archived `代码依据` materials and existing cleaned outputs
 - [ ] Replace hardcoded placeholder comparisons with structured offline result bundles for prediction, repair, clustering, and evaluation
@@ -51,10 +52,11 @@ The website must clearly, credibly, and repeatably present our algorithms and mo
 
 - The working web app lives under `demo-web/` and is already deployable as a static Vite build with dashboard and RouteEditor entry points.
 - Runtime data is served from `demo-web/public/data/*.json`, including AIS playback, flow forecast, shared geometry, dataset catalog, model config, and main corridor tracks.
-- The canonical research and provenance inputs available to us live under `C:\Users\X\Desktop\服务外包网站设计\代码依据`.
+- The canonical research and provenance inputs available to us live under `代码依据`.
 - `代码依据/流量预测` already contains STGCN code, benchmark notebooks, matrices, and saved model weights that are strong enough to support a forecast showcase, but only STGCN has been productized into current website-facing JSON so far.
 - `代码依据/轨迹修复` contains multiple repair-model experiments, metric computation, optimization history, parameter importance, and exported HTML result artifacts, but it does not yet provide website-ready structured JSON bundles.
 - `代码依据/轨迹聚类` contains segmentation, compression, distance fusion, clustering, noise re-clustering, and corridor export logic, but it remains notebook-centric research provenance rather than a stable website-facing data contract.
+- `compressed_segments(60,90,0.03).pkl` is already sufficient to regenerate the current website corridor export, but it should be treated as the authoritative source for corridor extraction only, not as a replacement for all raw or segmented clustering provenance.
 - The current collaborative-decision experience in `flow-forecast.json` is already presentation-friendly, but it is largely tied to forecast narrative output and not backed by a separate decision algorithm package under `代码依据`.
 - Current runtime payload sizes already approach a few megabytes per major artifact, so future expansion must avoid pushing all modules through a single eager-loading page.
 
@@ -75,9 +77,11 @@ The website must clearly, credibly, and repeatably present our algorithms and mo
 | Keep Vite + React + TypeScript as the core platform | The stack is already working; the problem is organization and data packaging, not framework capability | Good |
 | Move from one dense dashboard narrative toward module-oriented navigation | The number of algorithm views has outgrown a single monitoring-style surface | Good |
 | Use archived AIS playback and precomputed results to create quasi-realtime interaction | This matches what the team can actually reproduce and defend | Good |
+| Complete and verify missing data bundles before locking frontend contracts | Data-first sequencing reduces rework and prevents UI from depending on guessed structures | Good |
 | Require website-facing result bundles for repair and clustering before large UI buildout | Notebook outputs alone are not stable frontend contracts | Good |
+| Treat `compressed_segments(60,90,0.03).pkl` as the corridor-extraction authority for the website while preserving raw and segmented assets for provenance views | It is enough for main-corridor regeneration, but not for every clustering layer the site may want to show | Good |
 | Build collaborative decision as a rule-driven evidence layer over prediction and clustering outputs | `代码依据` does not currently contain a separate decision optimizer package strong enough to stand alone | Good |
 | Roll the unfinished hardening concerns from the prior roadmap into the new milestone foundation phase | Dataset packaging, verification, and lazy loading are now direct enablers for the showcase modules | Good |
 
 ---
-*Last updated: 2026-03-24 after starting milestone v1.1 Offline Showcase Expansion*
+*Last updated: 2026-03-25 after switching milestone v1.1 to a data-first execution order*

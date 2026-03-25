@@ -1,0 +1,175 @@
+{
+  "artifactId": "repair-manifest",
+  "module": "repair",
+  "sourceStage": "exported",
+  "derivedFrom": [
+    "repair-target-1-sample-1",
+    "repair-predictions-1",
+    "repair-metrics-1",
+    "repair-target-2-sample-1",
+    "repair-predictions-2",
+    "repair-metrics-2",
+    "repair-target-3-sample-1",
+    "repair-predictions-3",
+    "repair-metrics-3"
+  ],
+  "scenarioId": "repair-curated-v1",
+  "timeRange": {
+    "start": "sample-scoped",
+    "end": "sample-scoped"
+  },
+  "authoritativeFor": [
+    "REPR-01",
+    "REPR-02",
+    "REPR-03",
+    "REPR-04",
+    "REPR-05",
+    "BASE-02",
+    "BASE-05"
+  ],
+  "generatedAt": "2026-03-25T10:42:43+00:00",
+  "bundlePath": "data/modules/repair/repair-bundle.json",
+  "artifacts": [
+    {
+      "artifactId": "repair-samples",
+      "module": "repair",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "repair-target-1-sample-1",
+        "repair-target-2-sample-1",
+        "repair-target-3-sample-1"
+      ],
+      "scenarioId": "repair-curated-v1",
+      "timeRange": {
+        "start": "sample-scoped",
+        "end": "sample-scoped"
+      },
+      "authoritativeFor": [
+        "REPR-01"
+      ],
+      "path": "data/modules/repair/repair-samples.json",
+      "status": "ready",
+      "description": "Curated repair sample catalog for website selection."
+    },
+    {
+      "artifactId": "repair-trajectories",
+      "module": "repair",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "repair-target-1-sample-1",
+        "repair-predictions-1",
+        "repair-target-2-sample-1",
+        "repair-predictions-2",
+        "repair-target-3-sample-1",
+        "repair-predictions-3"
+      ],
+      "scenarioId": "repair-curated-v1",
+      "timeRange": {
+        "start": "sample-scoped",
+        "end": "sample-scoped"
+      },
+      "authoritativeFor": [
+        "REPR-02",
+        "REPR-03"
+      ],
+      "path": "data/modules/repair/repair-trajectories.json",
+      "status": "ready",
+      "description": "Missing, repaired, and ground-truth trajectories for curated repair samples."
+    },
+    {
+      "artifactId": "repair-errors",
+      "module": "repair",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "repair-metrics-1",
+        "repair-metrics-2",
+        "repair-metrics-3"
+      ],
+      "scenarioId": "repair-curated-v1",
+      "timeRange": {
+        "start": "sample-scoped",
+        "end": "sample-scoped"
+      },
+      "authoritativeFor": [
+        "REPR-04",
+        "REPR-05"
+      ],
+      "path": "data/modules/repair/repair-errors.json",
+      "status": "ready",
+      "description": "Longitude, latitude, and euclidean error arrays for each repair sample and model."
+    },
+    {
+      "artifactId": "repair-metrics-export",
+      "module": "repair",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "repair-metrics-1",
+        "repair-metrics-2",
+        "repair-metrics-3"
+      ],
+      "scenarioId": "repair-curated-v1",
+      "timeRange": {
+        "start": "sample-scoped",
+        "end": "sample-scoped"
+      },
+      "authoritativeFor": [
+        "REPR-05",
+        "EVAL-01",
+        "EVAL-03",
+        "EVAL-05"
+      ],
+      "path": "data/modules/repair/repair-metrics.json",
+      "status": "ready",
+      "description": "Scalar repair metrics for evaluation and module UI."
+    },
+    {
+      "artifactId": "repair-bundle",
+      "module": "repair",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "repair-samples",
+        "repair-trajectories",
+        "repair-errors",
+        "repair-metrics-export"
+      ],
+      "scenarioId": "repair-curated-v1",
+      "timeRange": {
+        "start": "sample-scoped",
+        "end": "sample-scoped"
+      },
+      "authoritativeFor": [
+        "REPR-01",
+        "REPR-02",
+        "REPR-03",
+        "REPR-04",
+        "REPR-05",
+        "BASE-02",
+        "BASE-05"
+      ],
+      "path": "data/modules/repair/repair-bundle.json",
+      "status": "ready",
+      "description": "Module entry bundle for repair data discovery."
+    }
+  ],
+  "deferred": [
+    {
+      "artifactId": "repair-optuna-study-export",
+      "reason": "study1_1.pkl requires optuna in the local environment, so only HTML outputs are currently reviewable.",
+      "dependsOn": [
+        "EVAL-04",
+        "Phase 11"
+      ]
+    }
+  ],
+  "sources": {
+    "repair-target-1-sample-1": "代码依据/轨迹修复/目标1随机噪声轨迹(50)/trajectory_1.csv",
+    "repair-predictions-1": "代码依据/轨迹修复/轨迹1预测值.pkl",
+    "repair-metrics-1": "代码依据/轨迹修复/metrics_results1_1.pkl",
+    "repair-target-2-sample-1": "代码依据/轨迹修复/目标2随机噪声轨迹(50)/trajectory_1.csv",
+    "repair-predictions-2": "代码依据/轨迹修复/轨迹2预测值.pkl",
+    "repair-metrics-2": "代码依据/轨迹修复/metrics_results2_1.pkl",
+    "repair-target-3-sample-1": "代码依据/轨迹修复/目标3随机噪声轨迹(50)/trajectory_1.csv",
+    "repair-predictions-3": "代码依据/轨迹修复/轨迹3预测值.pkl",
+    "repair-metrics-3": "代码依据/轨迹修复/metrics_results3_1.pkl"
+  }
+}

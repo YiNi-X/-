@@ -1942,6 +1942,86 @@
   font-variant-numeric: tabular-nums;
 }
 
+.platform-status {
+  grid-template-rows: minmax(0, 1fr);
+  padding: 0.7rem;
+}
+
+.platform-status-shell {
+  display: grid;
+  gap: 0.9rem;
+  align-content: center;
+  min-height: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: clamp(1.3rem, 2vw, 2rem);
+}
+
+.platform-status-copy,
+.platform-status-detail {
+  display: grid;
+  gap: 0.14rem;
+}
+
+.platform-status-eyebrow,
+.platform-status-card span,
+.platform-status-detail span {
+  color: rgba(169, 224, 255, 0.78);
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.platform-status-copy h1 {
+  font-size: clamp(1.5rem, 2.3vw, 2.2rem);
+  line-height: 1.04;
+}
+
+.platform-status-copy p,
+.platform-status-card small,
+.platform-status-detail strong {
+  color: rgba(214, 233, 243, 0.82);
+  line-height: 1.45;
+}
+
+.platform-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.35rem;
+}
+
+.platform-status-card {
+  display: grid;
+  gap: 0.14rem;
+  min-height: 118px;
+  padding: 0.78rem 0.84rem;
+  border: 1px solid rgba(80, 197, 255, 0.12);
+  background:
+    linear-gradient(180deg, rgba(12, 28, 44, 0.58), rgba(255, 255, 255, 0.02)),
+    rgba(255, 255, 255, 0.02);
+}
+
+.platform-status-card.accent {
+  border-color: rgba(255, 181, 71, 0.24);
+  background:
+    linear-gradient(180deg, rgba(56, 34, 9, 0.36), rgba(255, 255, 255, 0.02)),
+    rgba(255, 255, 255, 0.02);
+}
+
+.platform-status-card strong {
+  color: #eef8ff;
+  font-size: 0.92rem;
+  line-height: 1.14;
+}
+
+.platform-status-detail {
+  padding: 0.82rem 0.9rem;
+  border: 1px solid rgba(255, 122, 122, 0.16);
+  background:
+    linear-gradient(180deg, rgba(32, 17, 17, 0.6), rgba(255, 255, 255, 0.02)),
+    rgba(255, 255, 255, 0.02);
+}
+
 @keyframes hotspotPulse {
   0%,
   100% {

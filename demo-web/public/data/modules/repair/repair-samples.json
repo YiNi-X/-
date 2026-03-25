@@ -1,0 +1,63 @@
+{
+  "module": "repair",
+  "scenarioId": "repair-curated-v1",
+  "samples": [
+    {
+      "sampleId": "repair-target-1-sample-1",
+      "label": "Target 1 Sample 1",
+      "targetId": "target-1",
+      "missingPointCount": 829,
+      "groundTruthPointCount": 332,
+      "availableModels": [
+        "att-bilstm",
+        "bilstm",
+        "lstm",
+        "linear-interpolation",
+        "spline-interpolation"
+      ],
+      "sourceFiles": {
+        "missingTrajectory": "代码依据/轨迹修复/目标1随机噪声轨迹(50)/trajectory_1.csv",
+        "predictions": "代码依据/轨迹修复/轨迹1预测值.pkl",
+        "metrics": "代码依据/轨迹修复/metrics_results1_1.pkl"
+      }
+    },
+    {
+      "sampleId": "repair-target-2-sample-1",
+      "label": "Target 2 Sample 1",
+      "targetId": "target-2",
+      "missingPointCount": 1026,
+      "groundTruthPointCount": 411,
+      "availableModels": [
+        "att-bilstm",
+        "bilstm",
+        "lstm",
+        "linear-interpolation",
+        "spline-interpolation"
+      ],
+      "sourceFiles": {
+        "missingTrajectory": "代码依据/轨迹修复/目标2随机噪声轨迹(50)/trajectory_1.csv",
+        "predictions": "代码依据/轨迹修复/轨迹2预测值.pkl",
+        "metrics": "代码依据/轨迹修复/metrics_results2_1.pkl"
+      }
+    },
+    {
+      "sampleId": "repair-target-3-sample-1",
+      "label": "Target 3 Sample 1",
+      "targetId": "target-3",
+      "missingPointCount": 965,
+      "groundTruthPointCount": 386,
+      "availableModels": [
+        "att-bilstm",
+        "bilstm",
+        "lstm",
+        "linear-interpolation",
+        "spline-interpolation"
+      ],
+      "sourceFiles": {
+        "missingTrajectory": "代码依据/轨迹修复/目标3随机噪声轨迹(50)/trajectory_1.csv",
+        "predictions": "代码依据/轨迹修复/轨迹3预测值.pkl",
+        "metrics": "代码依据/轨迹修复/metrics_results3_1.pkl"
+      }
+    }
+  ]
+}

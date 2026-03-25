@@ -11,13 +11,15 @@
     "smoke": "node --test tests/smoke.test.mjs",
     "test": "npm run smoke",
     "verify": "npm run lint && npm run test && npm run build",
+    "verify:phase6": "python scripts/verify_phase6_bundles.py && npm run verify",
     "preview": "vite preview",
     "preview:editor": "vite preview --open /route-editor.html",
     "generate:data": "python scripts/generate_first_version_data.py"
   },
   "dependencies": {
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

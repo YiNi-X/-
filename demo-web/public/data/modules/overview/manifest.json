@@ -1,0 +1,83 @@
+{
+  "artifactId": "overview-manifest",
+  "module": "overview",
+  "sourceStage": "exported",
+  "derivedFrom": [
+    "forecast-manifest",
+    "repair-manifest",
+    "clustering-manifest",
+    "evaluation-manifest",
+    "artifact-index"
+  ],
+  "scenarioId": "phase6-overview-v1",
+  "timeRange": {
+    "start": "module-derived",
+    "end": "module-derived"
+  },
+  "authoritativeFor": [
+    "OVER-01",
+    "OVER-02",
+    "OVER-03",
+    "BASE-02",
+    "BASE-05"
+  ],
+  "generatedAt": "2026-03-25T10:47:59+00:00",
+  "bundlePath": "data/modules/overview/overview-bundle.json",
+  "artifacts": [
+    {
+      "artifactId": "overview-summary",
+      "module": "overview",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "forecast-bundle",
+        "repair-bundle",
+        "clustering-summary",
+        "evaluation-metrics",
+        "artifact-index"
+      ],
+      "scenarioId": "phase6-overview-v1",
+      "timeRange": {
+        "start": "module-derived",
+        "end": "module-derived"
+      },
+      "authoritativeFor": [
+        "OVER-01",
+        "OVER-02",
+        "OVER-03"
+      ],
+      "path": "data/modules/overview/overview-summary.json",
+      "status": "ready",
+      "description": "Business-loop framing and module scale summary derived from Phase 6 bundles."
+    },
+    {
+      "artifactId": "overview-bundle",
+      "module": "overview",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "overview-summary"
+      ],
+      "scenarioId": "phase6-overview-v1",
+      "timeRange": {
+        "start": "module-derived",
+        "end": "module-derived"
+      },
+      "authoritativeFor": [
+        "OVER-01",
+        "OVER-02",
+        "OVER-03",
+        "BASE-02",
+        "BASE-05"
+      ],
+      "path": "data/modules/overview/overview-bundle.json",
+      "status": "ready",
+      "description": "Module entry bundle for overview data discovery."
+    }
+  ],
+  "sources": {
+    "artifact-index": "demo-web/public/data/modules/artifact-index.json",
+    "forecast-bundle": "demo-web/public/data/modules/forecast/forecast-bundle.json",
+    "repair-bundle": "demo-web/public/data/modules/repair/repair-bundle.json",
+    "clustering-manifest": "demo-web/public/data/modules/clustering/manifest.json",
+    "evaluation-manifest": "demo-web/public/data/modules/evaluation/manifest.json"
+  }
+}

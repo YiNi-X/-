@@ -1,0 +1,194 @@
+{
+  "artifactId": "overview-summary",
+  "module": "overview",
+  "scenarioId": "phase6-overview-v1",
+  "generatedAt": "2026-03-25T10:47:59+00:00",
+  "framing": "Archived AIS playback plus offline-computed inference; not a live AIS backend.",
+  "businessLoop": [
+    {
+      "step": "Archived AIS Playback",
+      "description": "Use committed historical AIS playback as the common scene clock.",
+      "sourceArtifacts": [
+        "forecast-runtime",
+        "clustering-raw-cleaned-ais"
+      ]
+    },
+    {
+      "step": "Trajectory Clustering and Corridor Extraction",
+      "description": "Explain movement structure from raw to segmented, compressed, and corridor layers.",
+      "sourceArtifacts": [
+        "clustering-summary",
+        "clustering-stage-previews"
+      ]
+    },
+    {
+      "step": "Flow Prediction",
+      "description": "Project near-future traffic change across the archived playback timeline.",
+      "sourceArtifacts": [
+        "forecast-bundle",
+        "forecast-metrics"
+      ]
+    },
+    {
+      "step": "Trajectory Repair",
+      "description": "Show how damaged sample tracks are reconstructed and evaluated.",
+      "sourceArtifacts": [
+        "repair-bundle",
+        "repair-metrics-export"
+      ]
+    },
+    {
+      "step": "Evaluation and Decision Readiness",
+      "description": "Use metrics and review-first evidence to prepare later decision support work.",
+      "sourceArtifacts": [
+        "evaluation-metrics"
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "module": "clustering",
+      "status": "ready",
+      "manifestPath": "data/modules/clustering/manifest.json",
+      "bundlePath": "data/modules/clustering/clustering-bundle.json",
+      "scenarioId": "clustered-ais-v1",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "CLUS-01",
+        "CLUS-02",
+        "CLUS-04",
+        "BASE-02",
+        "BASE-05"
+      ]
+    },
+    {
+      "module": "evaluation",
+      "status": "ready",
+      "manifestPath": "data/modules/evaluation/manifest.json",
+      "bundlePath": "data/modules/evaluation/evaluation-bundle.json",
+      "scenarioId": "phase6-evaluation-v1",
+      "timeRange": {
+        "start": "module-derived",
+        "end": "module-derived"
+      },
+      "authoritativeFor": [
+        "EVAL-01",
+        "EVAL-02",
+        "EVAL-03",
+        "EVAL-05",
+        "BASE-02",
+        "BASE-05"
+      ]
+    },
+    {
+      "module": "forecast",
+      "status": "ready",
+      "manifestPath": "data/modules/forecast/manifest.json",
+      "bundlePath": "data/modules/forecast/forecast-bundle.json",
+      "scenarioId": "demo-live",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "FLOW-01",
+        "FLOW-02",
+        "FLOW-03",
+        "FLOW-04",
+        "BASE-02",
+        "BASE-05"
+      ]
+    },
+    {
+      "module": "repair",
+      "status": "ready",
+      "manifestPath": "data/modules/repair/manifest.json",
+      "bundlePath": "data/modules/repair/repair-bundle.json",
+      "scenarioId": "repair-curated-v1",
+      "timeRange": {
+        "start": "sample-scoped",
+        "end": "sample-scoped"
+      },
+      "authoritativeFor": [
+        "REPR-01",
+        "REPR-02",
+        "REPR-03",
+        "REPR-04",
+        "REPR-05",
+        "BASE-02",
+        "BASE-05"
+      ]
+    }
+  ],
+  "dataScale": {
+    "forecast": {
+      "timelineFrames": 577,
+      "availableModels": [
+        "STGCN"
+      ],
+      "deferredModels": [
+        "LSTM",
+        "BiLSTM"
+      ],
+      "horizons": [
+        "1h",
+        "2h",
+        "3h"
+      ]
+    },
+    "repair": {
+      "sampleCount": 3,
+      "availableModels": [
+        "att-bilstm",
+        "bilstm",
+        "linear-interpolation",
+        "lstm",
+        "spline-interpolation"
+      ],
+      "curatedSamples": [
+        "repair-target-1-sample-1",
+        "repair-target-2-sample-1",
+        "repair-target-3-sample-1"
+      ]
+    },
+    "clustering": {
+      "rawAisRows": 208812,
+      "rawMmsiCount": 2451,
+      "filteredResearchRows": 293771,
+      "filteredResearchMmsiCount": 3554,
+      "segmentedTracks": 3827,
+      "segmentedPoints": 152673,
+      "compressedTracks": 3827,
+      "compressedPoints": 18980,
+      "corridorRuntimeCorridors": 16,
+      "corridorRuntimeTracks": 1321,
+      "corridorReviewCorridors": 16,
+      "corridorReviewTracks": 1321
+    }
+  },
+  "evaluationReady": {
+    "forecastMetrics": [
+      "mae",
+      "rmse",
+      "r2"
+    ],
+    "repairMetrics": [
+      "rmse",
+      "mae",
+      "dtwSimilarity",
+      "ade",
+      "r2",
+      "hausdorffDistance"
+    ]
+  },
+  "deferredModules": [
+    {
+      "module": "collaborative-decision",
+      "status": "later-phase",
+      "reason": "Phase 6 stabilizes evidence packages first; strategy evidence remains intentionally deferred."
+    }
+  ]
+}

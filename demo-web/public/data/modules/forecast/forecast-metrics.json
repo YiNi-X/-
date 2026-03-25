@@ -1,0 +1,41 @@
+{
+  "module": "forecast",
+  "scenarioId": "demo-live",
+  "metricBasis": "timeline-aligned totalFlow derived from committed STGCN runtime output",
+  "generatedAt": "2026-03-25T10:42:43+00:00",
+  "models": {
+    "STGCN": {
+      "status": "available",
+      "horizons": {
+        "1h": {
+          "sampleCount": 565,
+          "mae": 36.835611,
+          "rmse": 47.384377,
+          "r2": 0.942885
+        },
+        "2h": {
+          "sampleCount": 553,
+          "mae": 61.44519,
+          "rmse": 77.744297,
+          "r2": 0.84856
+        },
+        "3h": {
+          "sampleCount": 541,
+          "mae": 70.876377,
+          "rmse": 91.948055,
+          "r2": 0.788904
+        }
+      }
+    }
+  },
+  "deferredModels": [
+    {
+      "model": "LSTM",
+      "reason": "Only notebook definitions exist in the repository; no committed structured runtime export is available."
+    },
+    {
+      "model": "BiLSTM",
+      "reason": "Only notebook definitions exist in the repository; no committed structured runtime export is available."
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "artifactId": "repair-bundle",
+  "module": "repair",
+  "generatedAt": "2026-03-25T10:42:43+00:00",
+  "scenarioId": "repair-curated-v1",
+  "timeRange": {
+    "start": "sample-scoped",
+    "end": "sample-scoped"
+  },
+  "sampleCount": 3,
+  "entryFiles": {
+    "samples": "data/modules/repair/repair-samples.json",
+    "trajectories": "data/modules/repair/repair-trajectories.json",
+    "errors": "data/modules/repair/repair-errors.json",
+    "metrics": "data/modules/repair/repair-metrics.json"
+  },
+  "availableModels": [
+    "att-bilstm",
+    "bilstm",
+    "linear-interpolation",
+    "lstm",
+    "spline-interpolation"
+  ],
+  "deferred": [
+    "repair-optuna-study-export"
+  ]
+}

@@ -8,17 +8,17 @@
 ### Showcase Foundation
 
 - [ ] **BASE-01**: Demo viewer can navigate between overview, flow prediction, trajectory repair, trajectory clustering, collaborative decision, and evaluation from one coherent website shell
-- [ ] **BASE-02**: Website loads module data from committed static artifacts derived from archived local research outputs instead of requiring a live backend or online inference
+- [x] **BASE-02**: Website loads module data from committed static artifacts derived from archived local research outputs instead of requiring a live backend or online inference
 - [ ] **BASE-03**: Demo viewer can switch scenarios or time slices without broken module state or missing data contracts
 - [ ] **BASE-04**: Website lazy-loads module or scenario artifacts so new datasets do not force one monolithic initial payload
-- [ ] **BASE-05**: Team can regenerate website-facing showcase artifacts from `代码依据` and existing cleaned outputs through one documented offline pipeline
-- [ ] **BASE-06**: Team can run one repeatable verification flow that checks buildability and critical module data contracts before demoing the site
+- [x] **BASE-05**: Team can regenerate website-facing showcase artifacts from `代码依据` and existing cleaned outputs through one documented offline pipeline
+- [x] **BASE-06**: Team can run one repeatable verification flow that checks buildability and critical module data contracts before demoing the site
 
 ### Flow Prediction
 
 - [ ] **FLOW-01**: Demo viewer can switch among STGCN, LSTM, and BiLSTM prediction results for the same archived scenario
 - [ ] **FLOW-02**: Demo viewer can switch forecast horizon between 1h, 2h, and 3h
-- [ ] **FLOW-03**: Demo viewer can inspect key prediction metrics for the selected model and horizon, including MAE, RMSE, and R²
+- [ ] **FLOW-03**: Demo viewer can inspect key prediction metrics for the selected model and horizon, including MAE, RMSE, and R-squared
 - [ ] **FLOW-04**: Demo viewer can inspect hotspot grid ranking and total flow trends during historical playback
 
 ### Trajectory Repair
@@ -27,7 +27,7 @@
 - [ ] **REPR-02**: Demo viewer can compare original ground truth, missing trajectory, and repaired trajectory on the same visual surface
 - [ ] **REPR-03**: Demo viewer can switch among ATT-BILSTM, BiLSTM, LSTM, and at least one classical baseline for the selected repair sample
 - [ ] **REPR-04**: Demo viewer can inspect longitude and latitude error charts for the selected repair result
-- [ ] **REPR-05**: Demo viewer can inspect a repair metric summary that includes MAE, RMSE, DTW, R², and Hausdorff distance
+- [ ] **REPR-05**: Demo viewer can inspect a repair metric summary that includes MAE, RMSE, DTW, R-squared, and Hausdorff distance
 
 ### Trajectory Clustering
 
@@ -79,29 +79,29 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BASE-01 | Phase 6 | Pending |
-| BASE-02 | Phase 6 | Pending |
-| BASE-03 | Phase 6 | Pending |
-| BASE-04 | Phase 6 | Pending |
-| BASE-05 | Phase 6 | Pending |
-| BASE-06 | Phase 6 | Pending |
-| FLOW-01 | Phase 7 | Pending |
-| FLOW-02 | Phase 7 | Pending |
-| FLOW-03 | Phase 7 | Pending |
-| FLOW-04 | Phase 7 | Pending |
-| REPR-01 | Phase 8 | Pending |
-| REPR-02 | Phase 8 | Pending |
-| REPR-03 | Phase 8 | Pending |
-| REPR-04 | Phase 8 | Pending |
-| REPR-05 | Phase 8 | Pending |
-| CLUS-01 | Phase 9 | Pending |
-| CLUS-02 | Phase 9 | Pending |
-| CLUS-03 | Phase 9 | Pending |
-| CLUS-04 | Phase 9 | Pending |
-| DECI-01 | Phase 10 | Pending |
-| DECI-02 | Phase 10 | Pending |
-| DECI-03 | Phase 10 | Pending |
-| DECI-04 | Phase 10 | Pending |
+| BASE-01 | Phase 7 | Pending |
+| BASE-02 | Phase 6 | Complete |
+| BASE-03 | Phase 7 | Pending |
+| BASE-04 | Phase 7 | Pending |
+| BASE-05 | Phase 6 | Complete |
+| BASE-06 | Phase 6 | Complete |
+| FLOW-01 | Phase 8 | Pending |
+| FLOW-02 | Phase 8 | Pending |
+| FLOW-03 | Phase 8 | Pending |
+| FLOW-04 | Phase 8 | Pending |
+| REPR-01 | Phase 9 | Pending |
+| REPR-02 | Phase 9 | Pending |
+| REPR-03 | Phase 9 | Pending |
+| REPR-04 | Phase 9 | Pending |
+| REPR-05 | Phase 9 | Pending |
+| CLUS-01 | Phase 10 | Pending |
+| CLUS-02 | Phase 10 | Pending |
+| CLUS-03 | Phase 10 | Pending |
+| CLUS-04 | Phase 10 | Pending |
+| DECI-01 | Phase 12 | Pending |
+| DECI-02 | Phase 12 | Pending |
+| DECI-03 | Phase 12 | Pending |
+| DECI-04 | Phase 12 | Pending |
 | EVAL-01 | Phase 11 | Pending |
 | EVAL-02 | Phase 11 | Pending |
 | EVAL-03 | Phase 11 | Pending |
@@ -118,4 +118,5 @@
 
 ---
 *Requirements defined: 2026-03-24*
-*Last updated: 2026-03-24 after defining milestone v1.1 Offline Showcase Expansion*
+*Last updated: 2026-03-25 after completing Phase 6 data completion and lineage*
+

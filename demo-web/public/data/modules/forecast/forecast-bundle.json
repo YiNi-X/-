@@ -1,0 +1,27 @@
+{
+  "artifactId": "forecast-bundle",
+  "module": "forecast",
+  "generatedAt": "2026-03-25T10:42:43+00:00",
+  "scenarioId": "demo-live",
+  "timeRange": {
+    "start": "2020-01-01T00:00:00",
+    "end": "2020-01-03T00:00:00"
+  },
+  "availableModels": [
+    "STGCN"
+  ],
+  "deferredModels": [
+    "LSTM",
+    "BiLSTM"
+  ],
+  "horizons": [
+    "1h",
+    "2h",
+    "3h"
+  ],
+  "entryFiles": {
+    "runtime": "data/modules/forecast/forecast-runtime.json",
+    "modelConfig": "data/modules/forecast/forecast-model-config.json",
+    "metrics": "data/modules/forecast/forecast-metrics.json"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "artifactId": "clustering-bundle",
+  "module": "clustering",
+  "generatedAt": "2026-03-25T10:42:54+00:00",
+  "scenarioId": "clustered-ais-v1",
+  "timeRange": {
+    "start": "2020-01-01T00:00:00",
+    "end": "2020-01-03T00:00:00"
+  },
+  "entryFiles": {
+    "summary": "data/modules/clustering/clustering-summary.json",
+    "stagePreviews": "data/modules/clustering/clustering-stage-previews.json",
+    "corridorRuntime": "data/modules/clustering/clustering-corridor-runtime.json",
+    "corridorReview": "data/modules/clustering/clustering-corridor-review.json"
+  },
+  "deferred": [
+    "clustering-noise-reclustered"
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-03-25T10:47:59+00:00",
+  "generatedBy": "demo-web/scripts/phase6_bundle_common.py",
+  "modules": [
+    {
+      "module": "clustering",
+      "status": "ready",
+      "manifestPath": "data/modules/clustering/manifest.json",
+      "bundlePath": "data/modules/clustering/clustering-bundle.json",
+      "scenarioId": "clustered-ais-v1",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "CLUS-01",
+        "CLUS-02",
+        "CLUS-04",
+        "BASE-02",
+        "BASE-05"
+      ]
+    },
+    {
+      "module": "evaluation",
+      "status": "ready",
+      "manifestPath": "data/modules/evaluation/manifest.json",
+      "bundlePath": "data/modules/evaluation/evaluation-bundle.json",
+      "scenarioId": "phase6-evaluation-v1",
+      "timeRange": {
+        "start": "module-derived",
+        "end": "module-derived"
+      },
+      "authoritativeFor": [
+        "EVAL-01",
+        "EVAL-02",
+        "EVAL-03",
+        "EVAL-05",
+        "BASE-02",
+        "BASE-05"
+      ]
+    },
+    {
+      "module": "forecast",
+      "status": "ready",
+      "manifestPath": "data/modules/forecast/manifest.json",
+      "bundlePath": "data/modules/forecast/forecast-bundle.json",
+      "scenarioId": "demo-live",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "FLOW-01",
+        "FLOW-02",
+        "FLOW-03",
+        "FLOW-04",
+        "BASE-02",
+        "BASE-05"
+      ]
+    },
+    {
+      "module": "overview",
+      "status": "ready",
+      "manifestPath": "data/modules/overview/manifest.json",
+      "bundlePath": "data/modules/overview/overview-bundle.json",
+      "scenarioId": "phase6-overview-v1",
+      "timeRange": {
+        "start": "module-derived",
+        "end": "module-derived"
+      },
+      "authoritativeFor": [
+        "OVER-01",
+        "OVER-02",
+        "OVER-03",
+        "BASE-02",
+        "BASE-05"
+      ]
+    },
+    {
+      "module": "repair",
+      "status": "ready",
+      "manifestPath": "data/modules/repair/manifest.json",
+      "bundlePath": "data/modules/repair/repair-bundle.json",
+      "scenarioId": "repair-curated-v1",
+      "timeRange": {
+        "start": "sample-scoped",
+        "end": "sample-scoped"
+      },
+      "authoritativeFor": [
+        "REPR-01",
+        "REPR-02",
+        "REPR-03",
+        "REPR-04",
+        "REPR-05",
+        "BASE-02",
+        "BASE-05"
+      ]
+    }
+  ]
+}

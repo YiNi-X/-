@@ -1,0 +1,144 @@
+{
+  "artifactId": "clustering-manifest",
+  "module": "clustering",
+  "sourceStage": "exported",
+  "derivedFrom": [
+    "clustering-raw-cleaned-ais",
+    "clustering-shaixuanhou-csv",
+    "clustering-segmented-pkl",
+    "clustering-compressed-pkl",
+    "clustering-corridor-runtime",
+    "clustering-corridor-review"
+  ],
+  "scenarioId": "clustered-ais-v1",
+  "timeRange": {
+    "start": "2020-01-01T00:00:00",
+    "end": "2020-01-03T00:00:00"
+  },
+  "authoritativeFor": [
+    "CLUS-01",
+    "CLUS-02",
+    "CLUS-04",
+    "BASE-02",
+    "BASE-05"
+  ],
+  "generatedAt": "2026-03-25T10:42:54+00:00",
+  "bundlePath": "data/modules/clustering/clustering-bundle.json",
+  "artifacts": [
+    {
+      "artifactId": "clustering-summary",
+      "module": "clustering",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "clustering-raw-cleaned-ais",
+        "clustering-shaixuanhou-csv",
+        "clustering-segmented-pkl",
+        "clustering-compressed-pkl",
+        "clustering-corridor-runtime"
+      ],
+      "scenarioId": "clustered-ais-v1",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "CLUS-01",
+        "CLUS-02"
+      ],
+      "path": "data/modules/clustering/clustering-summary.json",
+      "status": "ready",
+      "description": "Stage counts, review status, and deferred clustering boundaries."
+    },
+    {
+      "artifactId": "clustering-stage-previews",
+      "module": "clustering",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "clustering-raw-cleaned-ais",
+        "clustering-segmented-pkl",
+        "clustering-compressed-pkl",
+        "clustering-corridor-runtime"
+      ],
+      "scenarioId": "clustered-ais-v1",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "CLUS-01",
+        "CLUS-04"
+      ],
+      "path": "data/modules/clustering/clustering-stage-previews.json",
+      "status": "ready",
+      "description": "Curated preview data for raw, segmented, compressed, and corridor layers."
+    },
+    {
+      "artifactId": "clustering-corridor-review",
+      "module": "clustering",
+      "sourceStage": "exported-review",
+      "derivedFrom": [
+        "clustering-compressed-pkl"
+      ],
+      "scenarioId": "clustered-ais-v1",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "CLUS-04",
+        "BASE-05"
+      ],
+      "path": "data/modules/clustering/clustering-corridor-review.json",
+      "status": "review-first",
+      "description": "Regenerated corridor output kept separate from the live runtime dataset."
+    },
+    {
+      "artifactId": "clustering-bundle",
+      "module": "clustering",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "clustering-summary",
+        "clustering-stage-previews",
+        "clustering-corridor-runtime",
+        "clustering-corridor-review"
+      ],
+      "scenarioId": "clustered-ais-v1",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "CLUS-01",
+        "CLUS-02",
+        "CLUS-04",
+        "BASE-02",
+        "BASE-05"
+      ],
+      "path": "data/modules/clustering/clustering-bundle.json",
+      "status": "ready",
+      "description": "Module entry bundle for clustering data discovery."
+    }
+  ],
+  "reviewFiles": [
+    "demo-web/analysis/review/clustering-compressed-review.png",
+    "demo-web/analysis/review/clustering-corridor-review.png"
+  ],
+  "sources": {
+    "clustering-raw-cleaned-ais": "代码依据/轨迹聚类/cleaned_ais.CSV",
+    "clustering-shaixuanhou-csv": "代码依据/轨迹聚类/shaixuanhou_.csv",
+    "clustering-segmented-pkl": "代码依据/轨迹聚类/segments(60-90).pkl",
+    "clustering-compressed-pkl": "代码依据/轨迹聚类/compressed_segments(60,90,0.03).pkl",
+    "clustering-corridor-runtime": "demo-web/public/data/main-corridor-tracks.json",
+    "clustering-corridor-review": "demo-web/analysis/review/corridor-review-tracks.json"
+  },
+  "deferred": [
+    {
+      "artifactId": "clustering-noise-reclustered",
+      "reason": "normalized_distances(60,90,0.03).pkl is unreadable and the notebook-grade noise re-clustering path is not stable in the current environment.",
+      "dependsOn": [
+        "CLUS-03",
+        "Phase 10"
+      ]
+    }
+  ]
+}

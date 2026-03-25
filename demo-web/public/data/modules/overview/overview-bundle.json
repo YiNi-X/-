@@ -1,0 +1,13 @@
+{
+  "artifactId": "overview-bundle",
+  "module": "overview",
+  "generatedAt": "2026-03-25T10:47:59+00:00",
+  "scenarioId": "phase6-overview-v1",
+  "timeRange": {
+    "start": "module-derived",
+    "end": "module-derived"
+  },
+  "entryFiles": {
+    "summary": "data/modules/overview/overview-summary.json"
+  }
+}

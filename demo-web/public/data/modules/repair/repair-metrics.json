@@ -1,0 +1,234 @@
+{
+  "module": "repair",
+  "scenarioId": "repair-curated-v1",
+  "samples": [
+    {
+      "sampleId": "repair-target-1-sample-1",
+      "targetId": "target-1",
+      "metrics": [
+        {
+          "modelId": "att-bilstm",
+          "modelLabel": "ATT-BILSTM",
+          "mse": 0.0,
+          "rmse": 0.000194,
+          "mae": 0.000156,
+          "dtwSimilarity": 0.906085,
+          "ade": 0.000247,
+          "r2": 1.0,
+          "hausdorffDistance": 0.000594,
+          "lonDifferenceMean": 0.000145,
+          "latDifferenceMean": 0.000167,
+          "euclideanDistanceMean": 0.000247
+        },
+        {
+          "modelId": "bilstm",
+          "modelLabel": "BILSTM",
+          "mse": 0.0,
+          "rmse": 0.000339,
+          "mae": 0.000249,
+          "dtwSimilarity": 0.873335,
+          "ade": 0.000392,
+          "r2": 0.999999,
+          "hausdorffDistance": 0.000893,
+          "lonDifferenceMean": 0.000176,
+          "latDifferenceMean": 0.000321,
+          "euclideanDistanceMean": 0.000392
+        },
+        {
+          "modelId": "lstm",
+          "modelLabel": "LSTM",
+          "mse": 0.0,
+          "rmse": 0.000341,
+          "mae": 0.000286,
+          "dtwSimilarity": 0.842553,
+          "ade": 0.000447,
+          "r2": 0.999999,
+          "hausdorffDistance": 0.000882,
+          "lonDifferenceMean": 0.000178,
+          "latDifferenceMean": 0.000393,
+          "euclideanDistanceMean": 0.000447
+        },
+        {
+          "modelId": "linear-interpolation",
+          "modelLabel": "线性插值",
+          "mse": 1e-05,
+          "rmse": 0.003165,
+          "mae": 0.00268,
+          "dtwSimilarity": 0.442792,
+          "ade": 0.003939,
+          "r2": 1.0,
+          "hausdorffDistance": 0.00637,
+          "lonDifferenceMean": 0.00327,
+          "latDifferenceMean": 0.002091,
+          "euclideanDistanceMean": 0.003939
+        },
+        {
+          "modelId": "spline-interpolation",
+          "modelLabel": "样条插值",
+          "mse": 3e-06,
+          "rmse": 0.001672,
+          "mae": 0.001314,
+          "dtwSimilarity": 0.595097,
+          "ade": 0.002047,
+          "r2": 1.0,
+          "hausdorffDistance": 0.003356,
+          "lonDifferenceMean": 0.001824,
+          "latDifferenceMean": 0.000805,
+          "euclideanDistanceMean": 0.002047
+        }
+      ]
+    },
+    {
+      "sampleId": "repair-target-2-sample-1",
+      "targetId": "target-2",
+      "metrics": [
+        {
+          "modelId": "att-bilstm",
+          "modelLabel": "ATT-BILSTM",
+          "mse": 0.0,
+          "rmse": 0.000217,
+          "mae": 0.000167,
+          "dtwSimilarity": 0.879247,
+          "ade": 0.000264,
+          "r2": 1.0,
+          "hausdorffDistance": 0.000647,
+          "lonDifferenceMean": 0.000115,
+          "latDifferenceMean": 0.000219,
+          "euclideanDistanceMean": 0.000264
+        },
+        {
+          "modelId": "bilstm",
+          "modelLabel": "BILSTM",
+          "mse": 0.0,
+          "rmse": 0.000475,
+          "mae": 0.000329,
+          "dtwSimilarity": 0.822474,
+          "ade": 0.000497,
+          "r2": 0.999998,
+          "hausdorffDistance": 0.001664,
+          "lonDifferenceMean": 0.000255,
+          "latDifferenceMean": 0.000404,
+          "euclideanDistanceMean": 0.000497
+        },
+        {
+          "modelId": "lstm",
+          "modelLabel": "LSTM",
+          "mse": 1e-06,
+          "rmse": 0.000972,
+          "mae": 0.000761,
+          "dtwSimilarity": 0.682881,
+          "ade": 0.00119,
+          "r2": 0.999992,
+          "hausdorffDistance": 0.001997,
+          "lonDifferenceMean": 0.000505,
+          "latDifferenceMean": 0.001018,
+          "euclideanDistanceMean": 0.00119
+        },
+        {
+          "modelId": "linear-interpolation",
+          "modelLabel": "线性插值",
+          "mse": 3e-06,
+          "rmse": 0.001622,
+          "mae": 0.001261,
+          "dtwSimilarity": 0.528531,
+          "ade": 0.002145,
+          "r2": 1.0,
+          "hausdorffDistance": 0.002894,
+          "lonDifferenceMean": 0.00045,
+          "latDifferenceMean": 0.002071,
+          "euclideanDistanceMean": 0.002145
+        },
+        {
+          "modelId": "spline-interpolation",
+          "modelLabel": "样条插值",
+          "mse": 1e-06,
+          "rmse": 0.0009,
+          "mae": 0.000731,
+          "dtwSimilarity": 0.747589,
+          "ade": 0.001051,
+          "r2": 1.0,
+          "hausdorffDistance": 0.001636,
+          "lonDifferenceMean": 0.000686,
+          "latDifferenceMean": 0.000776,
+          "euclideanDistanceMean": 0.001051
+        }
+      ]
+    },
+    {
+      "sampleId": "repair-target-3-sample-1",
+      "targetId": "target-3",
+      "metrics": [
+        {
+          "modelId": "att-bilstm",
+          "modelLabel": "ATT-BILSTM",
+          "mse": 0.0,
+          "rmse": 0.000208,
+          "mae": 0.000149,
+          "dtwSimilarity": 0.89658,
+          "ade": 0.000242,
+          "r2": 0.999999,
+          "hausdorffDistance": 0.000866,
+          "lonDifferenceMean": 9.2e-05,
+          "latDifferenceMean": 0.000206,
+          "euclideanDistanceMean": 0.000242
+        },
+        {
+          "modelId": "bilstm",
+          "modelLabel": "BILSTM",
+          "mse": 1.1e-05,
+          "rmse": 0.003348,
+          "mae": 0.002646,
+          "dtwSimilarity": 0.746047,
+          "ade": 0.004067,
+          "r2": 0.999737,
+          "hausdorffDistance": 0.003809,
+          "lonDifferenceMean": 0.001686,
+          "latDifferenceMean": 0.003606,
+          "euclideanDistanceMean": 0.004067
+        },
+        {
+          "modelId": "lstm",
+          "modelLabel": "LSTM",
+          "mse": 5e-06,
+          "rmse": 0.002269,
+          "mae": 0.001642,
+          "dtwSimilarity": 0.711755,
+          "ade": 0.002594,
+          "r2": 0.999879,
+          "hausdorffDistance": 0.004196,
+          "lonDifferenceMean": 0.001044,
+          "latDifferenceMean": 0.00224,
+          "euclideanDistanceMean": 0.002594
+        },
+        {
+          "modelId": "linear-interpolation",
+          "modelLabel": "线性插值",
+          "mse": 4.8e-05,
+          "rmse": 0.006946,
+          "mae": 0.004908,
+          "dtwSimilarity": 0.243345,
+          "ade": 0.008358,
+          "r2": 1.0,
+          "hausdorffDistance": 0.016245,
+          "lonDifferenceMean": 0.001656,
+          "latDifferenceMean": 0.00816,
+          "euclideanDistanceMean": 0.008358
+        },
+        {
+          "modelId": "spline-interpolation",
+          "modelLabel": "样条插值",
+          "mse": 9e-06,
+          "rmse": 0.002984,
+          "mae": 0.002147,
+          "dtwSimilarity": 0.488661,
+          "ade": 0.00333,
+          "r2": 1.0,
+          "hausdorffDistance": 0.008262,
+          "lonDifferenceMean": 0.001808,
+          "latDifferenceMean": 0.002486,
+          "euclideanDistanceMean": 0.00333
+        }
+      ]
+    }
+  ]
+}

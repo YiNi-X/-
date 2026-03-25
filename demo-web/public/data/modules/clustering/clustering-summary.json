@@ -1,0 +1,50 @@
+{
+  "artifactId": "clustering-summary",
+  "module": "clustering",
+  "scenarioId": "clustered-ais-v1",
+  "generatedAt": "2026-03-25T10:42:54+00:00",
+  "timeRange": {
+    "start": "2020-01-01T00:00:00",
+    "end": "2020-01-03T00:00:00"
+  },
+  "stageCounts": {
+    "rawAisRows": 208812,
+    "rawMmsiCount": 2451,
+    "filteredResearchRows": 293771,
+    "filteredResearchMmsiCount": 3554,
+    "segmentedTracks": 3827,
+    "segmentedPoints": 152673,
+    "compressedTracks": 3827,
+    "compressedPoints": 18980,
+    "corridorRuntimeCorridors": 16,
+    "corridorRuntimeTracks": 1321,
+    "corridorReviewCorridors": 16,
+    "corridorReviewTracks": 1321
+  },
+  "layerOrder": [
+    "raw",
+    "segmented",
+    "compressed",
+    "corridor/exported",
+    "corridor/review"
+  ],
+  "reviewStatus": {
+    "corridorPromotion": "not-promoted",
+    "runtimeCorridorPath": "data/main-corridor-tracks.json",
+    "reviewCorridorPath": "analysis/review/corridor-review-tracks.json"
+  },
+  "reviewFiles": [
+    "demo-web/analysis/review/clustering-compressed-review.png",
+    "demo-web/analysis/review/clustering-corridor-review.png"
+  ],
+  "deferred": [
+    {
+      "artifactId": "clustering-noise-reclustered",
+      "reason": "normalized_distances(60,90,0.03).pkl is unreadable and the notebook-grade noise re-clustering path is not stable in the current environment.",
+      "dependsOn": [
+        "CLUS-03",
+        "Phase 10"
+      ]
+    }
+  ]
+}
