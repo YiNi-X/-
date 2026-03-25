@@ -12,12 +12,13 @@ import type { AisPlaybackData, FlowForecastData, GeometryConfig } from '../share
 import { formatRuntimeLoadFailure, loadAisPlaybackResource, loadFlowForecastResource, loadGeometryConfigResource } from '../runtimeData'
 import { SHARED_GEOMETRY_PATH } from './dashboardUtils'
 
-export function useDashboardRuntime() {
+export function useDashboardRuntime(preferredDatasetId?: string | null) {
   const [aisPlayback, setAisPlayback] = useState<AisPlaybackData | null>(null)
   const [flowForecast, setFlowForecast] = useState<FlowForecastData | null>(null)
   const [geometryConfig, setGeometryConfig] = useState<GeometryConfig | null>(null)
   const [datasetCatalog, setDatasetCatalog] = useState<DatasetCatalog | null>(null)
-  const [selectedDatasetId, setSelectedDatasetId] = useState(() => readPreferredDatasetId() ?? DEFAULT_DATASET_CATALOG.defaultDatasetId)
+  const [localSelectedDatasetId, setLocalSelectedDatasetId] = useState(() => readPreferredDatasetId() ?? DEFAULT_DATASET_CATALOG.defaultDatasetId)
+  const selectedDatasetId = preferredDatasetId ?? localSelectedDatasetId
   const [catalogLoadError, setCatalogLoadError] = useState('')
   const [datasetLoadError, setDatasetLoadError] = useState('')
   const [geometryLoadError, setGeometryLoadError] = useState('')
@@ -134,7 +135,7 @@ export function useDashboardRuntime() {
   const dashboardLoading = !dashboardUnavailableReason && !dashboardReady
 
   function selectDataset(nextDatasetId: string) {
-    setSelectedDatasetId(nextDatasetId)
+    setLocalSelectedDatasetId(nextDatasetId)
     persistDatasetSelection(nextDatasetId)
   }
 

@@ -18,7 +18,7 @@ The remaining unresolved concerns from the prior hardening roadmap are not disca
 - Decimal phases (6.1, 6.2): Urgent insertions if later needed
 
 - [x] **Phase 6: Data Completion and Lineage** - Complete the missing offline artifacts, confirm authoritative sources, and make website-facing bundles reproducible
-- [ ] **Phase 7: Frontend Contracts and Website Shell** - Build the frontend contracts, shell, navigation, shared loader, and baseline module pages on top of the stabilized artifacts
+- [x] **Phase 7: Frontend Contracts and Website Shell** - Build the frontend contracts, shell, navigation, shared loader, and baseline module pages on top of the stabilized artifacts
 - [ ] **Phase 8: Flow Prediction Module Completion** - Complete the forecast showcase around model switching, horizon switching, metrics, hotspots, and total flow trends
 - [ ] **Phase 9: Trajectory Repair Module Completion** - Complete curated repair comparisons with sample selection, model switching, error charts, and metric summaries
 - [ ] **Phase 10: Trajectory Clustering Module Completion** - Complete the clustering showcase with trajectory state switching, cluster statistics, corridor extraction views, and only the clustering layers that the available data can support
@@ -55,9 +55,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 07-01: Define frontend contracts, module registry metadata, deferred-state semantics, and route descriptors for the stabilized bundle set
-- [ ] 07-02: Implement shared loaders, validation hooks, lazy-loading behavior, and shared shell state around those contracts
-- [ ] 07-03: Build the website shell, navigation, and baseline module pages using real Phase 6 bundles plus honest deferred placeholders where data is not ready
+- [x] 07-01: Define frontend contracts, module registry metadata, deferred-state semantics, and route descriptors for the stabilized bundle set
+- [x] 07-02: Implement shared loaders, validation hooks, lazy-loading behavior, and shared shell state around those contracts
+- [x] 07-03: Build the website shell, navigation, and baseline module pages using real Phase 6 bundles plus honest deferred placeholders where data is not ready
 
 ### Phase 8: Flow Prediction Module Completion
 **Goal:** Complete the archived flow-forecast story as a true module rather than a hardcoded panel set
@@ -147,7 +147,7 @@ Phases execute in numeric order: 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 6. Data Completion and Lineage | 3/3 | Complete | 2026-03-25 |
-| 7. Frontend Contracts and Website Shell | 0/3 | Not started | - |
+| 7. Frontend Contracts and Website Shell | 3/3 | Complete | 2026-03-25 |
 | 8. Flow Prediction Module Completion | 0/3 | Not started | - |
 | 9. Trajectory Repair Module Completion | 0/3 | Not started | - |
 | 10. Trajectory Clustering Module Completion | 0/3 | Not started | - |
@@ -156,5 +156,5 @@ Phases execute in numeric order: 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12
 
 ---
 *Roadmap created: 2026-03-24*
-*Last updated: 2026-03-25 after completing Phase 6 data completion and lineage*
+*Last updated: 2026-03-25 after completing Phase 7 frontend contracts and website shell*
 *Current milestone: v1.1 Offline Showcase Expansion*

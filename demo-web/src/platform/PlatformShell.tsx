@@ -31,17 +31,6 @@ function renderShellBody(shell: PlatformShellResult, children?: (shell: Platform
     )
   }
 
-  if (shell.activeRoute.kind === 'placeholder') {
-    return (
-      <PlatformStatusSurface
-        tone="deferred"
-        title={shell.activeRoute.label}
-        summary={shell.activeRoute.description}
-        detail={shell.activeRoute.notice}
-      />
-    )
-  }
-
   if (shell.activeModuleId && shell.activeModuleStatus?.state === 'loading') {
     return (
       <PlatformStatusSurface

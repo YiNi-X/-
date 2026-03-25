@@ -1,0 +1,68 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import { existsSync, readFileSync } from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+import { PRIMARY_SHELL_ROUTE_IDS, SHELL_ROUTE_ORDER } from '../src/platform/routeRegistry.ts'
+
+const testDir = path.dirname(fileURLToPath(import.meta.url))
+const webDir = path.resolve(testDir, '..')
+
+function readSource(relativePath) {
+  return readFileSync(path.join(webDir, relativePath), 'utf8')
+}
+
+function assertFile(relativePath) {
+  assert.ok(existsSync(path.join(webDir, relativePath)), `Expected file to exist: ${relativePath}`)
+}
+
+test('phase 7 shell keeps the locked route order and page files in place', () => {
+  assert.deepEqual(SHELL_ROUTE_ORDER, ['home', 'overview', 'forecast', 'repair', 'clustering', 'evaluation', 'forward-looking'])
+  assert.deepEqual(PRIMARY_SHELL_ROUTE_IDS, ['home', 'forecast', 'repair', 'clustering', 'evaluation', 'forward-looking'])
+
+  for (const relativePath of [
+    'src/App.tsx',
+    'src/platform/PlatformShell.tsx',
+    'src/platform/pages/HomePage.tsx',
+    'src/platform/pages/OverviewPage.tsx',
+    'src/platform/pages/ForecastPage.tsx',
+    'src/platform/pages/RepairPage.tsx',
+    'src/platform/pages/ClusteringPage.tsx',
+    'src/platform/pages/EvaluationPage.tsx',
+    'src/platform/pages/ForwardLookingPage.tsx',
+  ]) {
+    assertFile(relativePath)
+  }
+})
+
+test('App route switch mounts every phase 7 destination', () => {
+  const appSource = readSource('src/App.tsx')
+  for (const routeId of SHELL_ROUTE_ORDER) {
+    assert.match(appSource, new RegExp(`case '${routeId}'`), `Expected App.tsx to handle route ${routeId}`)
+  }
+})
+
+test('homepage preview cards cover every module entry and keep click as the primary action', () => {
+  const homeSource = readSource('src/platform/pages/HomePage.tsx')
+  for (const routeId of ['overview', 'forecast', 'repair', 'clustering', 'evaluation', 'forward-looking']) {
+    assert.match(homeSource, new RegExp(`routeId: '${routeId}'`), `Expected a homepage preview card for ${routeId}`)
+  }
+  assert.match(homeSource, /onClick=\{\(\) => onNavigate\(card\.routeId\)\}/)
+  assert.match(homeSource, /View Details|View Trajectory|Compare Results|See Status/)
+})
+
+test('baseline module pages keep deferred language local to the affected sections', () => {
+  const forecastSource = readSource('src/platform/pages/ForecastPage.tsx')
+  const clusteringSource = readSource('src/platform/pages/ClusteringPage.tsx')
+  const forwardSource = readSource('src/platform/pages/ForwardLookingPage.tsx')
+
+  assert.match(forecastSource, /Not available in this version/)
+  assert.match(clusteringSource, /Later update|Not available in this version/)
+  assert.match(forwardSource, /later update/i)
+})
+
+test('package smoke script includes the new platform shell coverage', () => {
+  const packageJson = JSON.parse(readSource('package.json'))
+  assert.match(packageJson.scripts.smoke, /platform-shell-smoke\.test\.mjs/)
+})

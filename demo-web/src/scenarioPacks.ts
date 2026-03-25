@@ -1,3 +1,6 @@
+// Legacy scene packs retained only for the homepage command-center scene.
+// Phase 7 module pages and later module work should use Phase 6 bundles instead of these placeholders.
+
 import type { HorizonKey, ModelName } from './sharedContracts'
 
 export type MapTagDefinition = {
@@ -71,6 +74,7 @@ export const feedViews: FeedView[] = [
   },
 ]
 
+// Archived placeholder benchmark matrix; keep only for reference until Phase 8 replaces it with bundle-backed comparisons.
 export const modelBenchmarkMatrix: Record<HorizonKey, Record<ModelName, BenchmarkEntry>> = {
   '1h': {
     STGCN: { mae: 3.434, rmse: 4.667, r2: 0.85, summary: 'STGCN keeps the lowest overall error in the 1h forecast window.' },
