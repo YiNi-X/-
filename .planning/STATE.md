@@ -1,23 +1,42 @@
-# Project State
+---
+gsd_state_version: 1.0
+milestone: v1.1
+milestone_name: milestone
+current_phase: 6
+current_phase_name: Data Completion and Lineage
+current_plan: 0
+status: Not started
+stopped_at: Phase 6 context gathered
+last_updated: "2026-03-25T09:42:14.360Z"
+last_activity: 2026-03-25
+progress:
+  total_phases: 12
+  completed_phases: 2
+  total_plans: 9
+  completed_plans: 6
+  percent: 0
+---
+
+﻿# Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-24)
+See: .planning/PROJECT.md (updated 2026-03-25)
 
 **Core value:** The website must clearly, credibly, and repeatably present our algorithms and model outputs using archived AIS data plus offline-computed results, while preserving a convincing quasi-realtime demo experience.
-**Current focus:** Milestone v1.1 initialized; ready to start Phase 6 showcase shell and data packaging work
+**Current focus:** Milestone v1.1 re-sequenced around a data-first workflow; ready to start Phase 6 data completion and lineage work
 
 ## Current Position
 
 **Current Phase:** 6
-**Current Phase Name:** Showcase Shell and Data Packaging
-**Total Phases:** 11
+**Current Phase Name:** Data Completion and Lineage
+**Total Phases:** 12
 **Current Plan:** 0
 **Total Plans in Phase:** 3
 **Status:** Not started
 **Progress:** 0%
-**Last Activity:** 2026-03-24
-**Last Activity Description:** Started milestone v1.1, defined showcase requirements, wrote research summary, and created roadmap for phases 6-11
+**Last Activity:** 2026-03-25
+**Last Activity Description:** Re-sequenced milestone v1.1 to complete missing data first, then define frontend contracts and shell, then build module UI
 
 ## Performance Metrics
 
@@ -47,9 +66,11 @@ See: .planning/PROJECT.md (updated 2026-03-24)
 | Init | Remove realtime AIS/backend pressure from current planning | The mission is website presentation of algorithms and models, not live data ingestion |
 | 2 | Add one shared runtime contract boundary for shipped dashboard and RouteEditor JSON payloads | Validation must happen before React derives demo state |
 | 3 | Keep `App.tsx` and `RouteEditor.tsx` as composition shells over focused feature hooks | This reduces regression risk without forcing a UI redesign |
-| 4->6 | Roll unfinished pipeline and verification concerns into the new showcase foundation phase | Data packaging and validation are now direct prerequisites for the expanded website |
+| 4->6 | Roll unfinished pipeline and verification concerns into the new data-completion phase | Artifact completion and validation are direct prerequisites for the expanded website |
 | 6 | Keep the existing frontend stack and solve scale with module boundaries plus lazy-loaded artifacts | The current framework is sufficient for an offline showcase if data organization improves |
-| 6 | Treat collaborative decision as a rule-driven evidence layer over offline outputs | `代码依据` does not currently provide a separate decision optimizer strong enough for direct productization |
+| 6 | Use data completion and lineage decisions before frontend contract design | Stable authoritative artifacts reduce rework and prevent mismatched UI contracts |
+| 6 | Treat `compressed_segments(60,90,0.03).pkl` as the authoritative corridor-extraction input, not the only clustering provenance layer | It can regenerate website corridor outputs, but raw and segmented layers are still needed for full clustering storytelling |
+| 12 | Treat collaborative decision as a rule-driven evidence layer over offline outputs and defer it until the supporting data story is stable | `代码依据` does not currently provide a separate decision optimizer strong enough for direct productization |
 
 ## Blockers
 
@@ -57,6 +78,6 @@ See: .planning/PROJECT.md (updated 2026-03-24)
 
 ## Session
 
-**Last Date:** 2026-03-24
-**Stopped At:** Milestone v1.1 initialized; next recommended action is `$gsd-discuss-phase 6` or `$gsd-plan-phase 6`
-**Resume File:** .planning/ROADMAP.md
+**Last Date:** 2026-03-25T09:42:14.358Z
+**Stopped At:** Phase 6 context gathered
+**Resume File:** .planning/phases/06-data-completion-and-lineage/06-CONTEXT.md
