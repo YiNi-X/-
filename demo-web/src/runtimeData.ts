@@ -1,17 +1,36 @@
 import { ZodError } from 'zod'
 import type { DatasetCatalog } from './datasetCatalog'
-import type { AisPlaybackData, FlowForecastData, GeometryConfig, MainCorridorTracksFile } from './sharedContracts'
+import type {
+  AisPlaybackData,
+  FlowForecastData,
+  GeometryConfig,
+  MainCorridorTracksFile,
+  ModuleArtifactIndex,
+  ModuleBundleMetadata,
+  ModuleManifest,
+} from './sharedContracts'
 import {
   parseAisPlaybackData,
   parseDatasetCatalog,
   parseFlowForecastData,
   parseGeometryConfig,
   parseMainCorridorTracksFile,
-} from './runtimeSchemas'
+  parseModuleArtifactIndex,
+  parseModuleBundleMetadata,
+  parseModuleManifest,
+} from './runtimeSchemas.ts'
 
 type RuntimeParser<T> = (value: unknown) => T
 
-export type RuntimeResourceKind = 'datasetCatalog' | 'sharedGeometry' | 'aisPlayback' | 'flowForecast' | 'mainCorridorTracks'
+export type RuntimeResourceKind =
+  | 'datasetCatalog'
+  | 'sharedGeometry'
+  | 'aisPlayback'
+  | 'flowForecast'
+  | 'mainCorridorTracks'
+  | 'moduleArtifactIndex'
+  | 'moduleManifest'
+  | 'moduleBundle'
 export type RuntimeLoadFailureReason = 'network' | 'http' | 'json' | 'contract'
 
 export type RuntimeLoadSuccess<T> = {
@@ -44,6 +63,7 @@ type RuntimeLoadConfig<T> = {
 
 const FALLBACK_BASE_URL = 'http://localhost/'
 const DEFAULT_DATASET_CATALOG_PATH = 'data/dataset-catalog.json'
+const DEFAULT_MODULE_ARTIFACT_INDEX_PATH = 'data/modules/artifact-index.json'
 
 export function normalizeRuntimeResourcePath(resource: string) {
   return resource.trim().replace(/^\/+/, '')
@@ -149,6 +169,36 @@ export function loadDatasetCatalogResource(baseHref?: string) {
     label: 'Dataset catalog',
     resource: DEFAULT_DATASET_CATALOG_PATH,
     parser: parseDatasetCatalog,
+    baseHref,
+  })
+}
+
+export function loadModuleArtifactIndexResource(baseHref?: string) {
+  return loadValidatedRuntimeJson<ModuleArtifactIndex>({
+    kind: 'moduleArtifactIndex',
+    label: 'Module artifact index',
+    resource: DEFAULT_MODULE_ARTIFACT_INDEX_PATH,
+    parser: parseModuleArtifactIndex,
+    baseHref,
+  })
+}
+
+export function loadModuleManifestResource(resource: string, baseHref?: string) {
+  return loadValidatedRuntimeJson<ModuleManifest>({
+    kind: 'moduleManifest',
+    label: 'Module manifest',
+    resource,
+    parser: parseModuleManifest,
+    baseHref,
+  })
+}
+
+export function loadModuleBundleMetadataResource(resource: string, baseHref?: string) {
+  return loadValidatedRuntimeJson<ModuleBundleMetadata>({
+    kind: 'moduleBundle',
+    label: 'Module bundle',
+    resource,
+    parser: parseModuleBundleMetadata,
     baseHref,
   })
 }

@@ -1,6 +1,14 @@
 import { z } from 'zod'
 import type { DatasetCatalog } from './datasetCatalog'
-import type { AisPlaybackData, FlowForecastData, GeometryConfig, MainCorridorTracksFile } from './sharedContracts'
+import type {
+  AisPlaybackData,
+  FlowForecastData,
+  GeometryConfig,
+  MainCorridorTracksFile,
+  ModuleArtifactIndex,
+  ModuleBundleMetadata,
+  ModuleManifest,
+} from './sharedContracts'
 
 const LOCAL_ISO_DATETIME_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/
 const DATASET_ID_PATTERN = /^[A-Za-z0-9_-]+$/
@@ -22,6 +30,9 @@ const runtimePathSchema = z.string().trim().transform(normalizeRuntimePath).pipe
 const datasetIdSchema = z.string().trim().regex(DATASET_ID_PATTERN, 'Dataset ids may only contain letters, numbers, "_" or "-"')
 const alertLevelSchema = z.enum(['high', 'medium', 'watch'])
 const horizonKeySchema = z.enum(['1h', '2h', '3h'])
+const moduleIdSchema = z.enum(['overview', 'forecast', 'repair', 'clustering', 'evaluation'])
+const moduleSourceStageSchema = z.enum(['raw', 'cleaned', 'segmented', 'compressed', 'exported', 'exported-review'])
+const moduleArtifactStatusSchema = z.enum(['ready', 'review-first', 'partial', 'deferred'])
 
 const geoPointSchema = z
   .object({
@@ -362,6 +373,96 @@ export const mainCorridorTracksFileSchema: z.ZodType<MainCorridorTracksFile> = z
   .refine((value) => value.corridors.length === value.corridorCount, 'corridorCount must match the number of shipped corridors')
   .refine((value) => value.tracks.length === value.trackCount, 'trackCount must match the number of shipped tracks')
 
+const moduleTimeRangeSchema = z
+  .object({
+    start: nonEmptyStringSchema,
+    end: nonEmptyStringSchema,
+  })
+  .strict()
+
+const moduleLineageRecordSchema = z
+  .object({
+    artifactId: nonEmptyStringSchema,
+    module: moduleIdSchema,
+    sourceStage: moduleSourceStageSchema,
+    derivedFrom: z.array(nonEmptyStringSchema),
+    scenarioId: nonEmptyStringSchema,
+    timeRange: moduleTimeRangeSchema,
+    authoritativeFor: z.array(nonEmptyStringSchema),
+  })
+  .strict()
+
+const moduleDeferredItemSchema = z
+  .object({
+    artifactId: nonEmptyStringSchema,
+    reason: nonEmptyStringSchema,
+    dependsOn: z.array(nonEmptyStringSchema).default([]),
+  })
+  .strict()
+
+const moduleManifestArtifactSchema = moduleLineageRecordSchema
+  .extend({
+    path: runtimePathSchema,
+    status: moduleArtifactStatusSchema,
+    description: nonEmptyStringSchema,
+  })
+  .strict()
+
+export const moduleArtifactIndexSchema = z
+  .object({
+    schemaVersion: z.number().int().positive(),
+    generatedAt: nonEmptyStringSchema,
+    generatedBy: nonEmptyStringSchema,
+    modules: z
+      .array(
+        z
+          .object({
+            module: moduleIdSchema,
+            status: moduleArtifactStatusSchema,
+            manifestPath: runtimePathSchema,
+            bundlePath: runtimePathSchema,
+            scenarioId: nonEmptyStringSchema,
+            timeRange: moduleTimeRangeSchema,
+            authoritativeFor: z.array(nonEmptyStringSchema),
+          })
+          .strict(),
+      )
+      .min(1),
+  })
+  .strict()
+
+export const moduleManifestSchema = z
+  .object({
+    artifactId: nonEmptyStringSchema,
+    module: moduleIdSchema,
+    sourceStage: moduleSourceStageSchema,
+    derivedFrom: z.array(nonEmptyStringSchema),
+    scenarioId: nonEmptyStringSchema,
+    timeRange: moduleTimeRangeSchema,
+    authoritativeFor: z.array(nonEmptyStringSchema),
+    generatedAt: nonEmptyStringSchema,
+    bundlePath: runtimePathSchema,
+    artifacts: z.array(moduleManifestArtifactSchema).min(1),
+    deferred: z.array(moduleDeferredItemSchema).default([]),
+    reviewFiles: z.array(nonEmptyStringSchema).default([]),
+    sources: z.record(z.string(), nonEmptyStringSchema).default({}),
+  })
+  .strict()
+
+export const moduleBundleMetadataSchema = z
+  .object({
+    artifactId: nonEmptyStringSchema,
+    module: moduleIdSchema,
+    generatedAt: nonEmptyStringSchema,
+    scenarioId: nonEmptyStringSchema,
+    timeRange: moduleTimeRangeSchema,
+    entryFiles: z
+      .record(z.string(), runtimePathSchema)
+      .refine((value) => Object.keys(value).length > 0, 'entryFiles must include at least one shipped file'),
+    deferred: z.array(nonEmptyStringSchema).optional(),
+  })
+  .passthrough()
+
 export function parseDatasetCatalog(value: unknown) {
   return datasetCatalogSchema.parse(value)
 }
@@ -380,4 +481,16 @@ export function parseFlowForecastData(value: unknown) {
 
 export function parseMainCorridorTracksFile(value: unknown) {
   return mainCorridorTracksFileSchema.parse(value)
+}
+
+export function parseModuleArtifactIndex(value: unknown): ModuleArtifactIndex {
+  return moduleArtifactIndexSchema.parse(value)
+}
+
+export function parseModuleManifest(value: unknown): ModuleManifest {
+  return moduleManifestSchema.parse(value)
+}
+
+export function parseModuleBundleMetadata(value: unknown): ModuleBundleMetadata {
+  return moduleBundleMetadataSchema.parse(value)
 }

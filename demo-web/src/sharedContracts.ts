@@ -254,6 +254,76 @@ export type TimelineMoment = {
   date: string
 }
 
+export type ModuleId = 'overview' | 'forecast' | 'repair' | 'clustering' | 'evaluation'
+export type ShellRouteId = 'home' | 'overview' | 'forecast' | 'repair' | 'clustering' | 'evaluation' | 'forward-looking'
+export type ModuleSourceStage = 'raw' | 'cleaned' | 'segmented' | 'compressed' | 'exported' | 'exported-review'
+export type ModuleArtifactStatus = 'ready' | 'review-first' | 'partial' | 'deferred'
+
+export type ModulePackageTimeRange = {
+  start: string
+  end: string
+}
+
+export type ModuleDeferredItem = {
+  artifactId: string
+  reason: string
+  dependsOn: string[]
+}
+
+export type ModuleLineageRecord = {
+  artifactId: string
+  module: ModuleId
+  sourceStage: ModuleSourceStage
+  derivedFrom: string[]
+  scenarioId: string
+  timeRange: ModulePackageTimeRange
+  authoritativeFor: string[]
+}
+
+export type ModuleManifestArtifact = ModuleLineageRecord & {
+  path: string
+  status: ModuleArtifactStatus
+  description: string
+}
+
+export type ModuleManifest = ModuleLineageRecord & {
+  generatedAt: string
+  bundlePath: string
+  artifacts: ModuleManifestArtifact[]
+  deferred: ModuleDeferredItem[]
+  reviewFiles?: string[]
+  sources: Record<string, string>
+}
+
+export type ModuleArtifactIndexEntry = {
+  module: ModuleId
+  status: ModuleArtifactStatus
+  manifestPath: string
+  bundlePath: string
+  scenarioId: string
+  timeRange: ModulePackageTimeRange
+  authoritativeFor: string[]
+}
+
+export type ModuleArtifactIndex = {
+  schemaVersion: number
+  generatedAt: string
+  generatedBy: string
+  modules: ModuleArtifactIndexEntry[]
+}
+
+export type ModuleBundleEntryFiles = Record<string, string>
+
+export type ModuleBundleMetadata = {
+  artifactId: string
+  module: ModuleId
+  generatedAt: string
+  scenarioId: string
+  timeRange: ModulePackageTimeRange
+  entryFiles: ModuleBundleEntryFiles
+  deferred?: string[]
+  [key: string]: unknown
+}
 export async function loadPublicJson<T>(resource: string): Promise<T> {
   const response = await fetch(resource)
   if (!response.ok) {
@@ -261,3 +331,4 @@ export async function loadPublicJson<T>(resource: string): Promise<T> {
   }
   return response.json() as Promise<T>
 }
+
