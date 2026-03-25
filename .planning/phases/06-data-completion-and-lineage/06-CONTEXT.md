@@ -1,4 +1,4 @@
-﻿# Phase 6: Data Completion and Lineage - Context
+# Phase 6: Data Completion and Lineage - Context
 
 **Gathered:** 2026-03-25
 **Status:** Ready for planning
