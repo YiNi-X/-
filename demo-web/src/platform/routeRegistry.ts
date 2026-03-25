@@ -90,6 +90,10 @@ export const PRIMARY_SHELL_ROUTE_IDS: ShellRouteId[] = [
   'forward-looking',
 ]
 
+export function isModuleRouteId(routeId: ShellRouteId): routeId is ModuleId {
+  return routeId !== 'home' && routeId !== 'forward-looking'
+}
+
 export function getModuleRouteDescriptor(moduleId: ModuleId): ShellRouteDescriptor {
   const blueprint = moduleRouteBlueprints[moduleId]
   return {
