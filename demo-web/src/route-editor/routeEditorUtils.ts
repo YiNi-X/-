@@ -8,7 +8,15 @@ export type CursorState = { lon: number; lat: number; xPercent: number; yPercent
 export type LayerTransform = { scale: number; offsetX: number; offsetY: number; opacity: number; brightness: number }
 export type FixedLayerDisplay = { opacity: number; brightness: number }
 export type TransformLayerTarget = 'map' | 'tracks'
-export type StagePanState = { target: TransformLayerTarget; startX: number; startY: number; originX: number; originY: number }
+export type StagePanState = {
+  target: TransformLayerTarget
+  startX: number
+  startY: number
+  originX: number
+  originY: number
+  stageWidth: number
+  stageHeight: number
+}
 export type GeoViewport = { width: number; height: number; offsetX: number; offsetY: number }
 export type BackgroundPreset = { id: string; label: string; src: string }
 

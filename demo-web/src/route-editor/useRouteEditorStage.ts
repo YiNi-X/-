@@ -2,6 +2,14 @@ import type { CSSProperties, ChangeEvent, PointerEvent as ReactPointerEvent, Whe
 import { useEffect, useRef, useState } from 'react'
 import type { StudyBounds } from '../sharedContracts'
 import {
+  buildCalibrationStyle,
+  CALIBRATION_LIMITS,
+  DEFAULT_MAP_LAYER_CALIBRATION,
+  DEFAULT_TRACK_LAYER_CALIBRATION,
+  persistMapCalibration,
+  readPersistedMapCalibration,
+} from '../mapCalibration'
+import {
   BACKGROUND_PRESETS,
   clamp,
   type CursorState,
@@ -28,8 +36,8 @@ export function useRouteEditorStage({ studyBounds, geoViewport }: UseRouteEditor
   const [mapPresetId, setMapPresetId] = useState(BACKGROUND_PRESETS[0].id)
   const [mapUrlInput, setMapUrlInput] = useState('')
   const [uploadedMapUrl, setUploadedMapUrl] = useState('')
-  const [mapTransform, setMapTransform] = useState<LayerTransform>({ scale: 1, offsetX: 0, offsetY: 0, opacity: 0.92, brightness: 0.92 })
-  const [trackTransform, setTrackTransform] = useState<LayerTransform>({ scale: 1, offsetX: 0, offsetY: 0, opacity: 1, brightness: 1 })
+  const [mapTransform, setMapTransform] = useState<LayerTransform>(() => readPersistedMapCalibration().map)
+  const [trackTransform, setTrackTransform] = useState<LayerTransform>(() => readPersistedMapCalibration().tracks)
   const [activeTransformLayer, setActiveTransformLayer] = useState<TransformLayerTarget>('map')
   const [stagePan, setStagePan] = useState<StagePanState | null>(null)
 
@@ -38,16 +46,8 @@ export function useRouteEditorStage({ studyBounds, geoViewport }: UseRouteEditor
   const mapSource = uploadedMapUrl || mapUrlInput.trim() || (mapPreset.src ? resolvePageAsset(mapPreset.src) : '')
 
   const canvasStyle = { opacity: canvasDisplay.opacity, filter: `brightness(${canvasDisplay.brightness}) saturate(0.92)` } satisfies CSSProperties
-  const mapLayerStyle = {
-    transform: `translate(${mapTransform.offsetX}px, ${mapTransform.offsetY}px) scale(${mapTransform.scale})`,
-    opacity: mapTransform.opacity,
-    filter: `brightness(${mapTransform.brightness}) saturate(0.92)`,
-  } satisfies CSSProperties
-  const trackLayerStyle = {
-    transform: `translate(${trackTransform.offsetX}px, ${trackTransform.offsetY}px) scale(${trackTransform.scale})`,
-    opacity: trackTransform.opacity,
-    filter: `brightness(${trackTransform.brightness})`,
-  } satisfies CSSProperties
+  const mapLayerStyle = buildCalibrationStyle(mapTransform, 0.92)
+  const trackLayerStyle = buildCalibrationStyle(trackTransform)
 
   useEffect(
     () => () => {
@@ -58,15 +58,29 @@ export function useRouteEditorStage({ studyBounds, geoViewport }: UseRouteEditor
   )
 
   useEffect(() => {
+    persistMapCalibration({ map: mapTransform, tracks: trackTransform })
+  }, [mapTransform, trackTransform])
+
+  useEffect(() => {
     if (!stagePan) return
     const onMove = (event: PointerEvent) => {
       const deltaX = event.clientX - stagePan.startX
       const deltaY = event.clientY - stagePan.startY
+      const deltaXPercent = (deltaX / Math.max(stagePan.stageWidth, 1)) * 100
+      const deltaYPercent = (deltaY / Math.max(stagePan.stageHeight, 1)) * 100
       if (stagePan.target === 'map') {
-        setMapTransform((current) => ({ ...current, offsetX: stagePan.originX + deltaX, offsetY: stagePan.originY + deltaY }))
+        setMapTransform((current) => ({
+          ...current,
+          offsetX: clamp(stagePan.originX + deltaXPercent, CALIBRATION_LIMITS.offset.min, CALIBRATION_LIMITS.offset.max),
+          offsetY: clamp(stagePan.originY + deltaYPercent, CALIBRATION_LIMITS.offset.min, CALIBRATION_LIMITS.offset.max),
+        }))
         return
       }
-      setTrackTransform((current) => ({ ...current, offsetX: stagePan.originX + deltaX, offsetY: stagePan.originY + deltaY }))
+      setTrackTransform((current) => ({
+        ...current,
+        offsetX: clamp(stagePan.originX + deltaXPercent, CALIBRATION_LIMITS.offset.min, CALIBRATION_LIMITS.offset.max),
+        offsetY: clamp(stagePan.originY + deltaYPercent, CALIBRATION_LIMITS.offset.min, CALIBRATION_LIMITS.offset.max),
+      }))
     }
     const onUp = () => setStagePan(null)
     window.addEventListener('pointermove', onMove)
@@ -95,22 +109,26 @@ export function useRouteEditorStage({ studyBounds, geoViewport }: UseRouteEditor
   }
 
   function resetMapView() {
-    setMapTransform({ scale: 1, offsetX: 0, offsetY: 0, opacity: 0.92, brightness: 0.92 })
+    setMapTransform({ ...DEFAULT_MAP_LAYER_CALIBRATION })
   }
 
   function resetTrackView() {
-    setTrackTransform({ scale: 1, offsetX: 0, offsetY: 0, opacity: 1, brightness: 1 })
+    setTrackTransform({ ...DEFAULT_TRACK_LAYER_CALIBRATION })
   }
 
   function handleStagePointerDown(event: ReactPointerEvent<HTMLDivElement>) {
     const target = event.target as HTMLElement
     if (target.closest('.editor-stage-hud')) return
+    const rect = stageRef.current?.getBoundingClientRect()
+    if (!rect) return
     setStagePan({
       target: activeTransformLayer,
       startX: event.clientX,
       startY: event.clientY,
       originX: activeTransformLayer === 'map' ? mapTransform.offsetX : trackTransform.offsetX,
       originY: activeTransformLayer === 'map' ? mapTransform.offsetY : trackTransform.offsetY,
+      stageWidth: rect.width,
+      stageHeight: rect.height,
     })
   }
 
@@ -119,7 +137,10 @@ export function useRouteEditorStage({ studyBounds, geoViewport }: UseRouteEditor
     if (target.closest('.editor-stage-hud')) return
     event.preventDefault()
     const factor = event.deltaY < 0 ? 1.08 : 0.92
-    updateLayerTransform(activeTransformLayer, (current) => ({ ...current, scale: clamp(Number((current.scale * factor).toFixed(3)), 0.25, 6) }))
+    updateLayerTransform(activeTransformLayer, (current) => ({
+      ...current,
+      scale: clamp(Number((current.scale * factor).toFixed(3)), CALIBRATION_LIMITS.scale.min, CALIBRATION_LIMITS.scale.max),
+    }))
   }
 
   function handleCanvasFileChange(event: ChangeEvent<HTMLInputElement>) {

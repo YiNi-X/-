@@ -1,5 +1,6 @@
 ﻿import { RouteEditorStatusScreen } from './route-editor/RouteEditorStatusScreen'
 import { BACKGROUND_PRESETS, formatCompactTime, MAP_VIEWBOX } from './route-editor/routeEditorUtils'
+import { CALIBRATION_LIMITS } from './mapCalibration'
 import { useRouteEditorStage } from './route-editor/useRouteEditorStage'
 import { useRouteEditorWorkspace } from './route-editor/useRouteEditorWorkspace'
 
@@ -85,6 +86,7 @@ export function RouteEditor() {
           <p className="editor-copy">
             RouteEditor 现在直接读取 <code>extract_main_corridors_from_clustered_ais.py</code> 导出的清洗后真实船舶轨迹。
             当前舞台会保持等比例 geo 视口，并直接渲染原始清洗后的 <code>lat/lon</code> 轨迹，不再经过代表线重映射，也不会拉伸成百分比几何。
+            底图与轨迹的缩放、偏移、透明度会同步保存到浏览器，并被首页主图直接复用。
           </p>
         </div>
 
@@ -260,13 +262,13 @@ export function RouteEditor() {
             <label className="ghost-button upload-button"><span>上传底图</span><input type="file" accept="image/*" onChange={handleMapFileChange} /></label>
           </div>
           <div className="config-grid">
-            <label className="config-field"><span>缩放</span><input type="range" min="0.25" max="6" step="0.01" value={mapTransform.scale} onChange={(event) => setMapTransform((current) => ({ ...current, scale: Number(event.target.value) }))} /></label>
-            <label className="config-field"><span>X 偏移</span><input type="range" min="-1200" max="1200" step="1" value={mapTransform.offsetX} onChange={(event) => setMapTransform((current) => ({ ...current, offsetX: Number(event.target.value) }))} /></label>
-            <label className="config-field"><span>Y 偏移</span><input type="range" min="-900" max="900" step="1" value={mapTransform.offsetY} onChange={(event) => setMapTransform((current) => ({ ...current, offsetY: Number(event.target.value) }))} /></label>
-            <label className="config-field"><span>透明度</span><input type="range" min="0" max="1" step="0.01" value={mapTransform.opacity} onChange={(event) => setMapTransform((current) => ({ ...current, opacity: Number(event.target.value) }))} /></label>
-            <label className="config-field"><span>亮度</span><input type="range" min="0.4" max="1.6" step="0.02" value={mapTransform.brightness} onChange={(event) => setMapTransform((current) => ({ ...current, brightness: Number(event.target.value) }))} /></label>
+            <label className="config-field"><span>缩放</span><input type="range" min={CALIBRATION_LIMITS.scale.min} max={CALIBRATION_LIMITS.scale.max} step={CALIBRATION_LIMITS.scale.step} value={mapTransform.scale} onChange={(event) => setMapTransform((current) => ({ ...current, scale: Number(event.target.value) }))} /></label>
+            <label className="config-field"><span>X 偏移 (%)</span><input type="range" min={CALIBRATION_LIMITS.offset.min} max={CALIBRATION_LIMITS.offset.max} step={CALIBRATION_LIMITS.offset.step} value={mapTransform.offsetX} onChange={(event) => setMapTransform((current) => ({ ...current, offsetX: Number(event.target.value) }))} /></label>
+            <label className="config-field"><span>Y 偏移 (%)</span><input type="range" min={CALIBRATION_LIMITS.offset.min} max={CALIBRATION_LIMITS.offset.max} step={CALIBRATION_LIMITS.offset.step} value={mapTransform.offsetY} onChange={(event) => setMapTransform((current) => ({ ...current, offsetY: Number(event.target.value) }))} /></label>
+            <label className="config-field"><span>透明度</span><input type="range" min={CALIBRATION_LIMITS.opacity.min} max={CALIBRATION_LIMITS.opacity.max} step={CALIBRATION_LIMITS.opacity.step} value={mapTransform.opacity} onChange={(event) => setMapTransform((current) => ({ ...current, opacity: Number(event.target.value) }))} /></label>
+            <label className="config-field"><span>亮度</span><input type="range" min={CALIBRATION_LIMITS.brightness.min} max={CALIBRATION_LIMITS.brightness.max} step={CALIBRATION_LIMITS.brightness.step} value={mapTransform.brightness} onChange={(event) => setMapTransform((current) => ({ ...current, brightness: Number(event.target.value) }))} /></label>
           </div>
-          <p className="traffic-note">鼠标滚轮会缩放当前选中图层，直接在舞台上拖拽即可平移当前激活图层。</p>
+          <p className="traffic-note">鼠标滚轮会缩放当前选中图层，直接在舞台上拖拽即可平移当前激活图层。这组底图校准会同步作用到首页主图。</p>
         </div>
 
         <div className="editor-panel">
@@ -276,13 +278,13 @@ export function RouteEditor() {
             <button type="button" className="ghost-button" onClick={resetTrackView}>重置轨迹</button>
           </div>
           <div className="config-grid">
-            <label className="config-field"><span>缩放</span><input type="range" min="0.25" max="6" step="0.01" value={trackTransform.scale} onChange={(event) => setTrackTransform((current) => ({ ...current, scale: Number(event.target.value) }))} /></label>
-            <label className="config-field"><span>X 偏移</span><input type="range" min="-1200" max="1200" step="1" value={trackTransform.offsetX} onChange={(event) => setTrackTransform((current) => ({ ...current, offsetX: Number(event.target.value) }))} /></label>
-            <label className="config-field"><span>Y 偏移</span><input type="range" min="-900" max="900" step="1" value={trackTransform.offsetY} onChange={(event) => setTrackTransform((current) => ({ ...current, offsetY: Number(event.target.value) }))} /></label>
-            <label className="config-field"><span>透明度</span><input type="range" min="0" max="1" step="0.01" value={trackTransform.opacity} onChange={(event) => setTrackTransform((current) => ({ ...current, opacity: Number(event.target.value) }))} /></label>
-            <label className="config-field"><span>亮度</span><input type="range" min="0.4" max="1.6" step="0.02" value={trackTransform.brightness} onChange={(event) => setTrackTransform((current) => ({ ...current, brightness: Number(event.target.value) }))} /></label>
+            <label className="config-field"><span>缩放</span><input type="range" min={CALIBRATION_LIMITS.scale.min} max={CALIBRATION_LIMITS.scale.max} step={CALIBRATION_LIMITS.scale.step} value={trackTransform.scale} onChange={(event) => setTrackTransform((current) => ({ ...current, scale: Number(event.target.value) }))} /></label>
+            <label className="config-field"><span>X 偏移 (%)</span><input type="range" min={CALIBRATION_LIMITS.offset.min} max={CALIBRATION_LIMITS.offset.max} step={CALIBRATION_LIMITS.offset.step} value={trackTransform.offsetX} onChange={(event) => setTrackTransform((current) => ({ ...current, offsetX: Number(event.target.value) }))} /></label>
+            <label className="config-field"><span>Y 偏移 (%)</span><input type="range" min={CALIBRATION_LIMITS.offset.min} max={CALIBRATION_LIMITS.offset.max} step={CALIBRATION_LIMITS.offset.step} value={trackTransform.offsetY} onChange={(event) => setTrackTransform((current) => ({ ...current, offsetY: Number(event.target.value) }))} /></label>
+            <label className="config-field"><span>透明度</span><input type="range" min={CALIBRATION_LIMITS.opacity.min} max={CALIBRATION_LIMITS.opacity.max} step={CALIBRATION_LIMITS.opacity.step} value={trackTransform.opacity} onChange={(event) => setTrackTransform((current) => ({ ...current, opacity: Number(event.target.value) }))} /></label>
+            <label className="config-field"><span>亮度</span><input type="range" min={CALIBRATION_LIMITS.brightness.min} max={CALIBRATION_LIMITS.brightness.max} step={CALIBRATION_LIMITS.brightness.step} value={trackTransform.brightness} onChange={(event) => setTrackTransform((current) => ({ ...current, brightness: Number(event.target.value) }))} /></label>
           </div>
-          <p className="traffic-note">舞台会展示全部清洗后的真实轨迹。被选中的 corridor 会以组的形式高亮，当前轨迹则会额外显示自己的高亮和可编辑点位句柄。</p>
+          <p className="traffic-note">舞台会展示全部清洗后的真实轨迹。被选中的 corridor 会以组的形式高亮，当前轨迹则会额外显示自己的高亮和可编辑点位句柄；这组轨迹校准也会同步到首页。</p>
         </div>
 
         <div className="editor-panel">

@@ -13,6 +13,13 @@ export type HeaderBlock = {
   note: string
 }
 
+export type GeoViewport = {
+  width: number
+  height: number
+  offsetX: number
+  offsetY: number
+}
+
 export const STUDY_BOUNDS = {
   minLon: 113.558356434,
   maxLon: 113.95835643400001,
@@ -20,6 +27,7 @@ export const STUDY_BOUNDS = {
   maxLat: 22.635739805,
 }
 
+const MAP_VIEWBOX = { width: 1920, height: 1080 }
 export const CHART_WIDTH = 560
 export const CHART_HEIGHT = 248
 export const CHART_PAD_X = 22
@@ -45,14 +53,44 @@ export const TITLE_TAGS = ['轨迹修复', '主航路识别', '流量预测', '�
 export const EMPTY_PLAYBACK_FRAMES: PlaybackFrame[] = []
 export const EMPTY_FORECAST_TIMELINE: FlowForecastData['timeline'] = []
 
-export function geoToPercent(point: GeoPoint, bounds: StudyBounds = STUDY_BOUNDS) {
-  const x = ((point.lon - bounds.minLon) / (bounds.maxLon - bounds.minLon)) * 100
-  const y = ((bounds.maxLat - point.lat) / (bounds.maxLat - bounds.minLat)) * 100
+const METERS_PER_DEGREE = 111_000
+
+export function buildGeoViewport(bounds: StudyBounds = STUDY_BOUNDS): GeoViewport {
+  const meanLat = (bounds.minLat + bounds.maxLat) / 2
+  const geoWidth = Math.max((bounds.maxLon - bounds.minLon) * Math.cos((meanLat * Math.PI) / 180) * METERS_PER_DEGREE, 1)
+  const geoHeight = Math.max((bounds.maxLat - bounds.minLat) * METERS_PER_DEGREE, 1)
+  const geoAspect = geoWidth / geoHeight
+  const stageAspect = MAP_VIEWBOX.width / MAP_VIEWBOX.height
+
+  if (geoAspect >= stageAspect) {
+    const height = MAP_VIEWBOX.width / geoAspect
+    return {
+      width: MAP_VIEWBOX.width,
+      height,
+      offsetX: 0,
+      offsetY: (MAP_VIEWBOX.height - height) / 2,
+    }
+  }
+
+  const width = MAP_VIEWBOX.height * geoAspect
+  return {
+    width,
+    height: MAP_VIEWBOX.height,
+    offsetX: (MAP_VIEWBOX.width - width) / 2,
+    offsetY: 0,
+  }
+}
+
+export function geoToPercent(point: GeoPoint, bounds: StudyBounds = STUDY_BOUNDS, viewport: GeoViewport = buildGeoViewport(bounds)) {
+  const xRatio = (point.lon - bounds.minLon) / (bounds.maxLon - bounds.minLon)
+  const yRatio = (bounds.maxLat - point.lat) / (bounds.maxLat - bounds.minLat)
+  const x = ((viewport.offsetX + xRatio * viewport.width) / MAP_VIEWBOX.width) * 100
+  const y = ((viewport.offsetY + yRatio * viewport.height) / MAP_VIEWBOX.height) * 100
   return { x: `${x.toFixed(1)}%`, y: `${y.toFixed(1)}%` }
 }
 
-export function geoToNumericPercent(point: GeoPoint, bounds: StudyBounds = STUDY_BOUNDS) {
-  const value = geoToPercent(point, bounds)
+export function geoToNumericPercent(point: GeoPoint, bounds: StudyBounds = STUDY_BOUNDS, viewport: GeoViewport = buildGeoViewport(bounds)) {
+  const value = geoToPercent(point, bounds, viewport)
   return { x: Number.parseFloat(value.x), y: Number.parseFloat(value.y) }
 }
 
@@ -94,8 +132,8 @@ function createSmoothPercentPath(points: Array<{ x: number; y: number }>) {
   }, '')
 }
 
-export function createSmoothGeoPath(points: GeoPoint[], bounds: StudyBounds) {
-  return createSmoothPercentPath(points.map((point) => geoToNumericPercent(point, bounds)))
+export function createSmoothGeoPath(points: GeoPoint[], bounds: StudyBounds, viewport: GeoViewport = buildGeoViewport(bounds)) {
+  return createSmoothPercentPath(points.map((point) => geoToNumericPercent(point, bounds, viewport)))
 }
 
 export function createLinePath(values: number[], min: number, max: number) {

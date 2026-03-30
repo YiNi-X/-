@@ -50,6 +50,8 @@ test('homepage preview cards cover every module entry and keep click as the prim
   }
   assert.match(homeSource, /onClick=\{\(\) => onNavigate\(card\.routeId\)\}/)
   assert.match(homeSource, /查看详情|查看轨迹|对比结果|查看状态|打开分析/)
+  assert.match(homeSource, /轨迹 \/ 底图校准|RouteEditor/)
+  assert.match(homeSource, /href="\/route-editor\.html"/)
 })
 
 test('platform shell pages keep delivery-friendly language while preserving the current module structure', () => {

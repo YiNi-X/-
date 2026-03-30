@@ -2,6 +2,16 @@ import type { CSSProperties } from 'react'
 import { useEffect, useState } from 'react'
 import { DashboardStatusScreen } from '../../dashboard/DashboardStatusScreen'
 import {
+  buildCalibrationStyle,
+  CALIBRATION_LIMITS,
+  DEFAULT_MAP_LAYER_CALIBRATION,
+  DEFAULT_TRACK_LAYER_CALIBRATION,
+  hasCustomLayerCalibration,
+  persistMapCalibration,
+  readPersistedMapCalibration,
+  type MapLayerCalibration,
+} from '../../mapCalibration'
+import {
   DEFAULT_HOTSPOT_HIGH_THRESHOLD,
   geoToNumericPercent,
   geoToPercent,
@@ -58,6 +68,9 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
   const [evaluationMetrics, setEvaluationMetrics] = useState<EvaluationMetrics | null>(null)
   const [corridorDominance, setCorridorDominance] = useState<CorridorDominanceSummary | null>(null)
   const [previewRoute, setPreviewRoute] = useState<ShellRouteId | null>(null)
+  const [calibrationExpanded, setCalibrationExpanded] = useState(false)
+  const [mapCalibration, setMapCalibration] = useState<MapLayerCalibration>(() => readPersistedMapCalibration().map)
+  const [trackCalibration, setTrackCalibration] = useState<MapLayerCalibration>(() => readPersistedMapCalibration().tracks)
 
   const strategyEnabled = true
 
@@ -138,6 +151,10 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
     }, 3000)
     return () => window.clearInterval(timer)
   }, [autoplay, totalSceneCount])
+
+  useEffect(() => {
+    persistMapCalibration({ map: mapCalibration, tracks: trackCalibration })
+  }, [mapCalibration, trackCalibration])
 
   const repairLeader = evaluationMetrics?.repair?.aggregateByModel?.slice().sort((left, right) => left.rankByRmse - right.rankByRmse)[0]
   const forecastLeader = evaluationMetrics?.forecast?.rankings?.['1h']?.rmse?.[0]
@@ -240,8 +257,39 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
   ]
 
   const hoveredPreview = previewCards.find((card) => card.routeId === previewRoute) ?? null
-  const leftCards = previewCards.slice(0, 3)
+  const overviewCard = previewCards[0]
+  const leftCards = previewCards.slice(1, 3)
   const rightCards = previewCards.slice(3)
+  const mapLayerStyle = buildCalibrationStyle(mapCalibration, 0.92)
+  const geoLayerStyle = buildCalibrationStyle(trackCalibration)
+  const mapCalibrationActive = hasCustomLayerCalibration(mapCalibration, DEFAULT_MAP_LAYER_CALIBRATION)
+  const trackCalibrationActive = hasCustomLayerCalibration(trackCalibration, DEFAULT_TRACK_LAYER_CALIBRATION)
+  const calibrationStateLabel = mapCalibrationActive || trackCalibrationActive ? '已微调' : '默认'
+
+  function updateCalibrationLayer(
+    target: 'map' | 'tracks',
+    field: keyof MapLayerCalibration,
+    value: number,
+  ) {
+    if (target === 'map') {
+      setMapCalibration((current) => ({ ...current, [field]: value }))
+      return
+    }
+    setTrackCalibration((current) => ({ ...current, [field]: value }))
+  }
+
+  function resetCalibrationLayer(target: 'map' | 'tracks') {
+    if (target === 'map') {
+      setMapCalibration({ ...DEFAULT_MAP_LAYER_CALIBRATION })
+      return
+    }
+    setTrackCalibration({ ...DEFAULT_TRACK_LAYER_CALIBRATION })
+  }
+
+  function resetAllCalibration() {
+    setMapCalibration({ ...DEFAULT_MAP_LAYER_CALIBRATION })
+    setTrackCalibration({ ...DEFAULT_TRACK_LAYER_CALIBRATION })
+  }
 
   function handleApplyPlan() {
     if (!strategyEnabled || planApplied) return
@@ -280,46 +328,183 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
 
   return (
     <section className="console-layout home-console-layout">
-      <aside className="left-rail home-module-rail">
-        {leftCards.map((card) => (
-          <section
-            key={card.routeId}
-            className={previewRoute === card.routeId ? 'frame panel-block home-module-card active' : 'frame panel-block home-module-card'}
-            onMouseEnter={() => setPreviewRoute(card.routeId)}
-            onMouseLeave={() => setPreviewRoute(null)}
-          >
-            <div className="panel-title">
-              <div>
-                <p className="panel-kicker">{card.kicker}</p>
-                <h2>{card.title}</h2>
-              </div>
-              <span className="panel-code">{card.stateLabel}</span>
+      <aside className="left-rail home-module-rail home-left-rail">
+        <section
+          className={previewRoute === overviewCard.routeId ? 'frame panel-block home-module-card home-feature-card active' : 'frame panel-block home-module-card home-feature-card'}
+          onMouseEnter={() => setPreviewRoute(overviewCard.routeId)}
+          onMouseLeave={() => setPreviewRoute(null)}
+        >
+          <div className="panel-title">
+            <div>
+              <p className="panel-kicker">{overviewCard.kicker}</p>
+              <h2>{overviewCard.title}</h2>
             </div>
+            <span className="panel-code">{overviewCard.stateLabel}</span>
+          </div>
 
-            <p className="home-module-summary">{card.summary}</p>
+          <p className="home-module-summary">{overviewCard.summary}</p>
 
-            <div className="home-module-metrics">
-              <article>
-                <span>{card.primaryLabel}</span>
-                <strong>{card.primaryValue}</strong>
-              </article>
-              <article>
-                <span>{card.secondaryLabel}</span>
-                <strong>{card.secondaryValue}</strong>
-              </article>
-            </div>
+          <div className="home-module-metrics">
+            <article>
+              <span>{overviewCard.primaryLabel}</span>
+              <strong>{overviewCard.primaryValue}</strong>
+            </article>
+            <article>
+              <span>{overviewCard.secondaryLabel}</span>
+              <strong>{overviewCard.secondaryValue}</strong>
+            </article>
+          </div>
 
-            <button type="button" className="panel-action" onClick={() => onNavigate(card.routeId)}>
-              {card.actionLabel}
+          <div className="home-feature-actions">
+            <button type="button" className="panel-action" onClick={() => onNavigate(overviewCard.routeId)}>
+              {overviewCard.actionLabel}
             </button>
-          </section>
-        ))}
+            <button type="button" className="panel-action subtle" onClick={() => setCalibrationExpanded((current) => !current)}>
+              {calibrationExpanded ? '收起校准' : '打开校准'}
+            </button>
+          </div>
+        </section>
+
+        <div className="home-secondary-stack">
+          {leftCards.map((card) => (
+            <section
+              key={card.routeId}
+              className={previewRoute === card.routeId ? 'frame panel-block home-module-card compact active' : 'frame panel-block home-module-card compact'}
+              onMouseEnter={() => setPreviewRoute(card.routeId)}
+              onMouseLeave={() => setPreviewRoute(null)}
+            >
+              <div className="panel-title">
+                <div>
+                  <p className="panel-kicker">{card.kicker}</p>
+                  <h2>{card.title}</h2>
+                </div>
+                <span className="panel-code">{card.stateLabel}</span>
+              </div>
+
+              <p className="home-module-summary">{card.summary}</p>
+
+              <div className="home-module-metrics">
+                <article>
+                  <span>{card.primaryLabel}</span>
+                  <strong>{card.primaryValue}</strong>
+                </article>
+                <article>
+                  <span>{card.secondaryLabel}</span>
+                  <strong>{card.secondaryValue}</strong>
+                </article>
+              </div>
+
+              <button type="button" className="panel-action" onClick={() => onNavigate(card.routeId)}>
+                {card.actionLabel}
+              </button>
+            </section>
+          ))}
+        </div>
+
+        <section className="frame panel-block home-calibration-card">
+          <div className="panel-title">
+            <div>
+              <p className="panel-kicker">轨迹 / 底图校准</p>
+              <h2>直接调整首页主图叠图</h2>
+            </div>
+            <span className="panel-code">{calibrationStateLabel}</span>
+          </div>
+
+          <p className="home-module-summary">
+            如果轨迹和背景图没有贴齐，可以直接在这里调整底图层与轨迹层。参数会保存在当前浏览器，并被 RouteEditor 继续复用。
+          </p>
+
+          <div className="home-calibration-badges">
+            <span className={mapCalibrationActive ? 'home-calibration-badge active' : 'home-calibration-badge'}>底图 {mapCalibration.scale.toFixed(2)}x</span>
+            <span className={trackCalibrationActive ? 'home-calibration-badge active' : 'home-calibration-badge'}>轨迹 {trackCalibration.scale.toFixed(2)}x</span>
+          </div>
+
+          <div className="home-calibration-actions">
+            <button type="button" className="panel-action" onClick={() => setCalibrationExpanded((current) => !current)}>
+              {calibrationExpanded ? '收起校准面板' : '打开校准面板'}
+            </button>
+            <a className="panel-action subtle home-calibration-link" href="/route-editor.html" target="_blank" rel="noreferrer">
+              打开 RouteEditor
+            </a>
+          </div>
+
+          {calibrationExpanded ? (
+            <>
+              <div className="home-calibration-grid">
+                <label className="home-calibration-field">
+                  <span>底图缩放</span>
+                  <strong>{mapCalibration.scale.toFixed(2)}x</strong>
+                  <input type="range" min={CALIBRATION_LIMITS.scale.min} max={CALIBRATION_LIMITS.scale.max} step={CALIBRATION_LIMITS.scale.step} value={mapCalibration.scale} onChange={(event) => updateCalibrationLayer('map', 'scale', Number(event.target.value))} />
+                </label>
+                <label className="home-calibration-field">
+                  <span>底图透明度</span>
+                  <strong>{Math.round(mapCalibration.opacity * 100)}%</strong>
+                  <input type="range" min={CALIBRATION_LIMITS.opacity.min} max={CALIBRATION_LIMITS.opacity.max} step={CALIBRATION_LIMITS.opacity.step} value={mapCalibration.opacity} onChange={(event) => updateCalibrationLayer('map', 'opacity', Number(event.target.value))} />
+                </label>
+                <label className="home-calibration-field">
+                  <span>底图 X 偏移</span>
+                  <strong>{mapCalibration.offsetX.toFixed(1)}%</strong>
+                  <input type="range" min={CALIBRATION_LIMITS.offset.min} max={CALIBRATION_LIMITS.offset.max} step={CALIBRATION_LIMITS.offset.step} value={mapCalibration.offsetX} onChange={(event) => updateCalibrationLayer('map', 'offsetX', Number(event.target.value))} />
+                </label>
+                <label className="home-calibration-field">
+                  <span>底图 Y 偏移</span>
+                  <strong>{mapCalibration.offsetY.toFixed(1)}%</strong>
+                  <input type="range" min={CALIBRATION_LIMITS.offset.min} max={CALIBRATION_LIMITS.offset.max} step={CALIBRATION_LIMITS.offset.step} value={mapCalibration.offsetY} onChange={(event) => updateCalibrationLayer('map', 'offsetY', Number(event.target.value))} />
+                </label>
+                <label className="home-calibration-field">
+                  <span>底图亮度</span>
+                  <strong>{mapCalibration.brightness.toFixed(2)}</strong>
+                  <input type="range" min={CALIBRATION_LIMITS.brightness.min} max={CALIBRATION_LIMITS.brightness.max} step={CALIBRATION_LIMITS.brightness.step} value={mapCalibration.brightness} onChange={(event) => updateCalibrationLayer('map', 'brightness', Number(event.target.value))} />
+                </label>
+                <label className="home-calibration-field">
+                  <span>轨迹缩放</span>
+                  <strong>{trackCalibration.scale.toFixed(2)}x</strong>
+                  <input type="range" min={CALIBRATION_LIMITS.scale.min} max={CALIBRATION_LIMITS.scale.max} step={CALIBRATION_LIMITS.scale.step} value={trackCalibration.scale} onChange={(event) => updateCalibrationLayer('tracks', 'scale', Number(event.target.value))} />
+                </label>
+                <label className="home-calibration-field">
+                  <span>轨迹透明度</span>
+                  <strong>{Math.round(trackCalibration.opacity * 100)}%</strong>
+                  <input type="range" min={CALIBRATION_LIMITS.opacity.min} max={CALIBRATION_LIMITS.opacity.max} step={CALIBRATION_LIMITS.opacity.step} value={trackCalibration.opacity} onChange={(event) => updateCalibrationLayer('tracks', 'opacity', Number(event.target.value))} />
+                </label>
+                <label className="home-calibration-field">
+                  <span>轨迹 X 偏移</span>
+                  <strong>{trackCalibration.offsetX.toFixed(1)}%</strong>
+                  <input type="range" min={CALIBRATION_LIMITS.offset.min} max={CALIBRATION_LIMITS.offset.max} step={CALIBRATION_LIMITS.offset.step} value={trackCalibration.offsetX} onChange={(event) => updateCalibrationLayer('tracks', 'offsetX', Number(event.target.value))} />
+                </label>
+                <label className="home-calibration-field">
+                  <span>轨迹 Y 偏移</span>
+                  <strong>{trackCalibration.offsetY.toFixed(1)}%</strong>
+                  <input type="range" min={CALIBRATION_LIMITS.offset.min} max={CALIBRATION_LIMITS.offset.max} step={CALIBRATION_LIMITS.offset.step} value={trackCalibration.offsetY} onChange={(event) => updateCalibrationLayer('tracks', 'offsetY', Number(event.target.value))} />
+                </label>
+                <label className="home-calibration-field">
+                  <span>轨迹亮度</span>
+                  <strong>{trackCalibration.brightness.toFixed(2)}</strong>
+                  <input type="range" min={CALIBRATION_LIMITS.brightness.min} max={CALIBRATION_LIMITS.brightness.max} step={CALIBRATION_LIMITS.brightness.step} value={trackCalibration.brightness} onChange={(event) => updateCalibrationLayer('tracks', 'brightness', Number(event.target.value))} />
+                </label>
+              </div>
+
+              <div className="home-calibration-footer">
+                <button type="button" className="panel-action subtle" onClick={() => resetCalibrationLayer('map')}>
+                  重置底图
+                </button>
+                <button type="button" className="panel-action subtle" onClick={() => resetCalibrationLayer('tracks')}>
+                  重置轨迹
+                </button>
+                <button type="button" className="panel-action subtle" onClick={resetAllCalibration}>
+                  全部重置
+                </button>
+              </div>
+            </>
+          ) : null}
+        </section>
       </aside>
 
       <section className="map-column">
         <section className="frame map-frame">
-          <div className="map-stage">
-            <img src="/static-port-map.jpg" alt="静态港口底图" className="map-image" />
+          <div className="map-stage home-map-stage">
+            <div className="home-map-layer" style={mapLayerStyle}>
+              <img src="/static-port-map.jpg" alt="静态港口底图" className="map-image" />
+            </div>
             <div className="map-grid"></div>
 
             <div className="map-panel-title">
@@ -415,104 +600,106 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
               </div>
             </div>
 
-            <div className="vessel-route-layer" aria-hidden="true">
-              <svg className="vessel-route-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-                {displayedPlaybackTracks.map((track) => {
-                  const startPoint = track.points[0]
-                  const startPosition = geoToNumericPercent(startPoint, studyArea)
-                  const pathClassName = [
-                    'vessel-route-path',
-                    track.routeId === focusRoute ? 'focus' : '',
-                    activeTrackIds.has(track.mmsi) ? 'active' : '',
-                    track.isFocusArea ? 'focus-area' : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')
-                  const pointClassName = [
-                    'vessel-route-point',
-                    track.routeId === focusRoute ? 'focus' : '',
-                    activeTrackIds.has(track.mmsi) ? 'active' : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')
-                  const startClassName = [
-                    'vessel-route-start',
-                    track.routeId === focusRoute ? 'focus' : '',
-                    activeTrackIds.has(track.mmsi) ? 'active' : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')
+            <div className="home-geo-layer" style={geoLayerStyle}>
+              <div className="vessel-route-layer" aria-hidden="true">
+                <svg className="vessel-route-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  {displayedPlaybackTracks.map((track) => {
+                    const startPoint = track.points[0]
+                    const startPosition = geoToNumericPercent(startPoint, studyArea)
+                    const pathClassName = [
+                      'vessel-route-path',
+                      track.routeId === focusRoute ? 'focus' : '',
+                      activeTrackIds.has(track.mmsi) ? 'active' : '',
+                      track.isFocusArea ? 'focus-area' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')
+                    const pointClassName = [
+                      'vessel-route-point',
+                      track.routeId === focusRoute ? 'focus' : '',
+                      activeTrackIds.has(track.mmsi) ? 'active' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')
+                    const startClassName = [
+                      'vessel-route-start',
+                      track.routeId === focusRoute ? 'focus' : '',
+                      activeTrackIds.has(track.mmsi) ? 'active' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')
 
+                    return (
+                      <g key={track.mmsi}>
+                        <path d={track.path} className={pathClassName} />
+                        <circle cx={startPosition.x} cy={startPosition.y} r={track.routeId === focusRoute ? 0.58 : 0.46} className={startClassName} />
+                        {track.points.slice(1).map((point) => {
+                          const pointPosition = geoToNumericPercent(point, studyArea)
+                          return (
+                            <circle
+                              key={`${track.mmsi}-${point.sceneId}`}
+                              cx={pointPosition.x}
+                              cy={pointPosition.y}
+                              r={track.routeId === focusRoute ? 0.34 : 0.28}
+                              className={pointClassName}
+                            />
+                          )
+                        })}
+                      </g>
+                    )
+                  })}
+                </svg>
+
+                {visibleTrackMarkers.map((vessel) => {
+                  const vesselPosition = geoToPercent({ lon: vessel.lon, lat: vessel.lat }, studyArea)
                   return (
-                    <g key={track.mmsi}>
-                      <path d={track.path} className={pathClassName} />
-                      <circle cx={startPosition.x} cy={startPosition.y} r={track.routeId === focusRoute ? 0.58 : 0.46} className={startClassName} />
-                      {track.points.slice(1).map((point) => {
-                        const pointPosition = geoToNumericPercent(point, studyArea)
-                        return (
-                          <circle
-                            key={`${track.mmsi}-${point.sceneId}`}
-                            cx={pointPosition.x}
-                            cy={pointPosition.y}
-                            r={track.routeId === focusRoute ? 0.34 : 0.28}
-                            className={pointClassName}
-                          />
-                        )
-                      })}
-                    </g>
+                    <div
+                      key={`${scene.id}-${vessel.mmsi}`}
+                      className={vessel.routeId === focusRoute ? 'vessel-current focus' : vessel.isFocusArea ? 'vessel-current active' : 'vessel-current'}
+                      style={{
+                        left: vesselPosition.x,
+                        top: vesselPosition.y,
+                        transform: `translate(-50%, -50%) rotate(${vessel.heading}deg)`,
+                      }}
+                    >
+                      <span className="vessel-current-icon"></span>
+                    </div>
                   )
                 })}
-              </svg>
+              </div>
 
-              {visibleTrackMarkers.map((vessel) => {
-                const vesselPosition = geoToPercent({ lon: vessel.lon, lat: vessel.lat }, studyArea)
+              {routeLabels.map((route) => (
+                <div key={route.id} className={route.id === focusRoute ? 'route-tag active' : 'route-tag'} style={{ left: route.x, top: route.y }}>
+                  {route.id}
+                </div>
+              ))}
+
+              {mapTags.map((tag) => (
+                <div key={tag.id} className={tag.focusGrid === objectiveFocusGrid ? 'map-tag active' : 'map-tag'} style={{ left: tag.x, top: tag.y }}>
+                  <strong>{tag.id}</strong>
+                  <span>{tag.label}</span>
+                </div>
+              ))}
+
+              {hotspots.map((hotspot) => {
+                const hotspotPosition = geoToPercent(hotspot.point, studyArea)
+                const size = (22 + hotspot.intensity * 42) * hotspotScale
+                const style = {
+                  left: hotspotPosition.x,
+                  top: hotspotPosition.y,
+                  width: `${size}px`,
+                  height: `${size}px`,
+                  opacity: (0.25 + hotspot.intensity * 0.75) * (planApplied ? 0 : 1),
+                } satisfies CSSProperties
+                const className = hotspot.level === 'high' ? 'hotspot high' : hotspot.level === 'medium' ? 'hotspot medium' : 'hotspot'
+
                 return (
-                  <div
-                    key={`${scene.id}-${vessel.mmsi}`}
-                    className={vessel.routeId === focusRoute ? 'vessel-current focus' : vessel.isFocusArea ? 'vessel-current active' : 'vessel-current'}
-                    style={{
-                      left: vesselPosition.x,
-                      top: vesselPosition.y,
-                      transform: `translate(-50%, -50%) rotate(${vessel.heading}deg)`,
-                    }}
-                  >
-                    <span className="vessel-current-icon"></span>
+                  <div key={hotspot.id} className={`${className}${planApplied ? ' suppressed' : ''}`} style={style}>
+                    <span>{hotspot.id}</span>
                   </div>
                 )
               })}
             </div>
-
-            {routeLabels.map((route) => (
-              <div key={route.id} className={route.id === focusRoute ? 'route-tag active' : 'route-tag'} style={{ left: route.x, top: route.y }}>
-                {route.id}
-              </div>
-            ))}
-
-            {mapTags.map((tag) => (
-              <div key={tag.id} className={tag.focusGrid === objectiveFocusGrid ? 'map-tag active' : 'map-tag'} style={{ left: tag.x, top: tag.y }}>
-                <strong>{tag.id}</strong>
-                <span>{tag.label}</span>
-              </div>
-            ))}
-
-            {hotspots.map((hotspot) => {
-              const hotspotPosition = geoToPercent(hotspot.point, studyArea)
-              const size = (22 + hotspot.intensity * 42) * hotspotScale
-              const style = {
-                left: hotspotPosition.x,
-                top: hotspotPosition.y,
-                width: `${size}px`,
-                height: `${size}px`,
-                opacity: (0.25 + hotspot.intensity * 0.75) * (planApplied ? 0 : 1),
-              } satisfies CSSProperties
-              const className = hotspot.level === 'high' ? 'hotspot high' : hotspot.level === 'medium' ? 'hotspot medium' : 'hotspot'
-
-              return (
-                <div key={hotspot.id} className={`${className}${planApplied ? ' suppressed' : ''}`} style={style}>
-                  <span>{hotspot.id}</span>
-                </div>
-              )
-            })}
 
             <div className="map-bottom-strip">
               <div className="map-bottom-summary">
@@ -579,7 +766,7 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
         </section>
       </section>
 
-      <aside className="right-rail home-module-rail">
+      <aside className="right-rail home-module-rail home-right-rail">
         {rightCards.map((card) => (
           <section
             key={card.routeId}

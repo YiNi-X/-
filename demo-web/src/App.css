@@ -3647,6 +3647,8 @@
 
 .home-console-layout {
   min-height: 0;
+  grid-template-columns: minmax(304px, 320px) minmax(0, 1fr) minmax(310px, 332px);
+  align-items: stretch;
 }
 
 .home-module-rail {
@@ -3655,15 +3657,36 @@
   align-content: start;
 }
 
+.home-left-rail,
+.home-right-rail {
+  overflow: auto;
+  padding-right: 0.08rem;
+}
+
+.home-secondary-stack {
+  display: grid;
+  gap: 0.38rem;
+}
+
 .home-module-card {
   display: grid;
   gap: 0.6rem;
-  min-height: 205px;
+  min-height: 188px;
   padding: 0.82rem 0.88rem;
   transition:
     border-color 160ms ease,
     transform 160ms ease,
     box-shadow 160ms ease;
+}
+
+.home-feature-card {
+  min-height: 236px;
+  gap: 0.72rem;
+}
+
+.home-module-card.compact {
+  min-height: 164px;
+  gap: 0.5rem;
 }
 
 .home-module-card:hover,
@@ -3678,14 +3701,144 @@
   line-height: 1.5;
 }
 
+.home-module-card.compact .home-module-summary {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .home-module-metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.35rem;
 }
 
+.home-feature-actions,
+.home-calibration-actions,
+.home-calibration-footer {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.home-feature-actions,
+.home-calibration-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.home-feature-actions .panel-action,
+.home-calibration-actions .panel-action,
+.home-calibration-footer .panel-action {
+  width: 100%;
+  text-align: center;
+}
+
+.home-calibration-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.home-calibration-card {
+  display: grid;
+  gap: 0.72rem;
+  align-content: start;
+}
+
+.home-calibration-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.32rem;
+}
+
+.home-calibration-badge {
+  padding: 0.16rem 0.38rem;
+  border: 1px solid rgba(80, 197, 255, 0.14);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(219, 239, 249, 0.82);
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.home-calibration-badge.active {
+  border-color: rgba(255, 181, 71, 0.28);
+  background: linear-gradient(180deg, rgba(255, 181, 71, 0.14), rgba(255, 255, 255, 0.02));
+  color: #ffe9bf;
+}
+
+.home-calibration-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 0.46rem;
+}
+
+.home-calibration-field {
+  display: grid;
+  gap: 0.22rem;
+  padding: 0.48rem 0.54rem 0.52rem;
+  border: 1px solid rgba(80, 197, 255, 0.08);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.home-calibration-field span {
+  color: rgba(169, 224, 255, 0.76);
+  font-size: 0.52rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.home-calibration-field strong {
+  color: #eef8ff;
+  font-size: 0.72rem;
+  font-family: var(--mono-font);
+}
+
+.home-calibration-field input {
+  width: 100%;
+  margin: 0;
+  accent-color: #18bfd4;
+}
+
+.home-calibration-footer {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .home-map-actions {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.home-console-layout .map-frame {
+  display: grid;
+  place-items: center;
+}
+
+.home-map-stage {
+  width: 100%;
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.home-map-layer,
+.home-geo-layer {
+  position: absolute;
+  inset: 0;
+  transform-origin: center center;
+}
+
+.home-map-layer {
+  z-index: 0;
+  overflow: hidden;
+}
+
+.home-map-stage .map-grid {
+  z-index: 1;
+}
+
+.home-geo-layer {
+  z-index: 2;
+  pointer-events: none;
 }
 
 .corridor-dominance-card {
@@ -3765,6 +3918,10 @@
     grid-template-columns: 1fr;
   }
 
+  .home-console-layout {
+    grid-template-columns: 280px minmax(0, 1fr) 296px;
+  }
+
   .overview-summary-actions {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -3778,7 +3935,11 @@
   .platform-shell-status-strip,
   .module-kpi-grid,
   .home-module-metrics,
-  .home-map-actions {
+  .home-map-actions,
+  .home-feature-actions,
+  .home-calibration-actions,
+  .home-calibration-grid,
+  .home-calibration-footer {
     grid-template-columns: 1fr;
   }
 
