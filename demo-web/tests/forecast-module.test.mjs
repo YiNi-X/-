@@ -42,7 +42,7 @@ test('forecast view model exposes multi-model readiness, focus context, and evid
   assert.ok(viewModel.summaryBand.focusRouteId)
   assert.equal(viewModel.frameComparison.rows.length, viewModel.hotspotSeries.gridIds.length)
   assert.ok(viewModel.evidence.hotspotNodeLinks.length > 0)
-  assert.match(viewModel.readiness.nodeViewMessage, /节点级|node-level/i)
+  assert.match(viewModel.readiness.nodeViewMessage, /热点与节点|grid 视角|图结构/i)
   assert.match(viewModel.readiness.evidenceMessage, /抽屉|drawer/i)
   assert.match(viewModel.evidence.architectureFacts[0]?.value ?? '', /lstm/i)
 })

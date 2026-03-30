@@ -45,21 +45,21 @@ function buildEvidenceAssets(runtime: FlowForecastData, geometry: GeometryConfig
       id: 'correlation-matrix',
       label: '相关性矩阵',
       type: 'matrix',
-      description: '相关性证据已经存在于研究底稿中，更适合通过证据抽屉呈现，而不是直接塞进主舞台。',
+      description: '用于补充热点之间的相关性观察，适合在证据抽屉中集中查看。',
       readiness: 'pending',
     },
     {
       id: 'distance-matrix',
       label: '距离矩阵',
       type: 'matrix',
-      description: '距离矩阵可以作为论文向证据卡后续补充，而不必改动当前预测驾驶舱壳层。',
+      description: '用于补充热点之间的空间距离参考，适合与主舞台分层展示。',
       readiness: 'pending',
     },
     {
       id: 'scatter-matrix',
       label: '散点矩阵',
       type: 'scatter',
-      description: '成对散点证据应放进后续证据资源包，而不是第一版主图的一部分。',
+      description: '用于补充变量之间的对应关系观察，便于在证据抽屉中横向比较。',
       readiness: 'pending',
     },
     {
@@ -180,7 +180,7 @@ function buildEvidenceFacts(bundle: ForecastLoadedBundle): {
           : []),
       ]
     : [
-        { label: '模型配置', value: '当前壳层尚未提供可读取的模型配置文件。' },
+        { label: '模型配置', value: '当前展示以运行时摘要为主。' },
       ]
 
   const hotspotNodeLinks: ForecastHotspotNodeLink[] = bundle.modelConfig
@@ -260,13 +260,13 @@ export function buildForecastViewModel(
     evidenceAssets,
     evidence: evidenceFacts,
     readiness: {
-        selectedModelDeferredReason:
-          bundle.metrics.deferredModels?.find((item) => item.model === selectedModel)?.reason ??
-        (bundle.metrics.models[selectedModel]?.status === 'deferred' ? '该模型尚未导出到当前版本。' : undefined),
+      selectedModelDeferredReason:
+        bundle.metrics.deferredModels?.find((item) => item.model === selectedModel)?.reason ??
+        (bundle.metrics.models[selectedModel]?.status === 'deferred' ? '当前交付聚焦已上线模型组合。' : undefined),
       nodeViewMessage:
-        '节点级预测导出被明确保留到后续扩展阶段，当前驾驶舱不会假装已经拥有完整的 60 节点 runtime 证据。',
+        '当前页聚焦热点与节点的桥接索引，便于从 grid 视角回到图结构。',
       evidenceMessage:
-        '论文向证据可以继续在这个抽屉后方扩展，但不会挤占主预测驾驶舱，也不会伪造当前并不存在的交互。',
+        '证据抽屉汇总运行时事实、模型结构与热点映射，便于在主驾驶舱之外查看补充说明。',
     },
   }
 }

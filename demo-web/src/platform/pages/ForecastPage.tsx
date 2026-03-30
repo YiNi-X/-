@@ -18,12 +18,12 @@ export function ForecastPage({ entry, onNavigate }: ForecastPageProps) {
   const [analysisOpen, setAnalysisOpen] = useState(false)
 
   return (
-    <section className="module-page forecast-page" data-deferred-label="当前版本暂未提供">
+    <section className="module-page forecast-page">
       {forecast.error ? (
         <PlatformStatusSurface
           tone="error"
           title="预测数据不可用"
-          summary="预测 runtime 文件无法打开。"
+          summary="预测数据文件无法打开。"
           detail={forecast.error}
           actions={[{ label: '返回评估中心', onClick: () => onNavigate('evaluation') }]}
         />
@@ -33,7 +33,7 @@ export function ForecastPage({ entry, onNavigate }: ForecastPageProps) {
             <div>
               <p className="panel-kicker">流量预测</p>
               <h1>正在加载预测驾驶舱</h1>
-              <p className="module-takeaway">正在准备预测 runtime、指标、模型配置与 geometry 引用。</p>
+              <p className="module-takeaway">正在准备预测结果、指标摘要与地图联动数据。</p>
             </div>
             <div className="module-skeleton-grid forecast-summary-skeleton-grid">
               <div className="module-skeleton-card"></div>

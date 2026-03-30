@@ -43,8 +43,8 @@ test('repair view model exposes curated samples, model switching, and full metri
   assert.equal(typeof viewModel.metrics.selectedModel.r2, 'number')
   assert.equal(typeof viewModel.metrics.selectedModel.ade, 'number')
   assert.equal(typeof viewModel.metrics.selectedModel.hausdorffDistance, 'number')
-  assert.match(viewModel.readiness.trajectoryMessage, /已提交导出结果|实时回放|live replay/i)
-  assert.match(viewModel.readiness.errorMessage, /点序号|point order/i)
+  assert.match(viewModel.readiness.trajectoryMessage, /比较修复效果|缺失轨迹/)
+  assert.match(viewModel.readiness.errorMessage, /修复点序号|变化趋势/)
 })
 
 test('repair sources expose the full metric-summary language needed for REPR-05', () => {

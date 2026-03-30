@@ -29,7 +29,6 @@ export function ForecastPrimaryStage({
   onSelectFrame,
 }: ForecastPrimaryStageProps) {
   const availableModels = viewModel.meta.availableModels
-  const deferredModels = viewModel.meta.deferredModels
   const selectedForecast = viewModel.frame ? viewModel.frame.forecast[selectedHorizon as keyof typeof viewModel.frame.forecast] : null
   const corridorLeader = corridorDominance?.leadingCorridor ?? null
   const leadingDirection = corridorDominance?.leadingDirection ?? null
@@ -65,7 +64,7 @@ export function ForecastPrimaryStage({
         </div>
 
         <section className="forecast-control-group">
-          <span className="forecast-control-label">模型就绪情况</span>
+          <span className="forecast-control-label">已上线模型</span>
           <div className="forecast-segmented-row">
             {availableModels.map((model) => (
               <button
@@ -77,21 +76,8 @@ export function ForecastPrimaryStage({
                 {model}
               </button>
             ))}
-            {deferredModels.map((model) => (
-              <button key={model.model} type="button" className="segmented-button forecast-segmented-disabled" disabled title={model.reason}>
-                {model.model}
-              </button>
-            ))}
           </div>
         </section>
-
-        {deferredModels.length ? (
-          <section className="forecast-rail-card">
-            <span>延后模型</span>
-            <strong>{deferredModels.map((model) => model.model).join(' / ')}</strong>
-            <small>{deferredModels[0]?.reason}</small>
-          </section>
-        ) : null}
 
         <section className="forecast-control-group">
           <span className="forecast-control-label">预测 horizon</span>

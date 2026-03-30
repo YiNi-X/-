@@ -19,10 +19,10 @@ export function ForecastAlertTable({ alerts, corridorDominance, selectedGridId, 
   if (!alerts.length) {
     return (
       <PlatformStatusSurface
-        tone="deferred"
-        title="当前帧没有告警行"
-        summary="所选回放帧没有发布预测告警数据。"
-        detail="请把时间线滑块移动到压力更高的时刻，查看网格级告警证据。"
+        tone="unavailable"
+        title="当前帧告警较低"
+        summary="所选回放帧没有触发网格级高压告警。"
+        detail="把时间线移动到更繁忙的时段，可以查看网格级告警变化。"
       />
     )
   }

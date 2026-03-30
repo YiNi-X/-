@@ -21,7 +21,7 @@ export function ForecastEvidenceTab({ viewModel, onOpenEvidenceDrawer }: Forecas
           {viewModel.evidenceAssets.map((asset) => (
             <article key={asset.id} className="forecast-drawer-card">
               <span>{asset.label}</span>
-              <strong>{asset.readiness === 'ready' ? '当前壳层可用' : '规划中资源'}</strong>
+              <strong>{asset.readiness === 'ready' ? '当前可查看' : '补充视图'}</strong>
               <p>{asset.description}</p>
             </article>
           ))}
@@ -41,12 +41,12 @@ export function ForecastEvidenceTab({ viewModel, onOpenEvidenceDrawer }: Forecas
           <article className="forecast-selected-grid-card">
             <span>Runtime 事实</span>
             <strong>{viewModel.evidence.runtimeFacts.length}</strong>
-            <p>当前模块包中已经可见的已提交 provenance 字段。</p>
+            <p>当前模块包中已经可见的运行时摘要条目。</p>
           </article>
           <article className="forecast-selected-grid-card">
-            <span>延后模型</span>
-            <strong>{viewModel.meta.deferredModels.length}</strong>
-            <p>{viewModel.meta.deferredModels[0]?.reason ?? '当前模块不需要额外的 deferred model 提示。'}</p>
+            <span>已上线模型</span>
+            <strong>{viewModel.meta.availableModels.join(' / ')}</strong>
+            <p>{viewModel.meta.availableModels.length} 个模型已纳入当前预测驾驶舱。</p>
           </article>
         </div>
 

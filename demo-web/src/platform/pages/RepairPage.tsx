@@ -15,7 +15,7 @@ export function RepairPage({ entry, onNavigate }: RepairPageProps) {
   const repair = useRepairModule(entry)
 
   return (
-    <section className="module-page repair-page" data-deferred-label="当前版本暂未提供">
+    <section className="module-page repair-page">
       {repair.error ? (
         <PlatformStatusSurface
           tone="error"
@@ -30,7 +30,7 @@ export function RepairPage({ entry, onNavigate }: RepairPageProps) {
             <div>
               <p className="panel-kicker">轨迹修复</p>
               <h1>正在加载修复驾驶舱</h1>
-              <p className="module-takeaway">正在准备样本轨迹、notebook 导出的误差曲线与模型排名证据。</p>
+              <p className="module-takeaway">正在准备样本轨迹、误差曲线与模型排名摘要。</p>
             </div>
             <div className="module-skeleton-grid repair-summary-skeleton-grid">
               <div className="module-skeleton-card"></div>

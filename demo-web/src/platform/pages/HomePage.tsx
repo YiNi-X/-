@@ -200,8 +200,8 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
       kicker: '轨迹聚类',
       title: '轨迹聚类',
       summary: corridorLeader
-        ? `${corridorLeader.corridorId}（${corridorLeader.directionLabel}）已经成为 runtime 运动主线，因此聚类会把 corridor dominance 叙事显式传递到总览与评估页。`
-        : '聚类叙事从原始 AIS 进入分段、压缩与 corridor-ready 图层，同时保持 noise 阶段的研究边界。 ',
+        ? `${corridorLeader.corridorId}（${corridorLeader.directionLabel}）已经成为重点通道结论，并会同步到总览与评估页。`
+        : '聚类页展示从原始 AIS 到分段、压缩与重点通道提取的完整过程。',
       primaryLabel: '压缩轨迹数',
       primaryValue: String(compressedTracks),
       secondaryLabel: '主导 corridor',
@@ -229,13 +229,13 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
       title: '前瞻分析',
       summary:
         forwardLookingEntry?.summary ??
-        '在精选场景契约正式上线前，协同决策证据仍会保持明确的 deferred 状态。',
+        '协同决策模块展示精选场景、策略建议与重点航路变化。',
       primaryLabel: forwardLookingEntry?.primaryMetric.label ?? '状态',
-      primaryValue: forwardLookingEntry?.primaryMetric.value ?? '后续更新',
+      primaryValue: forwardLookingEntry?.primaryMetric.value ?? '精选场景',
       secondaryLabel: forwardLookingEntry?.secondaryMetric.label ?? '当前阶段',
-      secondaryValue: forwardLookingEntry?.secondaryMetric.value ?? '预留',
+      secondaryValue: forwardLookingEntry?.secondaryMetric.value ?? '策略分析',
       actionLabel: forwardLookingEntry ? '打开分析' : '查看状态',
-      stateLabel: forwardLookingEntry ? localizeReadinessLabel(forwardLookingEntry.status) : localizeReadinessLabel('deferred'),
+      stateLabel: forwardLookingEntry ? localizeReadinessLabel(forwardLookingEntry.status) : '精选场景',
     },
   ]
 

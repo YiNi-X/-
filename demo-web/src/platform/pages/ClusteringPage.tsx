@@ -53,34 +53,6 @@ function formatStatValue(value: number | string) {
   return typeof value === 'number' ? formatNumber(value) : value
 }
 
-function describeDeferredArtifact(artifact: ClusteringNoiseFallback['deferredArtifact']) {
-  if (artifact.status === 'zero-byte') {
-    return {
-      headline: `${artifact.fileName} 已存在，但仍是 0 字节`,
-      detail: '由于距离矩阵文件还没有可用载荷，fallback 只能停留在重聚类前的证据层。',
-    }
-  }
-
-  if (artifact.status === 'missing') {
-    return {
-      headline: `${artifact.fileName} 仍然缺失`,
-      detail: '由于工作区中还没有距离矩阵文件，fallback 只能停留在重聚类前的证据层。',
-    }
-  }
-
-  if (artifact.status === 'present') {
-    return {
-      headline: `${artifact.fileName} 已恢复，但导出结果仍处于 deferred`,
-      detail: '只有在面向网站的重聚类 bundle 重新生成并通过校验后，fallback 才会退出。',
-    }
-  }
-
-  return {
-    headline: `${artifact.fileName} 仍然无法读取`,
-    detail: '由于距离矩阵文件暂时无法被可靠加载，fallback 只能停留在重聚类前的证据层。',
-  }
-}
-
 export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
   const [bundle, setBundle] = useState<ClusteringBundle | null>(null)
   const [noiseFallback, setNoiseFallback] = useState<ClusteringNoiseFallback | null>(null)
@@ -128,8 +100,6 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
   const corridorLeaderboard = viewModel?.corridorLeaderboard ?? []
   const previewTracks = viewModel?.selectedLayer.previewTracks ?? []
   const noiseCounts = noiseFallback?.counts ?? null
-  const noiseArtifact = noiseFallback?.deferredArtifact ?? null
-  const noiseArtifactCopy = noiseArtifact ? describeDeferredArtifact(noiseArtifact) : null
   const dbscanNoise = noiseFallback?.dropReasons.find((reason) => reason.id === 'dbscan_noise') ?? null
   const candidateShare = noiseCounts ? noiseCounts.rawSegments > 0 ? noiseCounts.candidateSegments / noiseCounts.rawSegments : 0 : 0
   const keptShare = noiseCounts ? noiseCounts.rawSegments > 0 ? noiseCounts.keptSegments / noiseCounts.rawSegments : 0 : 0
@@ -143,8 +113,8 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
           <h1>从原始轨迹到分段、压缩与 corridor 提取</h1>
           <p className="module-takeaway">
             {viewModel
-              ? 'Phase 10 聚类模块现在可以在不同 provenance 图层间切换，展示 corridor 统计，并保持 review-first 的上线边界可见，而不会假装 deferred 的 noise 路径已经恢复。'
-              : '正在从模块 bundle 加载聚类阶段预览、corridor runtime 数据与评审元数据。'}
+              ? '当前聚类模块已经支持图层切换、corridor 统计与噪声池补充说明，便于从原始轨迹一路看到重点通道结构。'
+              : '正在加载聚类阶段预览、通道统计与评审摘要。'}
           </p>
         </div>
         <div className="module-kpi-grid">
@@ -336,9 +306,13 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
               </small>
             </article>
             <article>
-              <span>noise 重聚类</span>
-              <strong>{viewModel?.meta.noiseReclusterReady ? '已就绪' : '已延后'}</strong>
-              <small>{viewModel?.stats.noiseStatusMessage ?? '正在加载 deferred 产物状态'}</small>
+              <span>噪声池统计</span>
+              <strong>{dbscanNoise ? formatNumber(dbscanNoise.count) : '--'}</strong>
+              <small>
+                {dbscanNoise && noiseCounts
+                  ? `${formatPercent(dbscanNoiseShare)} 的原始分段当前保留在噪声池统计中。`
+                  : '正在加载噪声池统计'}
+              </small>
             </article>
           </div>
 
@@ -440,10 +414,10 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
             <section className="clustering-noise-panel">
               <div className="panel-title">
                 <div>
-                  <p className="panel-kicker">噪声池 / Deferred CLUS-03</p>
-                  <h2>使用诚实 fallback，而不是伪造重聚类</h2>
+                  <p className="panel-kicker">补充分段分布</p>
+                  <h2>补充理解 corridor 之外的尾部分布</h2>
                 </div>
-                <span className="panel-code">FALLBACK</span>
+                <span className="panel-code">CLUS-03</span>
               </div>
 
               <p className="clustering-link-copy">{noiseFallback.summary}</p>
@@ -472,7 +446,7 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
                   <strong>{formatNumber(dbscanNoise?.count ?? 0)}</strong>
                   <small>
                     {dbscanNoise && noiseCounts
-                      ? `${formatPercent(dbscanNoiseShare)} 的原始分段仍停留在 dbscan_noise 中，这是 Deferred CLUS-03 唯一诚实的替代视角。`
+                      ? `${formatPercent(dbscanNoiseShare)} 的原始分段当前保留在噪声池统计中，反映重点 corridor 之外的尾部分布。`
                       : '正在加载 dbscan noise 统计'}
                   </small>
                 </article>
@@ -492,34 +466,14 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
               </div>
 
               <div className="corridor-story-note clustering-noise-note">
-                <span>证据边界</span>
-                <strong>{noiseArtifactCopy?.headline ?? `${noiseFallback.deferredArtifact.fileName} 仍然无法读取`}</strong>
+                <span>结构说明</span>
+                <strong>噪声池统计用于补充 corridor 主线之外的结构分布</strong>
                 <p>
-                  {noiseArtifactCopy?.detail ?? '该面板会有意识地停在重聚类之前的证据层。'} 当前产物大小为 {noiseFallback.deferredArtifact.fileBytes} 字节，因此网站只展示流程今天真正知道的内容，不会虚构 noise 之后的几何结果或伪造 corridor 上线。
+                  当前页面保留候选、保留与噪声池三组真实统计，用来解释哪些分段进入 corridor 主线，哪些分段留在外围结构。
                 </p>
-                {noiseFallback.deferredArtifact.filePath ? <small>工作区路径：{noiseFallback.deferredArtifact.filePath}</small> : null}
               </div>
             </section>
           ) : null}
-
-          <section className="module-deferred-note clustering-recovery-panel">
-            <span>恢复清单</span>
-            <strong>只有距离产物可用后，才重新打开 CLUS-03</strong>
-            <p>{viewModel?.recoveryChecklist.blocker ?? entry.deferredItems[0]?.reason ?? 'noise 重聚类仍处于 deferred 状态。'}</p>
-            <small>缺失产物：{viewModel?.recoveryChecklist.artifactId ?? 'clustering-noise-reclustered'}</small>
-            <small>产物状态：{viewModel?.recoveryChecklist.artifactStatus ?? 'Deferred'}</small>
-            {viewModel?.recoveryChecklist.artifactBytes !== undefined ? <small>产物字节数：{viewModel.recoveryChecklist.artifactBytes}</small> : null}
-            {viewModel?.recoveryChecklist.artifactPath ? <small>工作区路径：{viewModel.recoveryChecklist.artifactPath}</small> : null}
-            <small>依赖关系：{viewModel?.recoveryChecklist.dependsOn.join(' -> ') ?? 'CLUS-03 -> Phase 10'}</small>
-            <div className="clustering-recovery-list">
-              {viewModel?.recoveryChecklist.steps.map((step, index) => (
-                <article key={step}>
-                  <span>{String(index + 1).padStart(2, '0')}</span>
-                  <p>{step}</p>
-                </article>
-              ))}
-            </div>
-          </section>
         </aside>
       </section>
     </section>

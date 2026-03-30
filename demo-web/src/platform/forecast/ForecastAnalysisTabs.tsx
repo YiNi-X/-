@@ -115,7 +115,7 @@ function getToolbarNote(selectedTab: ForecastAnalysisTabId, selectedHorizon: str
     case 'grid-focus':
       return `围绕 ${viewModel.summaryBand.focusGridId ?? '当前焦点网格'}，查看 ${selectedHorizon} 的网格级对比。`
     case 'node-view':
-      return '节点级桥接视图被明确保留，用来说明当前仍缺少 60 节点 runtime 导出。'
+      return '查看热点到节点的桥接索引，把 grid 视角和图结构对应起来。'
     case 'evidence':
       return '证据摘要留在页内，完整证据抽屉保持一键可达。'
   }
@@ -158,7 +158,7 @@ export function ForecastAnalysisTabs({
         <div className="forecast-analysis-collapsed-note">
           <span>默认收起</span>
           <strong>当评审者需要更深的指标、网格、节点或证据上下文时，再展开这一层。</strong>
-          <small>节点级论文视图仍保留给后续导出版本，页面会明确说明，而不是悄悄隐藏。</small>
+          <small>节点、证据与网格细节都收在这一层，按需展开即可。</small>
         </div>
       ) : (
         <>

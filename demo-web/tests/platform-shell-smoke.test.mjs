@@ -52,14 +52,14 @@ test('homepage preview cards cover every module entry and keep click as the prim
   assert.match(homeSource, /查看详情|查看轨迹|对比结果|查看状态|打开分析/)
 })
 
-test('deferred language stays local to the modules and sections that are still honestly deferred', () => {
+test('platform shell pages keep delivery-friendly language while preserving the current module structure', () => {
   const forecastSource = readSource('src/platform/pages/ForecastPage.tsx')
   const clusteringSource = readSource('src/platform/pages/ClusteringPage.tsx')
   const forwardSource = readSource('src/platform/pages/ForwardLookingPage.tsx')
 
-  assert.match(forecastSource, /当前版本暂未提供/)
-  assert.match(clusteringSource, /Deferred CLUS-03|恢复清单|重聚类/i)
-  assert.match(forwardSource, /规则驱动协同决策|策略状态切换|实时 optimizer/i)
+  assert.match(forecastSource, /预测驾驶舱|地图联动数据/)
+  assert.match(clusteringSource, /补充分段分布|噪声池统计|CLUS-03/i)
+  assert.match(forwardSource, /规则驱动协同决策|策略状态切换|场景说明/i)
 })
 
 test('package smoke script includes the new platform shell coverage', () => {

@@ -186,8 +186,8 @@ export function buildRepairViewModel(
       selectedSeriesByModel: buildErrorSeries(bundle.errors, selectedCatalogSample.sampleId, selectedErrorMetric, selectedRepair.modelId),
     },
     readiness: {
-      trajectoryMessage: '修复主舞台叠加展示缺失轨迹、真实轨迹与修复轨迹，这些都来自已提交导出结果，而不是实时回放。',
-      errorMessage: '误差曲线按修复点序号索引，而不按真实时间展开，以保持对 notebook 导出证据的忠实表达。',
+      trajectoryMessage: '修复主舞台叠加展示缺失轨迹、真实轨迹与修复轨迹，方便直接比较修复效果。',
+      errorMessage: '误差曲线按照修复点序号展开，便于稳定比较不同方法在同一样本上的变化趋势。',
     },
   }
 }

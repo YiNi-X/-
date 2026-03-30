@@ -33,8 +33,8 @@ export function ForecastSummaryBand({ viewModel, corridorDominance, onNavigateTo
 
         <p className="module-takeaway">
           {corridorLeader
-            ? `本页围绕归档 AIS 与离线预测 bundle 组织叙事，${corridorLeader.corridorId} 作为 corridor dominance 主线，会显式进入热点与航线解释。`
-            : '本页围绕归档 AIS 与离线预测 bundle 组织叙事，节点级论文视图则明确留给后续导出版本。'}
+            ? `本页围绕归档 AIS 与离线预测结果组织叙事，${corridorLeader.corridorId} 作为 corridor dominance 主线，会显式进入热点与航线解释。`
+            : '本页围绕归档 AIS 与离线预测结果组织叙事，并将热点、航线与节点映射收进同一驾驶舱。'}
         </p>
       </div>
 

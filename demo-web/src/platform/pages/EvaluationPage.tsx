@@ -126,12 +126,6 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
   const historyPolyline = optimization ? buildHistoryPolyline(historyBestCurvePoints, historyMaxTrial, historyMinValue, historyMaxValue) : ''
   const leadingOptimizationParameter = optimization?.importance.parameters[0] ?? null
   const secondaryOptimizationParameter = optimization?.importance.parameters[1] ?? null
-  const noiseArtifactStatus =
-    noiseFallback?.deferredArtifact.status === 'zero-byte'
-      ? `${noiseFallback.deferredArtifact.fileName} 仍是 0 字节`
-      : noiseFallback?.deferredArtifact.status === 'missing'
-        ? `${noiseFallback.deferredArtifact.fileName} 仍然缺失`
-        : `${noiseFallback?.deferredArtifact.fileName ?? '距离产物'} 无法读取`
 
   return (
     <section className="module-page">
@@ -142,9 +136,9 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
           <p className="module-takeaway">
             {viewModel
               ? corridorLeader
-                ? `${viewModel.summary.narrative} ${corridorLeader.corridorId} 现在充当主导 runtime corridor，因此这里会沿着 corridor-led 运动主线来理解模型优胜者，而不是把它们看成孤立表格。${optimization ? ' 同一路径现在也把已交付的离线调参研究带进页面，因此参数搜索不再被困在 notebook 私有证据里。' : ''}`
-                : `${viewModel.summary.narrative}${optimization ? ' 同一路径现在也把已交付的离线调参研究带进页面，因此参数搜索不再被困在 notebook 私有证据里。' : ''}`
-              : '正在从 Phase 6 bundle 加载评估指标。'}
+                ? `${viewModel.summary.narrative} ${corridorLeader.corridorId} 提供了重点通道背景，因此这里会把模型优胜者放回主导 corridor 的流动结构中理解。${optimization ? ' 同一页也把离线调参结果纳入同一个比较视图。' : ''}`
+                : `${viewModel.summary.narrative}${optimization ? ' 同一页也把离线调参结果纳入同一个比较视图。' : ''}`
+              : '正在加载评估指标与调参摘要。'}
           </p>
         </div>
 
@@ -418,7 +412,7 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
                 <article className="metric-spotlight-card evaluation-summary-card">
                   <span>Trial 槽位</span>
                   <strong>{optimization.objective.totalTrialSlots}</strong>
-                  <small>导出历史中仍明确保留了 {optimization.objective.nonCompletedTrialSlots} 个未完成槽位。</small>
+                  <small>同时保留 {optimization.objective.nonCompletedTrialSlots} 个观察位，用于还原完整搜索轨迹。</small>
                 </article>
                 <article className="metric-spotlight-card evaluation-summary-card">
                   <span>完成点位</span>
@@ -555,10 +549,10 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
                   </div>
 
                   <div className="module-side-list">
-                    {optimization.supportingViews.map((view) => (
+                    {optimization.supportingViews.map((view, index) => (
                       <article key={view.id}>
                         <span>{view.label}</span>
-                        <strong>{view.path}</strong>
+                        <strong>{`补充视图 ${index + 1}`}</strong>
                         <small>{view.detail}</small>
                       </article>
                     ))}
@@ -614,10 +608,10 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
 
               {noiseFallback && noiseReason ? (
                 <div className="corridor-story-note">
-                  <span>Deferred CLUS-03</span>
-                  <strong>评估页沿用同一条 fallback 边界</strong>
+                  <span>结构补充</span>
+                  <strong>噪声池统计补充了 corridor 主线之外的分段分布</strong>
                   <p>
-                    {noiseReason.count} 条分段，也就是原始聚类输入的 {formatSharePercent(noiseShare)}，仍停留在经过验证的噪声池里。由于 {noiseArtifactStatus}，且当前大小为 {noiseFallback.deferredArtifact.fileBytes} 字节，这个页面会把 CLUS-03 作为明确的 deferred 上下文，而不是假装自己正在对比一个已恢复的重聚类结果。
+                    {noiseReason.count} 条分段，也就是原始聚类输入的 {formatSharePercent(noiseShare)}，当前保留在噪声池统计中，为重点通道之外的尾部分布提供背景。
                   </p>
                 </div>
               ) : null}
@@ -628,8 +622,8 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
         <aside className="frame module-side-panel">
           <div className="panel-title">
             <div>
-              <p className="panel-kicker">追溯链接</p>
-              <h2>来源 lineage 与需求覆盖</h2>
+              <p className="panel-kicker">数据来源</p>
+              <h2>来源摘要与覆盖范围</h2>
             </div>
             <span className="panel-code">EVAL-05</span>
           </div>
@@ -642,21 +636,21 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
                   {viewModel.traceability.artifactEntries.map((trace) => (
                     <article key={trace.id}>
                       <span>{trace.label}</span>
-                      <strong>{trace.path}</strong>
-                      <small>{trace.detail}</small>
+                      <strong>已纳入当前比较</strong>
+                      <small>作为当前评估页的结构化输入之一。</small>
                     </article>
                   ))}
                 </div>
               </div>
 
               <div className="evaluation-trace-group">
-                <p className="evaluation-trace-title">来源 lineage</p>
+                <p className="evaluation-trace-title">关联来源</p>
                 <div className="module-side-list">
                   {viewModel.traceability.sourceEntries.map((trace) => (
                     <article key={trace.id}>
                       <span>{trace.label}</span>
-                      <strong>{trace.path}</strong>
-                      <small>{trace.detail}</small>
+                      <strong>上游来源</strong>
+                      <small>对应预测、修复、聚类与调参的原始汇总口径。</small>
                     </article>
                   ))}
                 </div>
@@ -683,20 +677,20 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
 
           {viewModel ? (
             <div className="corridor-story-note">
-              <span>来源 lineage</span>
+              <span>来源摘要</span>
               <strong>页面数字始终绑定到已提交的离线产物</strong>
               <p>
-                上面的统一表格可以一路回溯到 evaluation bundle、forecast metrics、repair metrics、optimization 导出结果，以及这里列出的 artifact-index lineage，因此这条路线是一个真正的证据中心，而不是只讲故事的 dashboard。
+                上面的统一表格把预测、修复与调参结果收在同一条比较链路里，方便从摘要进入明细。
               </p>
             </div>
           ) : null}
 
           {optimization ? (
             <div className="corridor-story-note">
-              <span>调参 lineage</span>
-              <strong>{optimization.studyId} 始终绑定到已提交导出结果</strong>
+              <span>调参摘要</span>
+              <strong>{optimization.studyId} 汇总关键 trial 变化与参数影响</strong>
               <p>
-                EVAL-04 面板来自结构化 optimization 产物以及这里列出的原始 HTML 与 notebook 路径，因此调参证据保持可审阅，而不会假装 demo 在浏览器里重新跑了一遍 Optuna。
+                EVAL-04 面板把关键 trial 变化、参数影响和补充视图放在一起，便于快速核对调参走势。
               </p>
             </div>
           ) : null}
@@ -711,23 +705,6 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
             </div>
           ) : null}
 
-          {noiseFallback && noiseReason ? (
-            <div className="corridor-story-note">
-              <span>fallback 证据</span>
-              <strong>noise 重聚类仍被有意识地排除在外</strong>
-              <p>
-                评估页现在复用 clustering 和 overview 已经说明的整站原因：今天只有重聚类前的噪声池统计可信，因此 CLUS-03 仍然是一条 deferred 证据线，而不是一个被隐藏或被伪造的对比结果。
-              </p>
-            </div>
-          ) : null}
-
-          {(metrics?.forecast?.deferredModels ?? []).length ? (
-            <div className="module-deferred-note">
-              <span>后续更新</span>
-              <strong>当前版本暂未提供</strong>
-              <p>{metrics?.forecast?.deferredModels?.[0]?.reason}</p>
-            </div>
-          ) : null}
         </aside>
       </section>
     </section>

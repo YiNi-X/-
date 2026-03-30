@@ -120,10 +120,10 @@ test('evaluation page source exposes the phase 11 unified center affordances', (
     '参数重要性',
     '最佳参数组合',
     '辅助离线视图',
-    '追溯链接',
-    '来源 lineage',
+    '数据来源',
+    '关联来源',
     'Corridor dominance 上下文',
-    'Deferred CLUS-03',
+    '结构补充',
   ]) {
     assert.match(evaluationSource, new RegExp(label), `Expected EvaluationPage to expose ${label}`)
   }

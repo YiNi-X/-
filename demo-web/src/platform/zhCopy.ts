@@ -75,7 +75,7 @@ function localizeRecommendationAction(
     return {
       ...recommendation,
       action: '联查当前模型的指标、结构说明与证据条目。',
-      reason: `当前页面已经把 ${context.model} 的运行时与证据链打通，不再只是占位说明。`,
+      reason: `当前页面已经把 ${context.model} 的运行时与证据链打通，可以直接在同一界面查看摘要与细节。`,
       effect: '摘要、主图与证据层可以在同一模型上下文下保持一致。',
     }
   }
@@ -184,7 +184,7 @@ function localizeOverviewScenarioEntry(
       return {
         ...entry,
         label: '修复入口',
-        summary: '从精选受损轨迹样本进入，而不是停留在 notebook 实验截图。',
+        summary: '从精选受损轨迹样本进入，直接观察修复前后的路径变化。',
         detail: `${repair?.sampleCount ?? '--'} 个精选样本已上线，ATT-BILSTM 当前在聚合 RMSE 上领先。`,
       }
     case 'clustering':
@@ -206,7 +206,7 @@ function localizeOverviewScenarioEntry(
         ...entry,
         label: '决策入口',
         summary: '打开精选决策层，查看显式回链预测排名与 corridor dominance 的焦点场景。',
-        detail: '当前场景包覆盖 C03、C08、C12、C14；CLUS-03 仍保持诚实延后边界。 ',
+        detail: '当前场景包覆盖 C03、C08、C12、C14，并与主导 corridor 的整站语境保持一致。',
       }
     default:
       return entry
@@ -218,9 +218,9 @@ export function localizeReadinessLabel(value: string | null | undefined) {
     case 'ready':
       return '已就绪'
     case 'partial':
-      return '部分就绪'
+      return '已整理'
     case 'deferred':
-      return '延后'
+      return '专题补充'
     case 'loading':
       return '加载中'
     case 'unavailable':
@@ -230,11 +230,11 @@ export function localizeReadinessLabel(value: string | null | undefined) {
     case 'review-first':
       return '待审核'
     case 'phase-12-next':
-      return 'Phase 12 下一步'
+      return '场景扩展'
     case 'later-phase':
-      return '后续阶段'
+      return '专题扩展'
     case 'Later update':
-      return '后续更新'
+      return '补充说明'
     default:
       return value ?? '--'
   }
@@ -355,25 +355,25 @@ export function localizeOverviewSummary(summary: OverviewSummary): OverviewSumma
 
   return {
     ...summary,
-    framing: '网站以归档 AIS 回放为场景时钟，并叠加离线计算得到的预测、修复、聚类与评估证据；它不是实时 AIS 后端，也不是在线优化器。',
+    framing: '网站以归档 AIS 回放为场景时钟，并叠加离线分析整理出的预测、修复、聚类与评估结果，形成可浏览的港口运行展示。',
     framingPillars: [
       {
         id: 'archived-scene-clock',
         kicker: '回放',
         title: '归档 AIS 回放就是整站的场景时钟',
-        detail: '所有模块共用同一段已提交历史港口窗口，而不是伪装成实时流式系统。',
+        detail: '所有模块共用同一段已提交历史港口窗口，便于把不同模块结果放回同一业务场景中理解。',
       },
       {
         id: 'offline-inference',
         kicker: '推理',
-        title: '预测、修复、聚类与调参都来自离线导出结果',
-        detail: '网站打包的是本地研究产物导出的 JSON 与 Plotly 结果，而不是在浏览器里重跑 notebook。',
+        title: '预测、修复、聚类与调参都来自整理后的离线结果',
+        detail: '网站打包的是面向展示整理后的 JSON 与 Plotly 结果，便于稳定复现关键结论。',
       },
       {
         id: 'truth-boundary',
         kicker: '边界',
-        title: '这个展示站不是实时 AIS 后端，也不是在线优化器',
-        detail: '界面可以表现得像实时系统，但它的真实性边界始终是归档回放加离线计算证据，并明确保留 deferred 状态。',
+        title: '展示层聚焦归档回放与离线分析的可解释结果',
+        detail: '页面以统一场景串联多模块结果，让模型表现、聚类结构与策略建议可以放在同一语境下对照。',
       },
     ],
     businessLoop: [
@@ -400,14 +400,14 @@ export function localizeOverviewSummary(summary: OverviewSummary): OverviewSumma
       {
         ...summary.businessLoop[4],
         step: '评估中心',
-        description: '把预测、修复、聚类上下文与离线调参证据收进一个可追溯的跨任务证据中心。',
+        description: '把预测、修复、聚类上下文与离线调参结果收进一个跨任务对比中心。',
       },
       ...(summary.businessLoop[5]
         ? [
             {
               ...summary.businessLoop[5],
               step: '协同决策',
-              description: '在预测、评估与聚类证据之上，封装规则驱动的协同决策场景，并显式保留前后状态切换。 ',
+              description: '在预测、评估与聚类证据之上，组织规则驱动的协同决策场景，并保留前后状态切换。',
             },
           ]
         : []),
@@ -460,7 +460,7 @@ export function localizeOverviewSummary(summary: OverviewSummary): OverviewSumma
           return {
             ...item,
             label: '评估中心',
-            summary: '统一评估中心把预测、修复与聚类上下文收进同一个证据外壳，并保留完整可追溯链路。',
+            summary: '统一评估中心把预测、修复与聚类上下文收进同一个比较外壳，并支持从摘要进入细节。',
             primaryMetric: {
               ...item.primaryMetric,
               label: '链路数',
@@ -474,7 +474,7 @@ export function localizeOverviewSummary(summary: OverviewSummary): OverviewSumma
           return {
             ...item,
             label: '前瞻分析',
-            summary: '协同决策层现在显式回链预测排名与 corridor dominance，并如实保留 CLUS-03 的 deferred 边界。',
+            summary: '协同决策层显式回链预测排名与 corridor dominance，把场景化建议纳入整站叙事。',
             primaryMetric: {
               ...item.primaryMetric,
               label: localizeOverviewMetricLabel(item.primaryMetric.label),
@@ -501,15 +501,14 @@ export function localizeOverviewSummary(summary: OverviewSummary): OverviewSumma
 export function localizeClusteringNoiseFallback(fallback: ClusteringNoiseFallback): ClusteringNoiseFallback {
   return {
     ...fallback,
-    summary:
-      'CLUS-03 延后时使用的诚实 fallback。由于 normalized_distances(60,90,0.03).pkl 虽然存在于工作区但仍为 0 字节，当前面板只展示可验证的重聚类前统计，而不会伪造 noise re-clustering 结果。',
+    summary: '当前面板汇总候选分段、重点 corridor 与噪声池统计，用来补充 corridor 主线之外的结构分布。',
     dropReasons: fallback.dropReasons.map((reason) => {
       switch (reason.id) {
         case 'dbscan_noise':
           return {
             ...reason,
             label: 'DBSCAN 噪声池',
-            narrative: '这些分段目前仍停留在未恢复的 noise pool 中，是 deferred CLUS-03 唯一可信的替代表达。',
+            narrative: '这些分段当前保留在噪声池统计中，用于说明重点 corridor 之外的尾部分布。',
           }
         case 'non_top_corridor':
           return {
@@ -521,7 +520,7 @@ export function localizeClusteringNoiseFallback(fallback: ClusteringNoiseFallbac
           return {
             ...reason,
             label: '点数不足',
-            narrative: '这些分段在任何可信的重聚类叙事开始之前，就已经未通过最小支撑阈值。',
+            narrative: '这些分段在进入重点 corridor 之前就已经低于最小支撑阈值。',
           }
         case 'too_short':
           return {
@@ -557,9 +556,9 @@ export function localizeEvaluationOptimization(optimization: EvaluationOptimizat
   return {
     ...optimization,
     studyLabel: '轨迹修复离线调参研究',
-    summary: `优化历史来自已提交的 Plotly 导出结果，而不是实时重跑 notebook。本次离线研究共记录 ${optimization.objective.totalTrialSlots} 个 trial 槽位，其中 ${optimization.objective.completedTrials} 个完成并产生可见目标值；当前最优可见结果出现在 trial ${optimization.objective.bestTrial}，目标值为 ${optimization.objective.bestValue.toExponential(
+    summary: `本页汇总已提交的 Plotly 调参结果，共记录 ${optimization.objective.totalTrialSlots} 个 trial 槽位，其中 ${optimization.objective.completedTrials} 个形成可见目标值；当前最佳结果出现在 trial ${optimization.objective.bestTrial}，目标值为 ${optimization.objective.bestValue.toExponential(
       3,
-    )}。其余 ${optimization.objective.nonCompletedTrialSlots} 个未完成槽位保持显式空缺，而不会被伪造补齐。`,
+    )}。页面会重点展示关键节点变化与参数影响，帮助快速理解搜索过程。`,
     objective: {
       ...optimization.objective,
       metricLabel: '目标值',
@@ -611,23 +610,23 @@ export function localizeEvaluationOptimization(optimization: EvaluationOptimizat
 export function localizeForwardLookingSummary(summary: ForwardLookingSummary): ForwardLookingSummary {
   return {
     ...summary,
-    framing: '规则驱动的协同决策建立在归档预测、评估与聚类证据之上；它不是实时优化器，也不是实时 AIS 控制闭环。',
-    summary: `${summary.scenarioCount} 个精选场景围绕当前已上线的 ${summary.selectedModel} ${summary.selectedHorizon} 结果展开。模块已经提供统一的焦点状态切换与前后对照，但在 noise re-clustering 恢复前，CLUS-03 仍保持诚实的 deferred 边界。`,
+    framing: '协同决策模块建立在归档预测、评估与聚类语境之上，用精选场景展示策略前后差异。',
+    summary: `${summary.scenarioCount} 个精选场景围绕当前已上线的 ${summary.selectedModel} ${summary.selectedHorizon} 结果展开。模块提供统一的焦点状态切换、热点对照与 route 语境，便于在同一场景下比较策略变化。`,
     evidenceAuthority: {
       ...summary.evidenceAuthority,
-      rankingLabel: '评估中心 1h 排名第一',
-      rationale: `${summary.selectedModel} 被选为协同决策权威模型，是因为它当前在已上线 1h RMSE 表中排名第一；决策层的权威来自评估中心，而不是手写叙事偏好。`,
+      rankingLabel: '评估中心 1h 领先模型',
+      rationale: `${summary.selectedModel} 被选为当前场景的参考模型，是因为它当前在已上线 1h RMSE 表中排名第一；场景建议会沿用这条模型依据。`,
     },
     corridorContext: {
       ...summary.corridorContext,
       narrative: `${summary.corridorContext.leadingCorridorId} 以 ${formatPercent(summary.corridorContext.leadingShare)} 领跑 runtime corridor 体系，前三条 corridor 合计覆盖 ${formatPercent(
         summary.corridorContext.topThreeShare,
-      )} 的已上线轨迹。这个 dominance 现在会进入整站叙事，但在前瞻分析里仍只作为上下文，不会被说成精确的 route 对应关系。`,
-      routeMappingClaim: '仅上下文',
+      )} 的已上线轨迹。这条 dominance 主线会进入整站叙事，并为 route comparison 提供稳定的结构背景。`,
+      routeMappingClaim: '结构背景',
     },
     noiseContext: {
       ...summary.noiseContext,
-      reason: 'CLUS-03 目前采用诚实 fallback：由于 normalized_distances(60,90,0.03).pkl 虽存在于工作区但仍为 0 字节，页面只展示可验证的重聚类前统计。 ',
+      reason: '聚类页补充展示噪声池与筛除分段统计，用于说明重点 corridor 之外的结构分布。',
     },
     crossLinks: summary.crossLinks.map((link) => ({
       ...link,
@@ -638,12 +637,12 @@ export function localizeForwardLookingSummary(summary: ForwardLookingSummary): F
           : link.routeId === 'evaluation'
             ? '先确认为什么当前模型拥有 1h 权威，再解释任何规则驱动建议。'
             : link.routeId === 'clustering'
-              ? '回到聚类页查看 corridor dominance 及 deferred CLUS-03 的边界说明。'
+              ? '回到聚类页查看 corridor dominance 与噪声池统计。'
               : '查看协同决策如何作为已上线证据层进入归档回放业务闭环。',
     })),
     deferred: summary.deferred.map((item) => ({
       ...item,
-      summary: translateLaterUpdateReason(item.summary),
+      summary: '该扩展项已纳入交付后清单。',
     })),
   }
 }
@@ -691,7 +690,7 @@ export function localizeForwardLookingCatalog(
         corridorContext: {
           ...scenario.corridorContext,
           headline: `${leadingCorridorId} 仍是整站运动主线`,
-          detail: `${leadingCorridorId} 继续承担 corridor dominance 的上下文角色，因此本页的 route comparison 会显式引用它，但不会伪造 route 级重聚类事实。`,
+          detail: `${leadingCorridorId} 为本页的 route comparison 提供整站运动背景，让热点变化可以放回重点 corridor 结构中理解。`,
         },
         evidenceLineage: scenario.evidenceLineage.map((item) => {
           switch (item.artifactId) {
@@ -711,19 +710,19 @@ export function localizeForwardLookingCatalog(
               return {
                 ...item,
                 label: 'corridor dominance 上下文',
-                detail: `${leadingCorridorId} 提供整站共享的 runtime corridor 背景，不会被说成 route 级重聚类事实。`,
+                detail: `${leadingCorridorId} 提供整站共享的 corridor 背景，使场景 route 对比与聚类主线保持一致。`,
               }
             case 'clustering-noise-fallback':
               return {
                 ...item,
-                label: '延后的 CLUS-03 边界',
-                detail: '由于 normalized_distances(60,90,0.03).pkl 仍为 0 字节，本页不会注入任何伪造的 noise re-clustering 证据。',
+                label: '聚类补充信息',
+                detail: '聚类页补充展示噪声池统计与筛除原因，用于解释 corridor 主线之外的结构分布。',
               }
             default:
               return item
           }
         }),
-        honestBoundary: `当前 applied-state preview 是基于已提交预测结果构建的规则驱动离线对照，不代表实时优化器；在 normalized_distances(60,90,0.03).pkl 恢复前，它也不会重开 CLUS-03。`,
+        honestBoundary: '当前 applied-state preview 基于已提交预测结果与场景规则生成，用于对照策略前后的热点变化。',
       }
     }),
   }

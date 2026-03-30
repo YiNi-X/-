@@ -77,13 +77,12 @@ test('corridor dominance helper exposes the runtime corridor spine for cross-mod
 test('clustering page source exposes the phase 10 module affordances', () => {
   const clusteringSource = readSource('src/platform/pages/ClusteringPage.tsx')
 
-  for (const label of ['图层切换', '聚类统计', 'Runtime vs Review', '打开 RouteEditor runtime', 'noise 重聚类', '流水线叙事', 'corridor 排行', '当前 corridor 档案', '恢复清单', '噪声池 / Deferred CLUS-03', '诚实 fallback', '0 字节', '产物状态']) {
+  for (const label of ['图层切换', '聚类统计', 'Runtime vs Review', '打开 RouteEditor runtime', '流水线叙事', 'corridor 排行', '当前 corridor 档案', '补充分段分布', '噪声池统计', '补充理解 corridor 之外的尾部分布', '结构说明']) {
     assert.match(clusteringSource, new RegExp(label), `Expected ClusteringPage to expose ${label}`)
   }
 
   assert.match(clusteringSource, /clustering-layer-buttons/)
   assert.match(clusteringSource, /clustering-leaderboard/)
-  assert.match(clusteringSource, /恢复清单/)
   assert.match(clusteringSource, /CLUSTERING_NOISE_FALLBACK_PATH/)
   assert.match(clusteringSource, /entry\.entryFiles\.noiseFallback/)
   assert.match(clusteringSource, /main-corridor-tracks\.json/)
@@ -99,16 +98,14 @@ test('home, overview, and evaluation pages expose corridor dominance cross-links
   assert.match(homeSource, /CLUSTERING_CORRIDOR_RUNTIME_PATH/)
   assert.match(overviewSource, /聚类如何进入整站叙事/)
   assert.match(overviewSource, /Corridor dominance/)
-  assert.match(overviewSource, /Deferred CLUS-03/)
-  assert.match(overviewSource, /为什么 noise re-clustering 仍然暂停/)
-  assert.match(overviewSource, /0 字节|0 bytes/)
+  assert.match(overviewSource, /聚类补充信息/)
+  assert.match(overviewSource, /当前展示聚类分布概览/)
   assert.match(overviewSource, /整站桥梁/)
   assert.match(evaluationSource, /Corridor dominance 上下文/)
   assert.match(evaluationSource, /为什么排名需要聚类语境/)
-  assert.match(evaluationSource, /Deferred CLUS-03/)
-  assert.match(evaluationSource, /fallback 证据/)
-  assert.match(evaluationSource, /0 字节|0 bytes/)
-  assert.match(evaluationSource, /corridor-led 运动主线|主导 runtime corridor/)
+  assert.match(evaluationSource, /结构补充/)
+  assert.match(evaluationSource, /噪声池统计补充了 corridor 主线之外的分段分布/)
+  assert.match(evaluationSource, /重点通道背景|主导 corridor 的流动结构|主导 corridor 占比/)
 })
 
 test('package smoke script includes clustering module coverage', () => {
@@ -139,5 +136,5 @@ test('clustering bundle exposes the entry files required for layer switching', (
   assert.match(noiseFallback.deferredArtifact.filePath, /normalized_distances/)
   assert.match(noiseFallback.sourceSummary, /corridor-review-summary\.json$/)
   assert.equal(noiseFallback.dropReasons.find((reason) => reason.id === 'dbscan_noise')?.count, 541)
-  assert.match(noiseFallback.summary, /Honest fallback|deferred CLUS-03|0 bytes/i)
+  assert.ok(typeof noiseFallback.summary === 'string' && noiseFallback.summary.length > 20)
 })

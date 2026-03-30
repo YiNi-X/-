@@ -29,7 +29,7 @@ export function ForecastEvidenceOverview({ viewModel }: ForecastEvidenceOverview
         <div className="panel-title">
           <div>
             <p className="panel-kicker">模型结构</p>
-            <h2>当前模型配置的诚实呈现</h2>
+            <h2>当前模型配置摘要</h2>
           </div>
           <span className="panel-code">MODEL</span>
         </div>
@@ -56,7 +56,7 @@ export function ForecastEvidenceOverview({ viewModel }: ForecastEvidenceOverview
             <article key={link.gridId} className="forecast-drawer-card forecast-node-link-card">
               <span>{link.gridId}</span>
               <strong>Node {link.nodeId}</strong>
-              <p>{link.routeId ? `${link.routeId} 对应 corridor` : '尚未导出 route 映射'}</p>
+              <p>{link.routeId ? `${link.routeId} 对应 corridor` : '当前以节点映射为主，可结合热点视图继续查看。'}</p>
             </article>
           ))}
         </div>

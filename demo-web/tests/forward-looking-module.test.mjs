@@ -48,7 +48,7 @@ test('forward-looking bundle exposes a ready rule-driven scenario contract', () 
   assert.ok(manifest.sources['clustering-noise-fallback'])
 })
 
-test('forward-looking page source exposes phase 12 evidence, cross-links, and deferred boundaries', () => {
+test('forward-looking page source exposes phase 12 evidence, cross-links, and scenario comparison surfaces', () => {
   const source = readSource('src/platform/pages/ForwardLookingPage.tsx')
 
   for (const label of [
@@ -63,12 +63,11 @@ test('forward-looking page source exposes phase 12 evidence, cross-links, and de
     '收益切换',
     '告警对比',
     '解释链路',
-    '证据权威',
+    '模型依据',
     'Corridor dominance',
-    'Deferred CLUS-03',
-    '场景 lineage',
+    '关联模块',
     '跨页回链',
-    'Deferred 后续步骤',
+    '场景说明',
   ]) {
     assert.match(source, new RegExp(label), `Expected ForwardLookingPage to expose ${label}`)
   }
@@ -79,7 +78,7 @@ test('forward-looking page source exposes phase 12 evidence, cross-links, and de
   assert.match(source, /共享 geometry/)
   assert.match(source, /策略状态切换/)
   assert.match(source, /before\/after 切换/)
-  assert.match(source, /这里不暗示存在实时 optimizer/)
+  assert.match(source, /应用态预览与策略基线共享同一场景锚点|场景说明/)
 })
 
 test('package smoke script includes forward-looking module coverage', () => {

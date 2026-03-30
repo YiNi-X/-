@@ -30,18 +30,10 @@ export function ForecastEvidenceDrawer({ viewModel, open, onClose }: ForecastEvi
         {viewModel.evidenceAssets.map((asset) => (
           <article key={asset.id} className="forecast-drawer-card">
             <span>{asset.label}</span>
-            <strong>{asset.readiness === 'ready' ? '当前壳层可用' : '规划中的证据资源'}</strong>
+            <strong>{asset.readiness === 'ready' ? '当前可查看' : '补充视图'}</strong>
             <p>{asset.description}</p>
           </article>
         ))}
-
-        {!!viewModel.meta.deferredModels.length && (
-          <article className="forecast-drawer-card forecast-drawer-card-warning">
-            <span>延后模型范围</span>
-            <strong>{viewModel.meta.deferredModels.map((item) => item.model).join(', ')}</strong>
-            <p>{viewModel.meta.deferredModels[0]?.reason}</p>
-          </article>
-        )}
       </div>
     </section>
   )

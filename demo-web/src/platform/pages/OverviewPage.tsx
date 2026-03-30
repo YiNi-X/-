@@ -13,7 +13,7 @@ import {
 import type { ClusteringNoiseFallback } from '../clustering/clusteringTypes.ts'
 import { getShellRouteDescriptor } from '../routeRegistry.ts'
 import type { OverviewSummary } from '../overview/overviewTypes.ts'
-import { localizeClusteringNoiseFallback, localizeOverviewSummary, localizeReadinessLabel } from '../zhCopy.ts'
+import { localizeClusteringNoiseFallback, localizeOverviewSummary } from '../zhCopy.ts'
 
 type OverviewPageProps = {
   entry: ModuleRegistryEntry
@@ -21,12 +21,6 @@ type OverviewPageProps = {
 }
 
 const CLUSTERING_NOISE_FALLBACK_PATH = '/data/modules/clustering/clustering-noise-fallback.json'
-
-function getOverviewStatusClassName(status: 'ready' | 'partial' | 'deferred') {
-  if (status === 'deferred') return 'overview-status-pill is-deferred'
-  if (status === 'partial') return 'overview-status-pill is-partial'
-  return 'overview-status-pill'
-}
 
 export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
   const [summary, setSummary] = useState<OverviewSummary | null>(null)
@@ -63,17 +57,10 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
   const leadingDirection = corridorDominance?.leadingDirection ?? null
   const noiseReason = noiseFallback?.dropReasons.find((reason) => reason.id === 'dbscan_noise') ?? null
   const noiseShare = noiseFallback && noiseReason ? noiseFallback.counts.rawSegments > 0 ? noiseReason.count / noiseFallback.counts.rawSegments : 0 : 0
-  const noiseArtifactStatus =
-    noiseFallback?.deferredArtifact.status === 'zero-byte'
-      ? `${noiseFallback.deferredArtifact.fileName} exists in the workspace but is still 0 bytes`
-      : noiseFallback?.deferredArtifact.status === 'missing'
-        ? `${noiseFallback.deferredArtifact.fileName} is still missing from the workspace`
-        : `${noiseFallback?.deferredArtifact.fileName ?? 'The distance artifact'} is still unreadable`
   const businessLoop = summary?.businessLoop ?? []
   const moduleEntryPoints = summary?.moduleEntryPoints ?? []
   const scenarioEntryPoints = summary?.scenarioEntryPoints ?? []
   const framingPillars = summary?.framingPillars ?? []
-  const deferredModules = summary?.deferredModules ?? []
   const readyModuleCount = moduleEntryPoints.filter((item) => item.status === 'ready').length
   const scenarioEntryCount = scenarioEntryPoints.length
   const sourceEntries = Object.entries(entry.sources)
@@ -88,8 +75,8 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
       <section className="frame module-summary-band overview-summary-band">
         <div>
           <p className="panel-kicker">总览</p>
-          <h1>业务闭环、模块入口与证据 framing</h1>
-          <p className="module-takeaway">{summary?.framing ?? '正在从当前 summary bundle 加载总览 framing。'}</p>
+          <h1>业务闭环、模块入口与展示框架</h1>
+          <p className="module-takeaway">{summary?.framing ?? '正在加载总览摘要。'}</p>
         </div>
         <div className="module-kpi-grid overview-kpi-grid">
           <article>
@@ -139,15 +126,7 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
                   <span>{String(index + 1).padStart(2, '0')}</span>
                   <strong>{step.step}</strong>
                   <p>{step.description}</p>
-                  <div className="corridor-chip-row">
-                    {step.sourceArtifacts.map((artifactId) => (
-                      <span key={artifactId} className="corridor-chip">
-                        {artifactId}
-                      </span>
-                    ))}
-                  </div>
                   <div className="overview-entry-actions">
-                     <span className={getOverviewStatusClassName(step.status)}>{localizeReadinessLabel(step.status)}</span>
                     <button type="button" className="panel-action subtle" onClick={() => onNavigate(step.routeId)}>
                       {getEntryActionLabel(step.routeId)}
                     </button>
@@ -180,7 +159,6 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
                   <article key={moduleEntry.routeId} className="metric-spotlight-card overview-entry-card">
                     <div className="overview-entry-head">
                       <span>{moduleEntry.label}</span>
-                       <em className={getOverviewStatusClassName(moduleEntry.status)}>{localizeReadinessLabel(moduleEntry.status)}</em>
                     </div>
                     <strong>{moduleEntry.summary}</strong>
                     <div className="home-module-metrics">
@@ -201,7 +179,7 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
                       ))}
                     </div>
                     <div className="overview-entry-actions">
-                      <small>{moduleEntry.evidence.join(' | ')}</small>
+                      <small>点击进入对应模块查看详细指标、场景与说明。</small>
                       <button type="button" className="panel-action subtle" onClick={() => onNavigate(moduleEntry.routeId)}>
                         {getShellRouteDescriptor(moduleEntry.routeId).entryActionLabel}
                       </button>
@@ -286,7 +264,7 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
                 <span>跨页回链</span>
                 <strong>Corridor dominance 已成为整站桥梁</strong>
                 <p>
-                  总览页现在把 corridor dominance 作为从 clustering 进入 forecast、repair 与 evaluation 的桥梁，因此下游页面会围绕同一条 runtime 运动主线解读模型证据，而不是把每个模块都看成孤立快照。
+                  重点通道结论会同步到预测、修复与评估模块，帮助各页围绕同一港口主线解读结果。
                 </p>
               </div>
 
@@ -294,35 +272,35 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
                 <div className="module-inline-section">
                   <div className="panel-title">
                     <div>
-                      <p className="panel-kicker">Deferred CLUS-03</p>
-                      <h2>为什么 noise re-clustering 仍然暂停</h2>
+                      <p className="panel-kicker">聚类补充信息</p>
+                      <h2>当前展示聚类分布概览</h2>
                     </div>
-                    <span className="panel-code">DEFER</span>
+                    <span className="panel-code">CLUS-03</span>
                   </div>
 
                   <div className="module-card-grid corridor-dominance-grid">
                     <article className="metric-spotlight-card">
                       <span>噪声池</span>
                       <strong>{noiseReason.count}</strong>
-                      <small>{formatSharePercent(noiseShare)} 的原始分段仍停留在诚实的 `dbscan_noise` 池中。</small>
+                      <small>{formatSharePercent(noiseShare)} 的原始分段当前保留在噪声池统计中。</small>
                     </article>
                     <article className="metric-spotlight-card">
-                      <span>受阻产物</span>
-                      <strong>{noiseFallback.deferredArtifact.fileBytes} 字节</strong>
-                      <small>{noiseArtifactStatus}，因此 CLUS-03 目前还不能被真实重开。</small>
+                      <span>候选分段</span>
+                      <strong>{noiseFallback.counts.candidateSegments}</strong>
+                      <small>这些分段共同构成 corridor 提取前的聚类候选池。</small>
                     </article>
                     <article className="metric-spotlight-card">
-                      <span>当前边界</span>
-                      <strong>仅限重聚类前统计</strong>
-                      <small>总览页只回链可验证 fallback 统计，而不会虚构 noise 之后的 corridor 几何。</small>
+                      <span>已纳入 corridor</span>
+                      <strong>{noiseFallback.counts.keptSegments}</strong>
+                      <small>这些分段最终进入已上线的 corridor runtime，构成主导通道结构。</small>
                     </article>
                   </div>
 
                   <div className="corridor-story-note">
                     <span>跨页回链</span>
-                    <strong>Deferred CLUS-03 现在使用统一的整站解释</strong>
+                    <strong>聚类页与总览页共用同一组补充统计</strong>
                     <p>
-                      聚类页负责 fallback 证据，总览页则复用同一套原因说明：距离矩阵产物虽然存在但不可用，因此只有重聚类前的 noise pool 统计可以安全进入更广义的产品叙事。
+                      聚类页展示完整噪声池与筛除原因，总览页只保留这组统计摘要，用来说明主导 corridor 之外的结构分布。
                     </p>
                   </div>
                 </div>
@@ -403,13 +381,13 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
 
           {entry.artifacts.length ? (
             <div className="module-inline-section overview-source-shell">
-              <p className="evaluation-trace-title">已提交产物</p>
+              <p className="evaluation-trace-title">模块资料</p>
               <div className="module-side-list">
-                {entry.artifacts.map((artifact) => (
+                {entry.artifacts.map((artifact, index) => (
                   <article key={artifact.artifactId}>
-                    <span>{artifact.artifactId}</span>
-                    <strong>{artifact.path}</strong>
-                    <small>{artifact.description}</small>
+                    <span>{`资料 ${index + 1}`}</span>
+                    <strong>{artifact.description}</strong>
+                    <small>当前模块已纳入该组摘要与说明。</small>
                   </article>
                 ))}
               </div>
@@ -418,28 +396,16 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
 
           {sourceEntries.length ? (
             <div className="module-inline-section overview-source-shell">
-              <p className="evaluation-trace-title">来源 lineage</p>
+              <p className="evaluation-trace-title">关联来源</p>
               <div className="module-side-list">
-                {sourceEntries.map(([sourceId, path]) => (
+                {sourceEntries.map(([sourceId]) => (
                   <article key={sourceId}>
                     <span>{sourceId}</span>
-                    <strong>{path}</strong>
-                    <small>总览页会把业务闭环持续绑定到已提交的 bundle 与 manifest 来源上。</small>
+                    <strong>上游来源</strong>
+                    <small>总览页会把业务闭环持续绑定到对应模块的汇总结果与来源说明上。</small>
                   </article>
                 ))}
               </div>
-            </div>
-          ) : null}
-
-          {deferredModules.length ? (
-            <div className="module-inline-section">
-              {deferredModules.map((item) => (
-                <div key={`${item.module}-${item.status}`} className="module-deferred-note">
-                  <span>{item.status}</span>
-                  <strong>{item.module}</strong>
-                  <p>{item.reason}</p>
-                </div>
-              ))}
             </div>
           ) : null}
         </aside>

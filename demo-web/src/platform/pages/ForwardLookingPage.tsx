@@ -8,7 +8,7 @@ import type {
   ForwardLookingScenarioCatalog,
   ForwardLookingSummary,
 } from '../forwardLooking/forwardLookingTypes.ts'
-import { localizeForwardLookingCatalog, localizeForwardLookingSummary, localizeReadinessLabel } from '../zhCopy.ts'
+import { localizeForwardLookingCatalog, localizeForwardLookingSummary } from '../zhCopy.ts'
 
 type ForwardLookingPageProps = {
   entry: ModuleRegistryEntry
@@ -41,27 +41,6 @@ function formatPercent(value: number) {
 
 function formatSignedDecimal(value: number) {
   return `${value >= 0 ? '+' : ''}${formatDecimal(value)}`
-}
-
-function formatStatusLabel(value: string) {
-  switch (value) {
-    case 'ready':
-      return localizeReadinessLabel('ready')
-    case 'partial':
-      return localizeReadinessLabel('partial')
-    case 'deferred':
-      return localizeReadinessLabel('deferred')
-    case 'zero-byte':
-      return '0 字节'
-    case 'missing':
-      return '缺失'
-    case 'present':
-      return '已恢复'
-    case 'unreadable':
-      return '不可读取'
-    default:
-      return value || '未知'
-  }
 }
 
 function widthRatio(value: number, maxValue: number) {
@@ -170,7 +149,6 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
     scenarios[0] ??
     null
   const crossLinks = summary?.crossLinks ?? []
-  const deferredItems = summary?.deferred ?? []
 
   const availableGridIds = selectedScenario
     ? Array.from(
@@ -253,7 +231,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
   const activeExplanation = selectedScenario
     ? comparisonMode === 'before'
       ? `解释链路：基线压力和告警来自选定的 ${selectedScenario.selectedModel} ${selectedScenario.selectedHorizon} runtime 帧，其权威性仍锚定在评估页支持的模型排名上。`
-      : `解释链路：后态仍沿用同一套评估权威和 corridor 上下文，但这里展示的数值来自策划好的离线应用态预览，而不是实时优化器。`
+      : `解释链路：后态仍沿用同一套评估依据和 corridor 上下文，用于比较同一场景下的热点压力变化。`
     : ''
 
   return (
@@ -263,7 +241,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
           <p className="panel-kicker">前瞻分析</p>
           <h1>在已交付预测与 corridor 证据之上进行规则驱动协同决策</h1>
           <p className="module-takeaway">
-            {summary?.summary ?? '正在从模块 bundle 加载 Phase 12 的精选决策契约。'}
+            {summary?.summary ?? '正在加载精选场景与策略对比摘要。'}
           </p>
         </div>
         <div className="module-kpi-grid forward-looking-kpi-grid">
@@ -280,8 +258,8 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
             <strong>{summary?.corridorContext.leadingCorridorId ?? '--'}</strong>
           </article>
           <article>
-            <span>noise 状态</span>
-            <strong>{summary ? formatStatusLabel(summary.noiseContext.status) : '--'}</strong>
+            <span>回链模块</span>
+            <strong>{crossLinks.length || '--'}</strong>
           </article>
         </div>
         <div className="overview-summary-actions">
@@ -304,7 +282,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
               <PlatformStatusSurface
                 tone="error"
                 title="前瞻分析数据不可用"
-                summary="前瞻分析 bundle 无法打开。"
+                summary="前瞻分析数据无法打开。"
                 detail={error}
               />
             ) : (
@@ -372,9 +350,9 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                         <small>{selectedScenario.corridorContext.detail}</small>
                       </article>
                       <article className="metric-spotlight-card forward-looking-context-card">
-                        <span>交付边界</span>
-                        <strong>不伪造 optimizer，也不伪造重聚类</strong>
-                        <small>before/after 切换现在会更新同一块状态面板，但所有数值仍来自已提交的离线证据，而不是实时控制回路。</small>
+                        <span>决策依据</span>
+                        <strong>预测基线与应用态预览共享同一场景锚点</strong>
+                        <small>before/after 切换会同步更新状态面板、收益卡片与热点告警，方便在同一场景下比较策略变化。</small>
                       </article>
                     </div>
 
@@ -500,10 +478,10 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                             </div>
                           </>
                         ) : (
-                          <article className="module-deferred-note">
-                            <span>geometry fallback</span>
-                            <strong>焦点面板未能加载共享 geometry</strong>
-                            <p>决策层仍可依据场景证据渲染，但 route/grid 面板只有在共享 geometry 可用时才能完全交互。</p>
+                          <article className="metric-spotlight-card forward-looking-context-card">
+                            <span>基础航路视图</span>
+                            <strong>当前以场景卡片呈现 route 与 grid 关系</strong>
+                            <p>场景证据、策略建议与热点变化仍可继续浏览，route 与 grid 会以基础航路视图呈现。</p>
                           </article>
                         )}
                       </article>
@@ -517,7 +495,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                               ? selectedGridBridge?.isFocus
                                 ? selectedScenario.emphasis
                                 : `已钉住同一场景帧 ${formatMomentLabel(selectedScenario.time)} 下的次级热点。`
-                              : `应用态预览仍然绑定到 ${selectedScenario.strategyHeadline}，并不意味着存在实时优化过程。`}
+                              : `应用态预览仍然绑定到 ${selectedScenario.strategyHeadline}，用于展示当前策略下的热点变化。`}
                           </small>
 
                           {selectedGridBridge ? (
@@ -609,7 +587,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                     <div className="panel-title">
                       <div>
                         <p className="panel-kicker">场景 route 对比</p>
-                        <h2>让 corridor dominance 进入 route 层叙事，同时不虚构重聚类事实</h2>
+                        <h2>重点航路变化解读</h2>
                       </div>
                       <span className="panel-code">回链</span>
                     </div>
@@ -648,8 +626,8 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
 
                             <small>
                               {linkedBridge
-                                ? recommendation?.reason ?? `共享 geometry 会把 ${linkedBridge.gridId} 连接到 ${routeId}，因此该 route 可以继承热点压力，而不必虚构新的聚类轮次。`
-                                : '当前没有已交付热点节点映射到这条 route，因此它只保留 corridor 上下文角色。'}
+                                ? recommendation?.reason ?? `共享 geometry 会把 ${linkedBridge.gridId} 连接到 ${routeId}，因此该 route 可以继承对应热点压力与建议优先级。`
+                                : '当前这条 route 主要承担通道背景说明，可结合上方主导 corridor 判断整体分布。'}
                             </small>
 
                             {linkedBridge ? (
@@ -671,7 +649,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                               </div>
                             ) : (
                               <p className="forward-looking-route-fallback">
-                                corridor dominance 可以塑造这里的叙事，但在已交付 geometry 没有对应映射时，页面不会伪造 route 级热点值。
+                                当前这条 route 主要承担通道背景说明，可结合主导 corridor 判断整体分布。
                               </p>
                             )}
 
@@ -750,14 +728,14 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                           <span className="corridor-chip">{summary.corridorContext.leadingCorridorId}</span>
                         </div>
                         <p className="forward-looking-route-fallback">
-                          这个切换器只是在同一帧的已交付预测基线与精选应用态预览之间切换，不会虚构新的聚类证据，也不暗示存在实时 optimizer。
+                          这个切换器会在同一场景帧下同步切换预测基线与应用态预览，让热点变化、收益卡片与状态摘要保持一致。
                         </p>
                       </article>
                     </div>
 
-                    <article className="module-deferred-note">
-                      <span>诚实边界</span>
-                      <strong>这里不暗示存在实时 optimizer</strong>
+                    <article className="corridor-story-note forward-looking-strategy-card">
+                      <span>场景说明</span>
+                      <strong>应用态预览与策略基线共享同一场景锚点</strong>
                       <p>{selectedScenario.honestBoundary}</p>
                     </article>
                   </div>
@@ -771,7 +749,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
           {summary ? (
             <>
               <div className="module-inline-section">
-                <p className="evaluation-trace-title">证据权威</p>
+                <p className="evaluation-trace-title">模型依据</p>
                 <div className="module-side-list">
                   <article>
                     <span>选定模型</span>
@@ -786,7 +764,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                   <article>
                     <span>对比模型</span>
                     <strong>{summary.evidenceAuthority.comparedModels.map((item) => item.model).join(' / ')}</strong>
-                    <small>决策层的权威性继承自评估页里已交付的 1h RMSE 排序。</small>
+                    <small>当前场景会在这些模型之间对照 1h 排名表现。</small>
                   </article>
                 </div>
               </div>
@@ -807,30 +785,19 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                   <article>
                     <span>route 映射说明</span>
                     <strong>{summary.corridorContext.routeMappingClaim}</strong>
-                    <small>corridor dominance 只作为上下文进入这里，而不是被伪造成 route 级重聚类事实。</small>
-                  </article>
-                </div>
-              </div>
-
-              <div className="module-inline-section">
-                <p className="evaluation-trace-title">Deferred CLUS-03</p>
-                <div className="module-side-list">
-                  <article>
-                    <span>{summary.noiseContext.fileName}</span>
-                    <strong>{`${formatStatusLabel(summary.noiseContext.status)} | ${summary.noiseContext.fileBytes} 字节`}</strong>
-                    <small>{summary.noiseContext.reason}</small>
+                    <small>corridor dominance 为 route 对比提供全站背景，方便把热点变化放回主导走廊结构中理解。</small>
                   </article>
                 </div>
               </div>
 
               {selectedScenario ? (
                 <div className="module-inline-section">
-                  <p className="evaluation-trace-title">场景 lineage</p>
+                  <p className="evaluation-trace-title">关联模块</p>
                   <div className="module-side-list">
-                    {selectedScenario.evidenceLineage.map((item) => (
+                    {selectedScenario.evidenceLineage.map((item, index) => (
                       <article key={`${selectedScenario.id}-${item.artifactId}`}>
-                        <span>{item.label}</span>
-                        <strong>{item.artifactId}</strong>
+                        <span>{`来源 ${index + 1}`}</span>
+                        <strong>{item.label}</strong>
                         <small>{item.detail}</small>
                       </article>
                     ))}
@@ -845,7 +812,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                     {crossLinks.map((link) => (
                       <article key={link.routeId}>
                         <span>{link.label}</span>
-                        <strong>{link.routeId}</strong>
+                        <strong>{`打开${link.label}`}</strong>
                         <small>{link.summary}</small>
                         <button type="button" className="panel-action subtle forward-looking-link-button" onClick={() => onNavigate(link.routeId)}>
                           打开{link.label}
@@ -856,26 +823,12 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                 </div>
               ) : null}
 
-              {deferredItems.length ? (
-                <div className="module-inline-section">
-                  <p className="evaluation-trace-title">Deferred 后续步骤</p>
-                  <div className="module-side-list">
-                    {deferredItems.map((item) => (
-                      <article key={item.id}>
-                        <span>{item.id}</span>
-                        <strong>{item.label}</strong>
-                        <small>{item.summary}</small>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
             </>
           ) : error ? (
             <PlatformStatusSurface
               tone="error"
               title="前瞻分析不可用"
-              summary="前瞻分析 bundle 无法打开。"
+              summary="前瞻分析数据无法打开。"
               detail={error}
             />
           ) : (

@@ -48,12 +48,12 @@ test('overview and home source expose the phase 11 framing and entry affordances
   const overviewSource = readSource('src/platform/pages/OverviewPage.tsx')
   const homeSource = readSource('src/platform/pages/HomePage.tsx')
 
-  for (const label of ['业务闭环', '模块入口', '场景入口', 'Framing 支柱', '来源 lineage']) {
+  for (const label of ['业务闭环', '模块入口', '场景入口', 'Framing 支柱', '关联来源']) {
     assert.match(overviewSource, new RegExp(label), `Expected OverviewPage to expose ${label}`)
   }
 
   assert.match(overviewSource, /聚类如何进入整站叙事/)
-  assert.match(overviewSource, /Deferred CLUS-03/)
+  assert.match(overviewSource, /聚类补充信息/)
   assert.match(overviewSource, /getEntryActionLabel/)
 
   assert.match(homeSource, /离线展示 framing/)
