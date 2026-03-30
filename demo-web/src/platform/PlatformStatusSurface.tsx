@@ -21,13 +21,13 @@ type PlatformStatusSurfaceProps = {
 function getEyebrow(tone: PlatformStatusTone) {
   switch (tone) {
     case 'loading':
-      return 'Loading'
+      return '加载中'
     case 'unavailable':
-      return 'Unavailable'
+      return '不可用'
     case 'error':
-      return 'Error'
+      return '错误'
     case 'deferred':
-      return 'Deferred'
+      return '延后'
   }
 }
 
@@ -52,13 +52,13 @@ export function PlatformStatusSurface({
 
       {detail ? (
         <div className="platform-status-detail">
-          <span>Detail</span>
+          <span>详情</span>
           <strong>{detail}</strong>
         </div>
       ) : null}
 
       {actions.length ? (
-        <div className="platform-status-actions" role="group" aria-label={`${tone} actions`}>
+        <div className="platform-status-actions" role="group" aria-label={`${tone} 操作`}>
           {actions.map((action) => (
             <button
               key={action.label}

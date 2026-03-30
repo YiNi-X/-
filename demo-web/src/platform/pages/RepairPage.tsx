@@ -15,22 +15,22 @@ export function RepairPage({ entry, onNavigate }: RepairPageProps) {
   const repair = useRepairModule(entry)
 
   return (
-    <section className="module-page repair-page" data-deferred-label="Not available in this version">
+    <section className="module-page repair-page" data-deferred-label="当前版本暂未提供">
       {repair.error ? (
         <PlatformStatusSurface
           tone="error"
-          title="Repair data unavailable"
-          summary="The repair sample files could not be opened."
+          title="修复数据不可用"
+          summary="修复样本文件无法打开。"
           detail={repair.error}
-          actions={[{ label: 'Return to evaluation', onClick: () => onNavigate('evaluation') }]}
+          actions={[{ label: '返回评估中心', onClick: () => onNavigate('evaluation') }]}
         />
       ) : repair.loading || !repair.viewModel ? (
         <section className="repair-loading-shell">
           <section className="frame module-summary-band repair-summary-band">
             <div>
-              <p className="panel-kicker">Trajectory Repair</p>
-              <h1>Loading curated repair cockpit</h1>
-              <p className="module-takeaway">Preparing sample trajectories, notebook-derived errors, and model ranking evidence.</p>
+              <p className="panel-kicker">轨迹修复</p>
+              <h1>正在加载修复驾驶舱</h1>
+              <p className="module-takeaway">正在准备样本轨迹、notebook 导出的误差曲线与模型排名证据。</p>
             </div>
             <div className="module-skeleton-grid repair-summary-skeleton-grid">
               <div className="module-skeleton-card"></div>

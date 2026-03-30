@@ -14,11 +14,11 @@ export function ForecastEvidenceDrawer({ viewModel, open, onClose }: ForecastEvi
     <section className="frame forecast-evidence-drawer">
       <div className="panel-title">
         <div>
-          <p className="panel-kicker">Evidence Drawer</p>
-          <h2>Research-facing support without breaking the cockpit flow</h2>
+          <p className="panel-kicker">证据抽屉</p>
+          <h2>在不打断驾驶舱节奏的前提下补充研究证据</h2>
         </div>
         <button type="button" className="drawer-close" onClick={onClose}>
-          Close
+          关闭
         </button>
       </div>
 
@@ -30,14 +30,14 @@ export function ForecastEvidenceDrawer({ viewModel, open, onClose }: ForecastEvi
         {viewModel.evidenceAssets.map((asset) => (
           <article key={asset.id} className="forecast-drawer-card">
             <span>{asset.label}</span>
-            <strong>{asset.readiness === 'ready' ? 'Ready in current shell' : 'Planned evidence asset'}</strong>
+            <strong>{asset.readiness === 'ready' ? '当前壳层可用' : '规划中的证据资源'}</strong>
             <p>{asset.description}</p>
           </article>
         ))}
 
         {!!viewModel.meta.deferredModels.length && (
           <article className="forecast-drawer-card forecast-drawer-card-warning">
-            <span>Deferred model scope</span>
+            <span>延后模型范围</span>
             <strong>{viewModel.meta.deferredModels.map((item) => item.model).join(', ')}</strong>
             <p>{viewModel.meta.deferredModels[0]?.reason}</p>
           </article>

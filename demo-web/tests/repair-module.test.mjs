@@ -43,8 +43,8 @@ test('repair view model exposes curated samples, model switching, and full metri
   assert.equal(typeof viewModel.metrics.selectedModel.r2, 'number')
   assert.equal(typeof viewModel.metrics.selectedModel.ade, 'number')
   assert.equal(typeof viewModel.metrics.selectedModel.hausdorffDistance, 'number')
-  assert.match(viewModel.readiness.trajectoryMessage, /Phase 6 export|live replay/i)
-  assert.match(viewModel.readiness.errorMessage, /point order/i)
+  assert.match(viewModel.readiness.trajectoryMessage, /已提交导出结果|实时回放|live replay/i)
+  assert.match(viewModel.readiness.errorMessage, /点序号|point order/i)
 })
 
 test('repair sources expose the full metric-summary language needed for REPR-05', () => {
@@ -52,12 +52,12 @@ test('repair sources expose the full metric-summary language needed for REPR-05'
   const detailSource = readSource('src/platform/repair/RepairDetailGrid.tsx')
   const pageSource = readSource('src/platform/pages/RepairPage.tsx')
 
-  for (const label of ['R-squared', 'ADE', 'Hausdorff', 'DTW', 'RMSE', 'MAE']) {
+  for (const label of ['R²', 'ADE', 'Hausdorff', 'DTW', 'RMSE', 'MAE']) {
     assert.match(primarySource + detailSource, new RegExp(label), `Expected repair UI to surface ${label}`)
   }
 
-  assert.match(detailSource, /Repair error chart/)
-  assert.match(detailSource, /Sample Ranking/)
+  assert.match(detailSource, /修复误差图/)
+  assert.match(detailSource, /样本排名/)
   assert.match(pageSource, /RepairPrimaryStage/)
   assert.match(pageSource, /RepairDetailGrid/)
 })

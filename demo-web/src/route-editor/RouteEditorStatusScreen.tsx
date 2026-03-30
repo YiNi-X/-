@@ -9,44 +9,44 @@ export function RouteEditorStatusScreen({ tracksDataError }: RouteEditorStatusSc
     <main className="route-editor-shell route-editor-status-shell">
       <aside className="editor-sidebar">
         <div className="editor-panel editor-status-panel">
-          <p className="editor-kicker">{isUnavailable ? 'Route Data Unavailable' : 'Preparing Route Workspace'}</p>
-          <h1>{isUnavailable ? 'Corridor data unavailable' : 'Loading validated corridor data'}</h1>
+          <p className="editor-kicker">{isUnavailable ? '航路数据不可用' : '正在准备航路工作区'}</p>
+          <h1>{isUnavailable ? 'corridor 数据不可用' : '正在加载已校验的 corridor 数据'}</h1>
           <p className="editor-copy">
             {isUnavailable
-              ? 'RouteEditor stopped before enabling editing or export because the curated main-corridor payload is missing or malformed.'
-              : 'RouteEditor is validating the committed main-corridor payload before enabling corridor inspection, edits, and exports.'}
+              ? '由于精选的 main-corridor 载荷缺失或格式异常，RouteEditor 在启用编辑和导出前就已停止。'
+              : 'RouteEditor 正在校验已提交的 main-corridor 载荷，只有通过后才会开放 corridor 查看、编辑与导出。'}
           </p>
         </div>
 
         <div className="editor-panel editor-status-panel">
           <div className="editor-panel-head">
-            <h2>Runtime Source</h2>
-            <span>{isUnavailable ? 'Unavailable' : 'Checking'}</span>
+            <h2>runtime 来源</h2>
+            <span>{isUnavailable ? '不可用' : '检查中'}</span>
           </div>
           <div className="editor-meta-grid">
             <div>
-              <small>Expected asset</small>
+              <small>期望产物</small>
               <strong>public/data/main-corridor-tracks.json</strong>
             </div>
             <div>
-              <small>Contract path</small>
+              <small>契约路径</small>
               <strong>/data/main-corridor-tracks.json</strong>
             </div>
           </div>
           <p className="traffic-note">
             {isUnavailable
-              ? 'Editing, selection, and JSON export remain disabled until the corridor payload validates successfully.'
-              : 'The editor will open only after the curated corridor payload passes the shared runtime contract boundary.'}
+              ? '在 corridor 载荷通过校验之前，编辑、选择和 JSON 导出都会保持禁用。'
+              : '只有当精选 corridor 载荷通过共享 runtime 契约边界后，编辑器才会真正打开。'}
           </p>
         </div>
 
         <div className="editor-panel editor-status-panel">
           <div className="editor-panel-head">
-            <h2>{isUnavailable ? 'Contract detail' : 'Status detail'}</h2>
-            <span>{isUnavailable ? 'Blocking' : 'Loading'}</span>
+            <h2>{isUnavailable ? '契约详情' : '状态详情'}</h2>
+            <span>{isUnavailable ? '阻塞中' : '加载中'}</span>
           </div>
           <p className={isUnavailable ? 'editor-warning editor-warning-static' : 'traffic-note editor-status-note'}>
-            {tracksDataError || 'Validating corridor summaries, track membership, point counts, and point geometry before the editing workspace becomes available.'}
+            {tracksDataError || '在编辑工作区可用前，系统会先校验 corridor 摘要、轨迹归属、点数量与点位 geometry。'}
           </p>
         </div>
       </aside>
@@ -54,23 +54,23 @@ export function RouteEditorStatusScreen({ tracksDataError }: RouteEditorStatusSc
       <section className="editor-canvas-shell">
         <div className="editor-toolbar">
           <div>
-            <strong>Workspace</strong>
-            <span>{isUnavailable ? 'Unavailable' : 'Preparing validated data'}</span>
+            <strong>工作区</strong>
+            <span>{isUnavailable ? '不可用' : '正在准备已校验数据'}</span>
           </div>
           <div>
-            <strong>Editing Surface</strong>
-            <span>{isUnavailable ? 'Locked' : 'Waiting for corridor payload'}</span>
+            <strong>编辑面板</strong>
+            <span>{isUnavailable ? '已锁定' : '等待 corridor 载荷'}</span>
           </div>
         </div>
 
         <div className="editor-status-stage">
           <div className="editor-status-stage-copy">
-            <span>{isUnavailable ? 'No editable corridor data' : 'Validation in progress'}</span>
-            <strong>{isUnavailable ? 'RouteEditor is paused until data is repaired.' : 'Building the corridor workspace from committed data.'}</strong>
+            <span>{isUnavailable ? '没有可编辑的 corridor 数据' : '校验进行中'}</span>
+            <strong>{isUnavailable ? '在数据修复前，RouteEditor 将保持暂停。' : '正在用已提交数据构建 corridor 工作区。'}</strong>
             <p>
               {isUnavailable
-                ? 'Repair or replace the curated main-corridor payload, then reload the page to restore the editor.'
-                : 'The stage will remain disabled until the runtime loader confirms the corridor file is structurally valid.'}
+                ? '请修复或替换精选 main-corridor 载荷，然后刷新页面以恢复编辑器。'
+                : '在 runtime loader 确认 corridor 文件结构有效前，舞台区域会保持禁用。'}
             </p>
           </div>
         </div>

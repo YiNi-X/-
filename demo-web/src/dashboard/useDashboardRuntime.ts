@@ -11,6 +11,7 @@ import {
 import type { AisPlaybackData, FlowForecastData, GeometryConfig } from '../sharedContracts'
 import { formatRuntimeLoadFailure, loadAisPlaybackResource, loadFlowForecastResource, loadGeometryConfigResource } from '../runtimeData'
 import { SHARED_GEOMETRY_PATH } from './dashboardUtils'
+import { localizeFlowForecastData } from '../platform/zhCopy.ts'
 
 export function useDashboardRuntime(preferredDatasetId?: string | null) {
   const [aisPlayback, setAisPlayback] = useState<AisPlaybackData | null>(null)
@@ -34,7 +35,7 @@ export function useDashboardRuntime(preferredDatasetId?: string | null) {
   }, [availableDatasets.length, datasetCatalog, selectedDatasetId])
 
   const selectedDatasetLabel = useMemo(
-    () => selectedDataset?.label ?? (datasetCatalog ? 'No operable dataset' : 'Waiting for catalog'),
+    () => selectedDataset?.label ?? (datasetCatalog ? '暂无可用数据集' : '等待数据目录'),
     [datasetCatalog, selectedDataset],
   )
 
@@ -115,7 +116,7 @@ export function useDashboardRuntime(preferredDatasetId?: string | null) {
         }
 
         setAisPlayback(playbackResult.data)
-        setFlowForecast(forecastResult.data)
+        setFlowForecast(localizeFlowForecastData(forecastResult.data))
         setDatasetLoadError('')
       })()
     }
@@ -129,7 +130,7 @@ export function useDashboardRuntime(preferredDatasetId?: string | null) {
   const dashboardUnavailableReason =
     runtimeLoadError ||
     (datasetCatalog && !selectedDataset
-      ? 'Traffic data unavailable. The dataset catalog does not currently provide a validated AIS playback and forecast pair.'
+      ? '交通数据暂不可用。当前数据集目录中没有同时通过校验的 AIS 回放与流量预测配对。'
       : '')
   const dashboardReady = Boolean(datasetCatalog && selectedDataset && geometryConfig && aisPlayback && flowForecast)
   const dashboardLoading = !dashboardUnavailableReason && !dashboardReady

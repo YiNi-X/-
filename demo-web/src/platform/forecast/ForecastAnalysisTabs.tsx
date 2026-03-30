@@ -23,10 +23,10 @@ type ForecastAnalysisTabsProps = {
 }
 
 const TAB_OPTIONS: Array<{ id: ForecastAnalysisTabId; label: string }> = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'grid-focus', label: 'Grid Focus' },
-  { id: 'node-view', label: 'Node View' },
-  { id: 'evidence', label: 'Evidence' },
+  { id: 'overview', label: '概览' },
+  { id: 'grid-focus', label: '网格焦点' },
+  { id: 'node-view', label: '节点视图' },
+  { id: 'evidence', label: '证据' },
 ]
 
 function renderOverview(viewModel: ForecastViewModel) {
@@ -37,21 +37,21 @@ function renderOverview(viewModel: ForecastViewModel) {
       <section className="forecast-tab-panel">
         <div className="panel-title">
           <div>
-            <p className="panel-kicker">Narrative evidence</p>
-            <h2>Current frame explanation</h2>
+            <p className="panel-kicker">叙事证据</p>
+            <h2>当前帧解释</h2>
           </div>
           <span className="panel-code">TEXT</span>
         </div>
         <div className="forecast-narrative-shell">
           <article className="forecast-narrative-card">
-            <span>Summary</span>
-            <strong>{viewModel.frame?.narrative.strategy?.headline ?? 'Awaiting strategy copy'}</strong>
+            <span>摘要</span>
+            <strong>{viewModel.frame?.narrative.strategy?.headline ?? '等待策略文案'}</strong>
             <p>{viewModel.frame?.narrative.strategy?.summary ?? viewModel.frame?.narrative.summary}</p>
           </article>
           <div className="forecast-log-list">
             {(viewModel.frame?.narrative.logs ?? []).slice(0, 3).map((logLine) => (
               <article key={logLine}>
-                <span>Replay log</span>
+                <span>回放日志</span>
                 <small>{logLine}</small>
               </article>
             ))}
@@ -95,9 +95,9 @@ function renderGridFocus(
         ) : (
           <PlatformStatusSurface
             tone="unavailable"
-            title="Grid focus unavailable"
-            summary="The selected frame does not expose hotspot comparison data."
-            detail="Choose another frame from the main timeline to continue."
+            title="网格焦点不可用"
+            summary="当前帧没有提供热点对比数据。"
+            detail="请在主时间线上选择另一帧继续查看。"
           />
         )}
 
@@ -111,13 +111,13 @@ function renderGridFocus(
 function getToolbarNote(selectedTab: ForecastAnalysisTabId, selectedHorizon: string, viewModel: ForecastViewModel) {
   switch (selectedTab) {
     case 'overview':
-      return 'Horizon-level quality and frame narrative for the current model.'
+      return '查看当前模型在不同 horizon 上的质量表现，以及当前帧的叙事解释。'
     case 'grid-focus':
-      return `Grid-level comparison for ${selectedHorizon} around ${viewModel.summaryBand.focusGridId ?? 'the current focus grid'}.`
+      return `围绕 ${viewModel.summaryBand.focusGridId ?? '当前焦点网格'}，查看 ${selectedHorizon} 的网格级对比。`
     case 'node-view':
-      return 'Reserved node-level bridge that stays explicit about missing 60-node runtime exports.'
+      return '节点级桥接视图被明确保留，用来说明当前仍缺少 60 节点 runtime 导出。'
     case 'evidence':
-      return 'Evidence summaries stay inside the page, while the full drawer remains one click away.'
+      return '证据摘要留在页内，完整证据抽屉保持一键可达。'
   }
 }
 
@@ -137,33 +137,33 @@ export function ForecastAnalysisTabs({
     <section className={`frame forecast-analysis-shell${open ? ' is-open' : ''}`}>
       <div className="forecast-analysis-header">
         <div className="forecast-analysis-copy">
-          <p className="panel-kicker">Detailed Analysis</p>
-          <h2>Metric evidence, grid pressure, and staged research surfaces</h2>
+          <p className="panel-kicker">详细分析</p>
+          <h2>指标证据、网格压力与分阶段研究视图</h2>
           <p>
-            Open this layer when you want to explain why the selected frame matters. Keep the main cockpit for the core story, and use this area for proof.
+            当你需要解释当前帧为什么重要时，再展开这一层。主驾驶舱负责核心叙事，这里负责证据与细节。
           </p>
         </div>
 
         <div className="forecast-analysis-actions">
           <button type="button" className="segmented-button" onClick={onOpenEvidenceDrawer}>
-            Evidence Drawer
+            证据抽屉
           </button>
           <button type="button" className={`segmented-button${open ? ' active' : ''}`} onClick={onToggleOpen}>
-            {open ? 'Hide Details' : 'Show Details'}
+            {open ? '收起详情' : '展开详情'}
           </button>
         </div>
       </div>
 
       {!open ? (
         <div className="forecast-analysis-collapsed-note">
-          <span>Collapsed by default</span>
-          <strong>Use this when the reviewer asks for deeper metric, grid, node, or evidence context.</strong>
-          <small>Node-level paper views remain staged for later exports and are intentionally kept explicit instead of hidden.</small>
+          <span>默认收起</span>
+          <strong>当评审者需要更深的指标、网格、节点或证据上下文时，再展开这一层。</strong>
+          <small>节点级论文视图仍保留给后续导出版本，页面会明确说明，而不是悄悄隐藏。</small>
         </div>
       ) : (
         <>
           <div className="forecast-analysis-toolbar">
-            <div className="forecast-analysis-tab-row" role="tablist" aria-label="Forecast analysis tabs">
+            <div className="forecast-analysis-tab-row" role="tablist" aria-label="预测分析标签页">
               {TAB_OPTIONS.map((tab) => (
                 <button
                   key={tab.id}

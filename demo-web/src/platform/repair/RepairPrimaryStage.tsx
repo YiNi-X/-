@@ -18,9 +18,9 @@ type RepairPrimaryStageProps = {
 }
 
 const ERROR_OPTIONS: Array<{ id: RepairErrorMetricKey; label: string }> = [
-  { id: 'euclideanDistance', label: 'Euclidean' },
-  { id: 'lonDifference', label: 'Lon diff' },
-  { id: 'latDifference', label: 'Lat diff' },
+  { id: 'euclideanDistance', label: '欧氏距离' },
+  { id: 'lonDifference', label: '经度差' },
+  { id: 'latDifference', label: '纬度差' },
 ]
 
 function metricLabel(metric: RepairErrorMetricKey) {
@@ -49,8 +49,8 @@ export function RepairPrimaryStage({
       <section className="frame repair-primary-panel">
         <div className="panel-title">
           <div>
-            <p className="panel-kicker">Primary Stage</p>
-            <h2>Trajectory reconstruction comparison</h2>
+            <p className="panel-kicker">主舞台</p>
+            <h2>轨迹重建对比</h2>
           </div>
           <span className="panel-code">{viewModel.summaryBand.selectedModelLabel}</span>
         </div>
@@ -71,14 +71,14 @@ export function RepairPrimaryStage({
       <aside className="frame repair-control-rail">
         <div className="panel-title">
           <div>
-            <p className="panel-kicker">Control Rail</p>
-            <h2>Sample, model, and layer interpretation</h2>
+            <p className="panel-kicker">控制侧栏</p>
+            <h2>样本、模型与图层解释</h2>
           </div>
           <span className="panel-code">REPAIR</span>
         </div>
 
         <section className="repair-control-group">
-          <span className="repair-control-label">Sample</span>
+          <span className="repair-control-label">样本</span>
           <div className="repair-segmented-row">
             {viewModel.sampleSelector.items.map((sample) => (
               <button
@@ -94,7 +94,7 @@ export function RepairPrimaryStage({
         </section>
 
         <section className="repair-control-group">
-          <span className="repair-control-label">Model</span>
+          <span className="repair-control-label">模型</span>
           <div className="repair-segmented-row">
             {viewModel.modelSelector.items.map((model) => (
               <button
@@ -110,16 +110,16 @@ export function RepairPrimaryStage({
         </section>
 
         <section className="repair-control-group">
-          <span className="repair-control-label">Visible layers</span>
+          <span className="repair-control-label">可见图层</span>
           <div className="repair-layer-toggle-grid">
-            <button type="button" className={`segmented-button${showMissing ? ' active' : ''}`} onClick={onToggleMissing}>Missing</button>
-            <button type="button" className={`segmented-button${showGroundTruth ? ' active' : ''}`} onClick={onToggleGroundTruth}>Truth</button>
-            <button type="button" className={`segmented-button${showRepair ? ' active' : ''}`} onClick={onToggleRepair}>Repair</button>
+            <button type="button" className={`segmented-button${showMissing ? ' active' : ''}`} onClick={onToggleMissing}>缺失</button>
+            <button type="button" className={`segmented-button${showGroundTruth ? ' active' : ''}`} onClick={onToggleGroundTruth}>真实</button>
+            <button type="button" className={`segmented-button${showRepair ? ' active' : ''}`} onClick={onToggleRepair}>修复</button>
           </div>
         </section>
 
         <section className="repair-control-group">
-          <span className="repair-control-label">Error focus</span>
+          <span className="repair-control-label">误差焦点</span>
           <div className="repair-segmented-row">
             {ERROR_OPTIONS.map((option) => (
               <button
@@ -135,9 +135,9 @@ export function RepairPrimaryStage({
         </section>
 
         <section className="repair-rail-card">
-          <span>Current reading</span>
+          <span>当前读数</span>
           <strong>{viewModel.summaryBand.selectedModelLabel}</strong>
-          <small>{metricLabel(selectedErrorMetric)} highlighted below by point index</small>
+          <small>下方按点序号高亮显示 {metricLabel(selectedErrorMetric)}</small>
         </section>
 
         {selectedMetrics ? (
@@ -153,14 +153,14 @@ export function RepairPrimaryStage({
               <small>Hausdorff {selectedMetrics.hausdorffDistance.toExponential(3)}</small>
             </article>
             <article className="repair-rail-card">
-              <span>R-squared / ADE</span>
+              <span>R² / ADE</span>
               <strong>{selectedMetrics.r2.toFixed(6)}</strong>
               <small>ADE {selectedMetrics.ade.toExponential(3)}</small>
             </article>
             <article className="repair-rail-card">
-              <span>Lon / Lat mean</span>
+              <span>经度 / 纬度均值</span>
               <strong>{selectedMetrics.lonDifferenceMean.toExponential(3)}</strong>
-              <small>Lat {selectedMetrics.latDifferenceMean.toExponential(3)}</small>
+              <small>纬度 {selectedMetrics.latDifferenceMean.toExponential(3)}</small>
             </article>
           </section>
         ) : null}

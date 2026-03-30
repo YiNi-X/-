@@ -52,23 +52,23 @@ test('forward-looking page source exposes phase 12 evidence, cross-links, and de
   const source = readSource('src/platform/pages/ForwardLookingPage.tsx')
 
   for (const label of [
-    'Curated Scenarios',
-    'Focus Surface',
-    'State Summary',
-    'Route and Grid Context',
-    'Focus Grid Pressure',
-    'Strategy Recommendations',
-    'Recommendation Stack',
-    'Scenario Route Comparison',
-    'Benefit Switching',
-    'Alert Comparison',
-    'Explanation linkage',
-    'Evidence Authority',
-    'Corridor Dominance',
+    '精选场景',
+    '焦点面板',
+    '状态摘要',
+    'Route 与 Grid 语境',
+    '焦点 Grid 压力',
+    '策略建议',
+    '建议栈',
+    '场景 route 对比',
+    '收益切换',
+    '告警对比',
+    '解释链路',
+    '证据权威',
+    'Corridor dominance',
     'Deferred CLUS-03',
-    'Scenario Lineage',
-    'Cross-links',
-    'Deferred Next Steps',
+    '场景 lineage',
+    '跨页回链',
+    'Deferred 后续步骤',
   ]) {
     assert.match(source, new RegExp(label), `Expected ForwardLookingPage to expose ${label}`)
   }
@@ -76,10 +76,10 @@ test('forward-looking page source exposes phase 12 evidence, cross-links, and de
   assert.match(source, /loadPublicJson<ForwardLookingSummary>/)
   assert.match(source, /loadPublicJson<ForwardLookingScenarioCatalog>/)
   assert.match(source, /loadPublicJson<GeometryConfig>/)
-  assert.match(source, /Interactive focus route\/grid panel grounded in shared geometry/)
-  assert.match(source, /Strategy state toggle/)
-  assert.match(source, /The before\/after toggle now updates one shared state surface/)
-  assert.match(source, /No live optimizer is implied here/)
+  assert.match(source, /共享 geometry/)
+  assert.match(source, /策略状态切换/)
+  assert.match(source, /before\/after 切换/)
+  assert.match(source, /这里不暗示存在实时 optimizer/)
 })
 
 test('package smoke script includes forward-looking module coverage', () => {

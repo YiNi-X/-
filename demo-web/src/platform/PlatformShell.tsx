@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { PlatformStatusSurface } from './PlatformStatusSurface.tsx'
 import type { PlatformShellOptions, PlatformShellResult } from './usePlatformShell.ts'
 import { usePlatformShell } from './usePlatformShell.ts'
+import { localizeReadinessLabel } from './zhCopy.ts'
 
 type PlatformShellProps = PlatformShellOptions & {
   children?: (shell: PlatformShellResult) => ReactNode
@@ -12,9 +13,9 @@ function renderShellBody(shell: PlatformShellResult, children?: (shell: Platform
     return (
       <PlatformStatusSurface
         tone="loading"
-        title="Loading website shell"
-        summary="The shell is validating the dataset catalog and module registry before opening the selected workspace."
-        detail={shell.shellUnavailableReason || `Preparing ${shell.selectedDatasetLabel}.`}
+        title="正在加载网站壳层"
+        summary="壳层正在校验数据集目录与模块注册表，然后才会打开当前工作区。"
+        detail={shell.shellUnavailableReason || `正在准备 ${shell.selectedDatasetLabel}。`}
       />
     )
   }
@@ -23,10 +24,10 @@ function renderShellBody(shell: PlatformShellResult, children?: (shell: Platform
     return (
       <PlatformStatusSurface
         tone="error"
-        title="Shell unavailable"
-        summary="The website shell could not finish validating its shared runtime contracts."
+        title="壳层不可用"
+        summary="网站壳层未能完成共享 runtime 契约校验。"
         detail={shell.shellUnavailableReason}
-        actions={[{ label: 'Retry shell', onClick: shell.retryRegistry }]}
+        actions={[{ label: '重试壳层', onClick: shell.retryRegistry }]}
       />
     )
   }
@@ -35,9 +36,9 @@ function renderShellBody(shell: PlatformShellResult, children?: (shell: Platform
     return (
       <PlatformStatusSurface
         tone="loading"
-        title={`Loading ${shell.activeRoute.label}`}
-        summary="The selected module bundle is being fetched and validated on demand."
-        detail={`Dataset: ${shell.selectedDatasetLabel}`}
+        title={`正在加载${shell.activeRoute.label}`}
+        summary="正在按需获取并校验当前模块 bundle。"
+        detail={`数据集：${shell.selectedDatasetLabel}`}
       />
     )
   }
@@ -46,12 +47,12 @@ function renderShellBody(shell: PlatformShellResult, children?: (shell: Platform
     return (
       <PlatformStatusSurface
         tone="error"
-        title={`${shell.activeRoute.label} unavailable`}
-        summary="The selected module bundle could not be opened through the shared shell runtime."
+        title={`${shell.activeRoute.label}不可用`}
+        summary="共享壳层 runtime 无法打开当前模块 bundle。"
         detail={shell.activeModuleStatus.message}
         actions={[
-          { label: 'Retry module', onClick: shell.retryActiveModule },
-          { label: 'Return home', onClick: () => shell.navigate('home') },
+          { label: '重试模块', onClick: shell.retryActiveModule },
+          { label: '返回首页', onClick: () => shell.navigate('home') },
         ]}
       />
     )
@@ -65,8 +66,8 @@ function renderShellBody(shell: PlatformShellResult, children?: (shell: Platform
     <PlatformStatusSurface
       tone="loading"
       title={shell.activeRoute.label}
-      summary="The shell runtime is ready. Baseline page content will mount here in Wave 3."
-      detail={`Dataset: ${shell.selectedDatasetLabel}`}
+      summary="壳层 runtime 已就绪，页面主体内容会在这里挂载。"
+      detail={`数据集：${shell.selectedDatasetLabel}`}
     />
   )
 }
@@ -78,12 +79,12 @@ export function PlatformShell({ children, ...options }: PlatformShellProps) {
     <div className="platform-shell">
       <header className="header-bar frame platform-shell-header">
         <div className="platform-shell-brand">
-          <span className="header-side-label">PORT CONTROL</span>
-          <strong>Port Smart Management Platform</strong>
+          <span className="header-side-label">港口调度中枢</span>
+          <strong>港口智能管理平台</strong>
           <small>{shell.activeRoute.label}</small>
         </div>
 
-        <nav className="platform-shell-nav" aria-label="Primary navigation">
+        <nav className="platform-shell-nav" aria-label="主导航">
           {shell.primaryRoutes.map((route) => (
             <button
               key={route.id}
@@ -99,7 +100,7 @@ export function PlatformShell({ children, ...options }: PlatformShellProps) {
 
         <div className="platform-shell-status-strip">
           <label>
-            <span>Dataset</span>
+            <span>数据集</span>
             <select value={shell.selectedDatasetId} onChange={(event) => shell.selectDataset(event.target.value)}>
               {shell.availableDatasets.map((dataset) => (
                 <option key={dataset.id} value={dataset.id}>
@@ -110,8 +111,8 @@ export function PlatformShell({ children, ...options }: PlatformShellProps) {
           </label>
 
           <div>
-            <span>Status</span>
-            <strong>{shell.activeModule?.readiness ?? shell.activeRoute.status}</strong>
+            <span>状态</span>
+            <strong>{localizeReadinessLabel(shell.activeModule?.readiness ?? shell.activeRoute.status)}</strong>
           </div>
         </div>
       </header>

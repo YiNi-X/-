@@ -17,6 +17,7 @@ import type {
   EvaluationOptimizationFile,
   EvaluationRepairMetricKey,
 } from '../evaluation/evaluationTypes.ts'
+import { localizeClusteringNoiseFallback, localizeEvaluationOptimization } from '../zhCopy.ts'
 
 type EvaluationPageProps = {
   entry: ModuleRegistryEntry
@@ -87,9 +88,9 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
       .then(([data, corridorRuntime, fallback, optimizationData]) => {
         if (cancelled) return
         setMetrics(data)
-        setOptimization(optimizationData)
+        setOptimization(optimizationData ? localizeEvaluationOptimization(optimizationData) : null)
         setCorridorDominance(corridorRuntime ? buildCorridorDominanceSummary(corridorRuntime) : null)
-        setNoiseFallback(fallback)
+        setNoiseFallback(fallback ? localizeClusteringNoiseFallback(fallback) : null)
         setError('')
       })
       .catch((loadError) => {
@@ -127,54 +128,54 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
   const secondaryOptimizationParameter = optimization?.importance.parameters[1] ?? null
   const noiseArtifactStatus =
     noiseFallback?.deferredArtifact.status === 'zero-byte'
-      ? `${noiseFallback.deferredArtifact.fileName} is still 0 bytes`
+      ? `${noiseFallback.deferredArtifact.fileName} 仍是 0 字节`
       : noiseFallback?.deferredArtifact.status === 'missing'
-        ? `${noiseFallback.deferredArtifact.fileName} is still missing`
-        : `${noiseFallback?.deferredArtifact.fileName ?? 'The distance artifact'} is unreadable`
+        ? `${noiseFallback.deferredArtifact.fileName} 仍然缺失`
+        : `${noiseFallback?.deferredArtifact.fileName ?? '距离产物'} 无法读取`
 
   return (
     <section className="module-page">
       <section className="frame module-summary-band evaluation-summary-band">
         <div>
-          <p className="panel-kicker">Evaluation Center</p>
-          <h1>Unified metric and tuning evidence across forecast and repair</h1>
+          <p className="panel-kicker">评估中心</p>
+          <h1>统一汇总预测与修复的指标和调参证据</h1>
           <p className="module-takeaway">
             {viewModel
               ? corridorLeader
-                ? `${viewModel.summary.narrative} ${corridorLeader.corridorId} now acts as the dominant runtime corridor, so the center reads model winners against the corridor-led movement spine instead of as detached tables.${optimization ? ' The same route now surfaces the shipped offline tuning study, so parameter search no longer stays trapped in notebook-only evidence.' : ''}`
-                : `${viewModel.summary.narrative}${optimization ? ' The same route now surfaces the shipped offline tuning study, so parameter search no longer stays trapped in notebook-only evidence.' : ''}`
-              : 'Loading evaluation metrics from the Phase 6 bundle.'}
+                ? `${viewModel.summary.narrative} ${corridorLeader.corridorId} 现在充当主导 runtime corridor，因此这里会沿着 corridor-led 运动主线来理解模型优胜者，而不是把它们看成孤立表格。${optimization ? ' 同一路径现在也把已交付的离线调参研究带进页面，因此参数搜索不再被困在 notebook 私有证据里。' : ''}`
+                : `${viewModel.summary.narrative}${optimization ? ' 同一路径现在也把已交付的离线调参研究带进页面，因此参数搜索不再被困在 notebook 私有证据里。' : ''}`
+              : '正在从 Phase 6 bundle 加载评估指标。'}
           </p>
         </div>
 
         <div className="module-kpi-grid evaluation-kpi-grid">
           <article>
-            <span>Forecast horizons</span>
+            <span>预测 horizon 数</span>
             <strong>{viewModel?.forecast.horizonOptions.length ?? '--'}</strong>
           </article>
           <article>
-            <span>Repair scopes</span>
+            <span>修复 scope 数</span>
             <strong>{viewModel?.repair.scopeOptions.length ?? '--'}</strong>
           </article>
           <article>
-            <span>Traceability links</span>
+            <span>可追溯链接</span>
             <strong>{viewModel?.traceability.totalLinks ?? '--'}</strong>
           </article>
           <article>
-            <span>Dominant corridor share</span>
+            <span>主导 corridor 占比</span>
             <strong>{corridorLeader ? formatSharePercent(corridorLeader.share) : viewModel?.forecast.modelCount ?? '--'}</strong>
           </article>
         </div>
 
         <div className="evaluation-summary-actions">
           <button type="button" className="module-primary-action" onClick={() => onNavigate('forecast')}>
-            Open Forecast
+            打开预测页
           </button>
           <button type="button" className="module-primary-action evaluation-secondary-action" onClick={() => onNavigate('repair')}>
-            Open Repair
+            打开修复页
           </button>
           <button type="button" className="module-primary-action evaluation-secondary-action" onClick={() => onNavigate('clustering')}>
-            Trace Corridor
+            追踪 corridor
           </button>
         </div>
       </section>
@@ -183,14 +184,14 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
         <section className="frame module-main-panel">
           <div className="panel-title">
             <div>
-              <p className="panel-kicker">Unified Scoreboard</p>
-              <h2>One shell for cross-task winners</h2>
+              <p className="panel-kicker">统一记分板</p>
+              <h2>跨任务优胜者的统一外壳</h2>
             </div>
             <span className="panel-code">11-01</span>
           </div>
 
           {error ? (
-            <PlatformStatusSurface tone="error" title="Evaluation data unavailable" summary="The evaluation metrics file could not be opened." detail={error} />
+            <PlatformStatusSurface tone="error" title="评估数据不可用" summary="评估指标文件无法打开。" detail={error} />
           ) : viewModel ? (
             <div className="module-inline-section evaluation-score-shell">
               <p className="clustering-link-copy">{viewModel.summary.narrative}</p>
@@ -207,16 +208,16 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
 
               <div className="evaluation-link-row">
                 <button type="button" className="panel-action subtle" onClick={() => onNavigate('overview')}>
-                  Open Overview
+                  打开总览
                 </button>
                 <button type="button" className="panel-action subtle" onClick={() => onNavigate('forecast')}>
-                  Open Forecast
+                  打开预测页
                 </button>
                 <button type="button" className="panel-action subtle" onClick={() => onNavigate('repair')}>
-                  Open Repair
+                  打开修复页
                 </button>
                 <button type="button" className="panel-action subtle" onClick={() => onNavigate('clustering')}>
-                  Open Clustering
+                  打开聚类页
                 </button>
               </div>
             </div>
@@ -232,15 +233,15 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
             <div className="module-inline-section evaluation-ranking-shell">
               <div className="panel-title">
                 <div>
-                  <p className="panel-kicker">Forecast Ranking Table</p>
-                  <h2>Rank flow prediction models by horizon and metric</h2>
+                  <p className="panel-kicker">预测排名表</p>
+                  <h2>按 horizon 与指标对流量预测模型排序</h2>
                 </div>
                 <span className="panel-code">EVAL-02</span>
               </div>
 
               <div className="evaluation-filter-shell">
                 <div className="evaluation-filter-group">
-                  <span className="evaluation-filter-label">Select horizon</span>
+                  <span className="evaluation-filter-label">选择 horizon</span>
                   <div className="evaluation-filter-row">
                     {viewModel.forecast.horizonOptions.map((horizon) => (
                       <button
@@ -256,7 +257,7 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
                 </div>
 
                 <div className="evaluation-filter-group">
-                  <span className="evaluation-filter-label">Select metric</span>
+                  <span className="evaluation-filter-label">选择指标</span>
                   <div className="evaluation-filter-row">
                     {viewModel.forecast.metricOptions.map((option) => (
                       <button
@@ -273,16 +274,16 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
               </div>
 
               <p className="evaluation-filter-caption">
-                The forecast table sorts the shipped models by the selected horizon and metric while keeping MAE, RMSE, and R2 visible in the same row.
+                预测表会按照选定的 horizon 和指标对已交付模型进行排序，同时在同一行保留 MAE、RMSE 与 R2。
               </p>
 
               <div className="module-card-grid">
                 {viewModel.forecast.leaderCards.map((ranking) => (
                   <article key={ranking.horizon} className="metric-spotlight-card">
                     <span>{ranking.horizon}</span>
-                    <strong>RMSE leader {ranking.rmseLeader?.model ?? '--'}</strong>
-                    <small>MAE leader {ranking.maeLeader?.model ?? '--'} | samples {ranking.sampleCount || '--'}</small>
-                    <em>R2 leader {ranking.r2Leader?.model ?? '--'}</em>
+                    <strong>RMSE 领先模型 {ranking.rmseLeader?.model ?? '--'}</strong>
+                    <small>MAE 领先模型 {ranking.maeLeader?.model ?? '--'} | 样本数 {ranking.sampleCount || '--'}</small>
+                    <em>R2 领先模型 {ranking.r2Leader?.model ?? '--'}</em>
                   </article>
                 ))}
               </div>
@@ -291,14 +292,14 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
                 <table className="data-table evaluation-table">
                   <thead>
                     <tr>
-                      <th>Rank</th>
-                      <th>Model</th>
-                      <th>{viewModel.forecast.metricOptions.find((option) => option.id === viewModel.forecast.selectedMetric)?.label ?? 'Metric'}</th>
-                      <th>Samples</th>
+                      <th>排名</th>
+                      <th>模型</th>
+                      <th>{viewModel.forecast.metricOptions.find((option) => option.id === viewModel.forecast.selectedMetric)?.label ?? '指标'}</th>
+                      <th>样本数</th>
                       <th>MAE</th>
                       <th>RMSE</th>
                       <th>R2</th>
-                      <th>Leader slots</th>
+                      <th>领先项数</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -324,15 +325,15 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
             <div className="module-inline-section evaluation-ranking-shell">
               <div className="panel-title">
                 <div>
-                  <p className="panel-kicker">Repair Ranking Table</p>
-                  <h2>Rank repair methods by sample and metric</h2>
+                  <p className="panel-kicker">修复排名表</p>
+                  <h2>按样本和指标对修复方法排序</h2>
                 </div>
                 <span className="panel-code">EVAL-03</span>
               </div>
 
               <div className="evaluation-filter-shell">
                 <div className="evaluation-filter-group">
-                  <span className="evaluation-filter-label">Select scope</span>
+                  <span className="evaluation-filter-label">选择 scope</span>
                   <div className="evaluation-filter-row">
                     {viewModel.repair.scopeOptions.map((option) => (
                       <button
@@ -348,7 +349,7 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
                 </div>
 
                 <div className="evaluation-filter-group">
-                  <span className="evaluation-filter-label">Select metric</span>
+                  <span className="evaluation-filter-label">选择指标</span>
                   <div className="evaluation-filter-row">
                     {viewModel.repair.metricOptions.map((option) => (
                       <button
@@ -370,9 +371,9 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
                 <table className="data-table evaluation-table">
                   <thead>
                     <tr>
-                      <th>Rank</th>
-                      <th>Model</th>
-                      <th>{viewModel.repair.metricOptions.find((option) => option.id === viewModel.repair.selectedMetric)?.label ?? 'Metric'}</th>
+                      <th>排名</th>
+                      <th>模型</th>
+                      <th>{viewModel.repair.metricOptions.find((option) => option.id === viewModel.repair.selectedMetric)?.label ?? '指标'}</th>
                       <th>RMSE</th>
                       <th>MAE</th>
                       <th>DTW</th>
@@ -405,8 +406,8 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
             <div className="module-inline-section evaluation-optimization-shell">
               <div className="panel-title">
                 <div>
-                  <p className="panel-kicker">Optimization Evidence</p>
-                  <h2>Expose the shipped offline tuning study inside the evaluation center</h2>
+                  <p className="panel-kicker">调参证据</p>
+                  <h2>把已交付的离线调参研究纳入评估中心</h2>
                 </div>
                 <span className="panel-code">EVAL-04</span>
               </div>
@@ -415,38 +416,38 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
 
               <div className="module-card-grid evaluation-optimization-grid">
                 <article className="metric-spotlight-card evaluation-summary-card">
-                  <span>Trial slots</span>
+                  <span>Trial 槽位</span>
                   <strong>{optimization.objective.totalTrialSlots}</strong>
-                  <small>{optimization.objective.nonCompletedTrialSlots} non-complete slots remain explicit in the exported history.</small>
+                  <small>导出历史中仍明确保留了 {optimization.objective.nonCompletedTrialSlots} 个未完成槽位。</small>
                 </article>
                 <article className="metric-spotlight-card evaluation-summary-card">
-                  <span>Completed points</span>
+                  <span>完成点位</span>
                   <strong>{optimization.objective.completedTrials}</strong>
-                  <small>{optimization.objective.metricLabel} points reached a final visible objective value.</small>
+                  <small>{optimization.objective.metricLabel} 的这些点位已经到达最终可见目标值。</small>
                 </article>
                 <article className="metric-spotlight-card evaluation-summary-card evaluation-tone-accent">
-                  <span>Best checkpoint</span>
+                  <span>最佳检查点</span>
                   <strong>
                     Trial {optimization.objective.bestTrial} | {formatOptimizationValue(optimization.objective.bestValue)}
                   </strong>
-                  <small>{formatSharePercent(optimization.objective.improvementRatio)} better than the first completed point shown in the export.</small>
+                  <small>比导出中展示的第一个已完成点提升了 {formatSharePercent(optimization.objective.improvementRatio)}。</small>
                 </article>
                 <article className="metric-spotlight-card evaluation-summary-card evaluation-tone-warning">
-                  <span>Dominant knobs</span>
+                  <span>主导参数</span>
                   <strong>
                     {leadingOptimizationParameter?.label ?? '--'}
                     {secondaryOptimizationParameter ? ` + ${secondaryOptimizationParameter.label}` : ''}
                   </strong>
-                  <small>{formatSharePercent(optimization.importance.topTwoShare)} of the importance ranking sits in the top two parameters.</small>
+                  <small>参数重要性中有 {formatSharePercent(optimization.importance.topTwoShare)} 集中在前两个参数上。</small>
                 </article>
               </div>
 
               <div className="evaluation-optimization-columns">
                 <section className="evaluation-optimization-panel">
                   <div className="evaluation-panel-heading">
-                    <p className="evaluation-trace-title">Optimization History</p>
+                    <p className="evaluation-trace-title">调参历史</p>
                     <strong>
-                      {optimization.studyLabel} | best {formatOptimizationValue(optimization.objective.bestValue)}
+                      {optimization.studyLabel} | 最优值 {formatOptimizationValue(optimization.objective.bestValue)}
                     </strong>
                   </div>
 
@@ -455,7 +456,7 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
                       className="evaluation-history-chart"
                       viewBox={`0 0 ${HISTORY_CHART_WIDTH} ${HISTORY_CHART_HEIGHT}`}
                       role="img"
-                      aria-label="Optimization history chart"
+                      aria-label="调参历史图"
                     >
                       <line
                         x1={HISTORY_CHART_PADDING_X}
@@ -492,7 +493,7 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
                   <div className="module-card-grid evaluation-checkpoint-grid">
                     {optimization.objective.checkpoints.map((checkpoint, index) => (
                       <article key={checkpoint.trial} className="metric-spotlight-card">
-                        <span>{index === 0 ? 'Initial best' : 'New best'}</span>
+                        <span>{index === 0 ? '初始最优' : '新的最优'}</span>
                         <strong>Trial {checkpoint.trial}</strong>
                         <small>{formatOptimizationValue(checkpoint.value)}</small>
                       </article>
@@ -502,9 +503,9 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
 
                 <section className="evaluation-optimization-panel">
                   <div className="evaluation-panel-heading">
-                    <p className="evaluation-trace-title">Parameter Importance</p>
+                    <p className="evaluation-trace-title">参数重要性</p>
                     <strong>
-                      {leadingOptimizationParameter ? `${leadingOptimizationParameter.label} leads` : 'Importance ranking'}
+                      {leadingOptimizationParameter ? `${leadingOptimizationParameter.label} 领先` : '重要性排序'}
                     </strong>
                   </div>
 
@@ -529,8 +530,8 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
               <div className="evaluation-optimization-columns">
                 <section className="evaluation-optimization-panel">
                   <div className="evaluation-panel-heading">
-                    <p className="evaluation-trace-title">Best Parameter Set</p>
-                    <strong>Recovered from the best visible completed trial</strong>
+                    <p className="evaluation-trace-title">最佳参数组合</p>
+                    <strong>从当前可见的最佳已完成 Trial 中恢复</strong>
                   </div>
 
                   <div className="module-card-grid evaluation-best-param-grid">
@@ -539,8 +540,8 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
                         <span>{parameter.label}</span>
                         <strong>{parameter.displayValue}</strong>
                         <small>
-                          Completed-trial range {parameter.observedMinDisplay} - {parameter.observedMaxDisplay}
-                          {parameter.scale === 'log10' ? ' | log search' : ''}
+                          已完成 Trial 范围 {parameter.observedMinDisplay} - {parameter.observedMaxDisplay}
+                          {parameter.scale === 'log10' ? ' | log 搜索' : ''}
                         </small>
                       </article>
                     ))}
@@ -549,8 +550,8 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
 
                 <section className="evaluation-optimization-panel">
                   <div className="evaluation-panel-heading">
-                    <p className="evaluation-trace-title">Supporting Offline Views</p>
-                    <strong>Raw exports stay visible beside the structured summary</strong>
+                    <p className="evaluation-trace-title">辅助离线视图</p>
+                    <strong>结构化摘要旁边保留原始导出结果</strong>
                   </div>
 
                   <div className="module-side-list">
@@ -571,35 +572,35 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
             <div className="module-inline-section">
               <div className="panel-title">
                 <div>
-                  <p className="panel-kicker">Corridor Dominance Context</p>
-                  <h2>Why the rankings need clustering context</h2>
+                  <p className="panel-kicker">Corridor dominance 上下文</p>
+                  <h2>为什么排名需要聚类语境</h2>
                 </div>
                 <span className="panel-code">TRACE</span>
               </div>
 
               <div className="module-card-grid corridor-dominance-grid">
                 <article className="metric-spotlight-card">
-                  <span>Lead corridor</span>
-                  <strong>{corridorLeader ? `${corridorLeader.corridorId} ${formatSharePercent(corridorLeader.share)}` : 'Loading'}</strong>
+                  <span>主导 corridor</span>
+                  <strong>{corridorLeader ? `${corridorLeader.corridorId} ${formatSharePercent(corridorLeader.share)}` : '加载中'}</strong>
                   <small>
                     {corridorLeader
-                      ? `${corridorLeader.trackCount} runtime tracks flow through the corridor that currently anchors the site-level movement story.`
-                      : 'Waiting for clustering runtime context.'}
+                      ? `当前有 ${corridorLeader.trackCount} 条 runtime 轨迹流经这条 corridor，它正在锚定整站的运动叙事。`
+                      : '正在等待 clustering runtime 上下文。'}
                   </small>
                 </article>
                 <article className="metric-spotlight-card">
-                  <span>Dominant direction</span>
-                  <strong>{leadingDirection ? `${leadingDirection.directionLabel} ${formatSharePercent(leadingDirection.share)}` : 'Loading'}</strong>
+                  <span>主导方向</span>
+                  <strong>{leadingDirection ? `${leadingDirection.directionLabel} ${formatSharePercent(leadingDirection.share)}` : '加载中'}</strong>
                   <small>
                     {leadingDirection
-                      ? `${leadingDirection.corridorCount} corridors roll up into the main direction family, led by ${leadingDirection.leadCorridorId}.`
-                      : 'Direction-family rollup is unavailable.'}
+                      ? `${leadingDirection.corridorCount} 条 corridor 汇入该方向家族，由 ${leadingDirection.leadCorridorId} 领头。`
+                      : '方向家族汇总暂不可用。'}
                   </small>
                 </article>
                 <article className="metric-spotlight-card">
-                  <span>Evaluation focus</span>
+                  <span>评估焦点</span>
                   <strong>{formatSharePercent(corridorDominance.topThreeShare)}</strong>
-                  <small>The top three corridors cover this much runtime traffic, so forecast and repair comparisons should stay traceable to dense corridor behavior first.</small>
+                  <small>前三条 corridor 覆盖了这些 runtime 流量，因此预测与修复对比应优先回链到高密度 corridor 行为。</small>
                 </article>
               </div>
 
@@ -614,11 +615,9 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
               {noiseFallback && noiseReason ? (
                 <div className="corridor-story-note">
                   <span>Deferred CLUS-03</span>
-                  <strong>Evaluation keeps the same fallback boundary</strong>
+                  <strong>评估页沿用同一条 fallback 边界</strong>
                   <p>
-                    {noiseReason.count} segments, or {formatSharePercent(noiseShare)} of raw clustering input, still sit in the verified noise pool.
-                    Because {noiseArtifactStatus} at {noiseFallback.deferredArtifact.fileBytes} bytes, this page treats CLUS-03 as an explicit deferred
-                    context instead of pretending to compare against a recovered reclustering result.
+                    {noiseReason.count} 条分段，也就是原始聚类输入的 {formatSharePercent(noiseShare)}，仍停留在经过验证的噪声池里。由于 {noiseArtifactStatus}，且当前大小为 {noiseFallback.deferredArtifact.fileBytes} 字节，这个页面会把 CLUS-03 作为明确的 deferred 上下文，而不是假装自己正在对比一个已恢复的重聚类结果。
                   </p>
                 </div>
               ) : null}
@@ -629,8 +628,8 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
         <aside className="frame module-side-panel">
           <div className="panel-title">
             <div>
-              <p className="panel-kicker">Traceability Links</p>
-              <h2>Source lineage and requirement coverage</h2>
+              <p className="panel-kicker">追溯链接</p>
+              <h2>来源 lineage 与需求覆盖</h2>
             </div>
             <span className="panel-code">EVAL-05</span>
           </div>
@@ -638,7 +637,7 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
           {viewModel ? (
             <div className="evaluation-trace-shell">
               <div className="evaluation-trace-group">
-                <p className="evaluation-trace-title">Committed artifacts</p>
+                <p className="evaluation-trace-title">已提交产物</p>
                 <div className="module-side-list">
                   {viewModel.traceability.artifactEntries.map((trace) => (
                     <article key={trace.id}>
@@ -651,7 +650,7 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
               </div>
 
               <div className="evaluation-trace-group">
-                <p className="evaluation-trace-title">Source lineage</p>
+                <p className="evaluation-trace-title">来源 lineage</p>
                 <div className="module-side-list">
                   {viewModel.traceability.sourceEntries.map((trace) => (
                     <article key={trace.id}>
@@ -666,8 +665,8 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
           ) : (
             <div className="module-side-list">
               <article>
-                <span>Traceability</span>
-                <strong>Loading</strong>
+                <span>可追溯性</span>
+                <strong>加载中</strong>
               </article>
             </div>
           )}
@@ -684,53 +683,48 @@ export function EvaluationPage({ entry, onNavigate }: EvaluationPageProps) {
 
           {viewModel ? (
             <div className="corridor-story-note">
-              <span>Source lineage</span>
-              <strong>Displayed numbers stay tied to committed offline artifacts</strong>
+              <span>来源 lineage</span>
+              <strong>页面数字始终绑定到已提交的离线产物</strong>
               <p>
-                The unified tables above can be walked back to the evaluation bundle, forecast metrics, repair metrics, optimization exports,
-                and artifact-index lineage listed here, so this route works as a real evidence center instead of a narrative-only dashboard.
+                上面的统一表格可以一路回溯到 evaluation bundle、forecast metrics、repair metrics、optimization 导出结果，以及这里列出的 artifact-index lineage，因此这条路线是一个真正的证据中心，而不是只讲故事的 dashboard。
               </p>
             </div>
           ) : null}
 
           {optimization ? (
             <div className="corridor-story-note">
-              <span>Optimization lineage</span>
-              <strong>{optimization.studyId} stays tied to committed exports</strong>
+              <span>调参 lineage</span>
+              <strong>{optimization.studyId} 始终绑定到已提交导出结果</strong>
               <p>
-                The EVAL-04 panel is derived from the structured optimization artifact plus the raw HTML and notebook paths listed here, so
-                tuning evidence stays reviewable without pretending the demo reran Optuna in-browser.
+                EVAL-04 面板来自结构化 optimization 产物以及这里列出的原始 HTML 与 notebook 路径，因此调参证据保持可审阅，而不会假装 demo 在浏览器里重新跑了一遍 Optuna。
               </p>
             </div>
           ) : null}
 
           {corridorLeader ? (
             <div className="corridor-story-note">
-              <span>Cross-link</span>
-              <strong>{corridorLeader.corridorId} keeps the scoreboard grounded</strong>
+              <span>跨页回链</span>
+              <strong>{corridorLeader.corridorId} 让记分板保持落地</strong>
               <p>
-                Overview now introduces corridor dominance before this page, and clustering provides the runtime evidence. That way the evaluation shell
-                can explain why the best model rankings matter most on the densest corridor family instead of treating every path as equally
-                representative.
+                总览页现在会在进入本页前先介绍 corridor dominance，而 clustering 则提供 runtime 证据。这样评估壳层就能解释为什么最佳模型排名首先要在最密集的 corridor 家族上成立，而不是把所有路径都视为同等代表性。
               </p>
             </div>
           ) : null}
 
           {noiseFallback && noiseReason ? (
             <div className="corridor-story-note">
-              <span>Fallback evidence</span>
-              <strong>Noise re-clustering is still intentionally excluded</strong>
+              <span>fallback 证据</span>
+              <strong>noise 重聚类仍被有意识地排除在外</strong>
               <p>
-                Evaluation now repeats the same site-wide reason shown in clustering and overview: only the pre-reclustering noise-pool counts are
-                trustworthy today, so CLUS-03 remains a deferred evidence track rather than a hidden or mocked comparison.
+                评估页现在复用 clustering 和 overview 已经说明的整站原因：今天只有重聚类前的噪声池统计可信，因此 CLUS-03 仍然是一条 deferred 证据线，而不是一个被隐藏或被伪造的对比结果。
               </p>
             </div>
           ) : null}
 
           {(metrics?.forecast?.deferredModels ?? []).length ? (
             <div className="module-deferred-note">
-              <span>Later update</span>
-              <strong>Not available in this version</strong>
+              <span>后续更新</span>
+              <strong>当前版本暂未提供</strong>
               <p>{metrics?.forecast?.deferredModels?.[0]?.reason}</p>
             </div>
           ) : null}

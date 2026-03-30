@@ -22,10 +22,10 @@ function App() {
             ) : (
               <PlatformStatusSurface
                 tone="unavailable"
-                title="Overview unavailable"
-                summary="The overview bundle has not been loaded into the shell yet."
-                detail="Return home or retry the selected module once the registry finishes loading."
-                actions={[{ label: 'Return home', onClick: () => shell.navigate('home') }]}
+                title="总览不可用"
+                summary="总览 bundle 还没有被加载到壳层中。"
+                detail="注册表加载完成后，请返回首页或重试当前模块。"
+                actions={[{ label: '返回首页', onClick: () => shell.navigate('home') }]}
               />
             )
           case 'forecast':
@@ -34,10 +34,10 @@ function App() {
             ) : (
               <PlatformStatusSurface
                 tone="unavailable"
-                title="Flow prediction unavailable"
-                summary="The forecast bundle has not been loaded into the shell yet."
-                detail="Return home or retry the selected module once the registry finishes loading."
-                actions={[{ label: 'Return home', onClick: () => shell.navigate('home') }]}
+                title="流量预测不可用"
+                summary="预测 bundle 还没有被加载到壳层中。"
+                detail="注册表加载完成后，请返回首页或重试当前模块。"
+                actions={[{ label: '返回首页', onClick: () => shell.navigate('home') }]}
               />
             )
           case 'repair':
@@ -46,10 +46,10 @@ function App() {
             ) : (
               <PlatformStatusSurface
                 tone="unavailable"
-                title="Trajectory repair unavailable"
-                summary="The repair bundle has not been loaded into the shell yet."
-                detail="Return home or retry the selected module once the registry finishes loading."
-                actions={[{ label: 'Return home', onClick: () => shell.navigate('home') }]}
+                title="轨迹修复不可用"
+                summary="修复 bundle 还没有被加载到壳层中。"
+                detail="注册表加载完成后，请返回首页或重试当前模块。"
+                actions={[{ label: '返回首页', onClick: () => shell.navigate('home') }]}
               />
             )
           case 'clustering':
@@ -58,10 +58,10 @@ function App() {
             ) : (
               <PlatformStatusSurface
                 tone="unavailable"
-                title="Trajectory clustering unavailable"
-                summary="The clustering bundle has not been loaded into the shell yet."
-                detail="Return home or retry the selected module once the registry finishes loading."
-                actions={[{ label: 'Return home', onClick: () => shell.navigate('home') }]}
+                title="轨迹聚类不可用"
+                summary="聚类 bundle 还没有被加载到壳层中。"
+                detail="注册表加载完成后，请返回首页或重试当前模块。"
+                actions={[{ label: '返回首页', onClick: () => shell.navigate('home') }]}
               />
             )
           case 'evaluation':
@@ -70,10 +70,10 @@ function App() {
             ) : (
               <PlatformStatusSurface
                 tone="unavailable"
-                title="Evaluation center unavailable"
-                summary="The evaluation bundle has not been loaded into the shell yet."
-                detail="Return home or retry the selected module once the registry finishes loading."
-                actions={[{ label: 'Return home', onClick: () => shell.navigate('home') }]}
+                title="评估中心不可用"
+                summary="评估 bundle 还没有被加载到壳层中。"
+                detail="注册表加载完成后，请返回首页或重试当前模块。"
+                actions={[{ label: '返回首页', onClick: () => shell.navigate('home') }]}
               />
             )
           case 'forward-looking':
@@ -82,10 +82,10 @@ function App() {
             ) : (
               <PlatformStatusSurface
                 tone="unavailable"
-                title="Forward-looking analysis unavailable"
-                summary="The forward-looking bundle has not been loaded into the shell yet."
-                detail="Return home or retry the selected module once the registry finishes loading."
-                actions={[{ label: 'Return home', onClick: () => shell.navigate('home') }]}
+                title="前瞻分析不可用"
+                summary="前瞻分析 bundle 还没有被加载到壳层中。"
+                detail="注册表加载完成后，请返回首页或重试当前模块。"
+                actions={[{ label: '返回首页', onClick: () => shell.navigate('home') }]}
               />
             )
           default:

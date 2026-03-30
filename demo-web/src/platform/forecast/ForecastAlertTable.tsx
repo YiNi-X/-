@@ -1,6 +1,7 @@
 import type { ForecastAlert } from '../../sharedContracts'
 import { PlatformStatusSurface } from '../PlatformStatusSurface.tsx'
 import { formatSharePercent, type CorridorDominanceSummary } from '../clustering/corridorDominance.ts'
+import { localizeAlertLevelLabel } from '../zhCopy.ts'
 
 type ForecastAlertTableProps = {
   alerts: ForecastAlert[]
@@ -19,9 +20,9 @@ export function ForecastAlertTable({ alerts, corridorDominance, selectedGridId, 
     return (
       <PlatformStatusSurface
         tone="deferred"
-        title="No alert rows for this frame"
-        summary="The selected replay frame does not publish forecast alert rows."
-        detail="Move the timeline marker to a higher-pressure moment to see grid-level alert evidence."
+        title="当前帧没有告警行"
+        summary="所选回放帧没有发布预测告警数据。"
+        detail="请把时间线滑块移动到压力更高的时刻，查看网格级告警证据。"
       />
     )
   }
@@ -33,22 +34,22 @@ export function ForecastAlertTable({ alerts, corridorDominance, selectedGridId, 
     <section className="forecast-tab-panel">
       <div className="panel-title">
         <div>
-          <p className="panel-kicker">Alert table</p>
-          <h2>Grid-level alert evidence for the current frame</h2>
+          <p className="panel-kicker">告警表</p>
+          <h2>当前帧的网格级告警证据</h2>
         </div>
         <span className="panel-code">ALERT</span>
       </div>
 
       {corridorLeader ? (
         <div className="forecast-context-note forecast-alert-context-note">
-          <span>Corridor-linked hotspot context</span>
+          <span>Corridor 联动热点上下文</span>
           <strong>
-            Alert escalation stays tied to {corridorLeader.corridorId} at {formatSharePercent(corridorLeader.share)}
+            告警升级仍需回到 {corridorLeader.corridorId} 这条主导 corridor 来解释，占比 {formatSharePercent(corridorLeader.share)}
           </strong>
           <small>
             {leadingDirection
-              ? `${leadingDirection.directionLabel} remains the dominant corridor family, so hotspot pressure should be narrated as part of that larger movement regime.`
-              : `${corridorLeader.directionLabel} remains the strongest corridor family in clustering runtime.`}
+              ? `${leadingDirection.directionLabel} 仍是主导 corridor 家族，因此热点压力需要放到更大的运动结构里叙述。`
+              : `${corridorLeader.directionLabel} 仍是 clustering runtime 中最强的 corridor 家族。`}
           </small>
         </div>
       ) : null}
@@ -64,13 +65,13 @@ export function ForecastAlertTable({ alerts, corridorDominance, selectedGridId, 
             <div className="forecast-alert-button-head">
               <div>
                 <span>{alert.grid}</span>
-                <strong>{alert.level.toUpperCase()}</strong>
+                <strong>{localizeAlertLevelLabel(alert.level)}</strong>
               </div>
               <em>{formatDelta(alert)}</em>
             </div>
             <p>{alert.note}</p>
             <small>
-              {alert.current.toFixed(1)} now {'->'} {alert.future.toFixed(1)} forecast
+              当前 {alert.current.toFixed(1)} {'->'} 预测 {alert.future.toFixed(1)}
             </small>
           </button>
         ))}

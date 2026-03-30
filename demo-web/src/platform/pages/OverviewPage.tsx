@@ -13,6 +13,7 @@ import {
 import type { ClusteringNoiseFallback } from '../clustering/clusteringTypes.ts'
 import { getShellRouteDescriptor } from '../routeRegistry.ts'
 import type { OverviewSummary } from '../overview/overviewTypes.ts'
+import { localizeClusteringNoiseFallback, localizeOverviewSummary, localizeReadinessLabel } from '../zhCopy.ts'
 
 type OverviewPageProps = {
   entry: ModuleRegistryEntry
@@ -43,9 +44,9 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
     ])
       .then(([data, corridorRuntime, fallback]) => {
         if (cancelled) return
-        setSummary(data)
+        setSummary(localizeOverviewSummary(data))
         setCorridorDominance(corridorRuntime ? buildCorridorDominanceSummary(corridorRuntime) : null)
-        setNoiseFallback(fallback)
+        setNoiseFallback(fallback ? localizeClusteringNoiseFallback(fallback) : null)
         setError('')
       })
       .catch((loadError) => {
@@ -79,44 +80,44 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
   const topScenarioEntries = scenarioEntryPoints
 
   function getEntryActionLabel(routeId: ShellRouteId) {
-    return routeId === 'home' ? 'Open Home' : getShellRouteDescriptor(routeId).entryActionLabel
+    return routeId === 'home' ? '打开首页' : getShellRouteDescriptor(routeId).entryActionLabel
   }
 
   return (
     <section className="module-page">
       <section className="frame module-summary-band overview-summary-band">
         <div>
-          <p className="panel-kicker">Overview</p>
-          <h1>Business loop, module entry points, and evidence framing</h1>
-          <p className="module-takeaway">{summary?.framing ?? 'Loading the overview framing from the Phase 6 summary bundle.'}</p>
+          <p className="panel-kicker">总览</p>
+          <h1>业务闭环、模块入口与证据 framing</h1>
+          <p className="module-takeaway">{summary?.framing ?? '正在从当前 summary bundle 加载总览 framing。'}</p>
         </div>
         <div className="module-kpi-grid overview-kpi-grid">
           <article>
-            <span>Loop steps</span>
+            <span>闭环步骤</span>
             <strong>{summary ? businessLoop.length : '--'}</strong>
           </article>
           <article>
-            <span>Entry modules</span>
+            <span>入口模块</span>
             <strong>{summary ? readyModuleCount : '--'}</strong>
           </article>
           <article>
-            <span>Scenario entries</span>
+            <span>场景入口</span>
             <strong>{summary ? scenarioEntryCount : '--'}</strong>
           </article>
           <article>
-            <span>Forecast frames</span>
+            <span>预测帧数</span>
             <strong>{summary?.dataScale?.forecast?.timelineFrames ?? '--'}</strong>
           </article>
         </div>
         <div className="overview-summary-actions">
           <button type="button" className="module-primary-action" onClick={() => onNavigate('home')}>
-            Open Home
+            打开首页
           </button>
           <button type="button" className="module-primary-action evaluation-secondary-action" onClick={() => onNavigate('forecast')}>
-            View Forecast
+            查看预测
           </button>
           <button type="button" className="module-primary-action evaluation-secondary-action" onClick={() => onNavigate('evaluation')}>
-            Open Evaluation
+            打开评估中心
           </button>
         </div>
       </section>
@@ -125,8 +126,8 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
         <section className="frame module-main-panel">
           <div className="panel-title">
             <div>
-              <p className="panel-kicker">Business Loop</p>
-              <h2>How archived playback turns into evidence-ready modules</h2>
+              <p className="panel-kicker">业务闭环</p>
+              <h2>归档回放如何转成可用证据模块</h2>
             </div>
             <span className="panel-code">OVER-01</span>
           </div>
@@ -146,7 +147,7 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
                     ))}
                   </div>
                   <div className="overview-entry-actions">
-                    <span className={getOverviewStatusClassName(step.status)}>{step.status}</span>
+                     <span className={getOverviewStatusClassName(step.status)}>{localizeReadinessLabel(step.status)}</span>
                     <button type="button" className="panel-action subtle" onClick={() => onNavigate(step.routeId)}>
                       {getEntryActionLabel(step.routeId)}
                     </button>
@@ -155,7 +156,7 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
               ))}
             </div>
           ) : error ? (
-            <PlatformStatusSurface tone="error" title="Overview data unavailable" summary="The overview summary file could not be opened." detail={error} />
+            <PlatformStatusSurface tone="error" title="总览数据不可用" summary="overview summary 文件无法打开。" detail={error} />
           ) : (
             <div className="module-skeleton-grid">
               <div className="module-skeleton-card"></div>
@@ -168,8 +169,8 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
             <div className="module-inline-section">
               <div className="panel-title">
                 <div>
-                  <p className="panel-kicker">Module Entry Points</p>
-                  <h2>Jump straight from the loop into each algorithm surface</h2>
+                  <p className="panel-kicker">模块入口</p>
+                  <h2>从业务闭环直接跳转到各算法页面</h2>
                 </div>
                 <span className="panel-code">OVER-02</span>
               </div>
@@ -179,7 +180,7 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
                   <article key={moduleEntry.routeId} className="metric-spotlight-card overview-entry-card">
                     <div className="overview-entry-head">
                       <span>{moduleEntry.label}</span>
-                      <em className={getOverviewStatusClassName(moduleEntry.status)}>{moduleEntry.status}</em>
+                       <em className={getOverviewStatusClassName(moduleEntry.status)}>{localizeReadinessLabel(moduleEntry.status)}</em>
                     </div>
                     <strong>{moduleEntry.summary}</strong>
                     <div className="home-module-metrics">
@@ -215,8 +216,8 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
             <div className="module-inline-section">
               <div className="panel-title">
                 <div>
-                  <p className="panel-kicker">Scenario Entry Points</p>
-                  <h2>Replace generic logs with concrete ways into the archived showcase</h2>
+                  <p className="panel-kicker">场景入口</p>
+                  <h2>用明确入口替代泛化日志，进入归档展示站</h2>
                 </div>
                 <span className="panel-code">ENTRY</span>
               </div>
@@ -241,34 +242,34 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
             <div className="module-inline-section">
               <div className="panel-title">
                 <div>
-                  <p className="panel-kicker">Corridor Dominance</p>
-                  <h2>How clustering enters the site narrative</h2>
+                  <p className="panel-kicker">Corridor dominance</p>
+                  <h2>聚类如何进入整站叙事</h2>
                 </div>
                 <span className="panel-code">XLINK</span>
               </div>
 
               <div className="module-card-grid corridor-dominance-grid">
                 <article className="metric-spotlight-card">
-                  <span>Lead corridor</span>
-                  <strong>{corridorLeader ? `${corridorLeader.corridorId} ${formatSharePercent(corridorLeader.share)}` : 'Loading'}</strong>
+                  <span>主导 corridor</span>
+                  <strong>{corridorLeader ? `${corridorLeader.corridorId} ${formatSharePercent(corridorLeader.share)}` : '加载中'}</strong>
                   <small>
                     {corridorLeader
-                      ? `${corridorLeader.directionLabel} traffic contributes ${corridorLeader.trackCount} of ${corridorDominance.totalTracks} runtime tracks.`
-                      : 'Waiting for clustering runtime context.'}
+                      ? `${corridorLeader.directionLabel} 方向贡献了 ${corridorLeader.trackCount} / ${corridorDominance.totalTracks} 条 runtime 轨迹。`
+                      : '正在等待 clustering runtime 上下文。'}
                   </small>
                 </article>
                 <article className="metric-spotlight-card">
-                  <span>Top-three coverage</span>
+                  <span>前三覆盖率</span>
                   <strong>{formatSharePercent(corridorDominance.topThreeShare)}</strong>
-                  <small>The top three runtime corridors become the movement spine used to summarize the whole archived harbor loop.</small>
+                  <small>前三条 runtime corridor 构成了整段归档港口叙事的运动主线。</small>
                 </article>
                 <article className="metric-spotlight-card">
-                  <span>Dominant direction</span>
-                  <strong>{leadingDirection ? `${leadingDirection.directionLabel} ${formatSharePercent(leadingDirection.share)}` : 'Loading'}</strong>
+                  <span>主导方向</span>
+                  <strong>{leadingDirection ? `${leadingDirection.directionLabel} ${formatSharePercent(leadingDirection.share)}` : '加载中'}</strong>
                   <small>
                     {leadingDirection
-                      ? `${leadingDirection.corridorCount} corridors roll up into this direction family, led by ${leadingDirection.leadCorridorId}.`
-                      : 'Direction family analysis is unavailable.'}
+                      ? `${leadingDirection.corridorCount} 条 corridor 归入该方向家族，领头 corridor 为 ${leadingDirection.leadCorridorId}。`
+                      : '当前没有可用的方向家族分析。'}
                   </small>
                 </article>
               </div>
@@ -282,11 +283,10 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
               </div>
 
               <div className="corridor-story-note">
-                <span>Cross-link</span>
-                <strong>Corridor dominance is now a site-wide bridge</strong>
+                <span>跨页回链</span>
+                <strong>Corridor dominance 已成为整站桥梁</strong>
                 <p>
-                  Overview now treats corridor dominance as the bridge from clustering into forecast, repair, and evaluation, so downstream pages
-                  read model evidence against the same runtime movement spine instead of as isolated module snapshots.
+                  总览页现在把 corridor dominance 作为从 clustering 进入 forecast、repair 与 evaluation 的桥梁，因此下游页面会围绕同一条 runtime 运动主线解读模型证据，而不是把每个模块都看成孤立快照。
                 </p>
               </div>
 
@@ -295,35 +295,34 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
                   <div className="panel-title">
                     <div>
                       <p className="panel-kicker">Deferred CLUS-03</p>
-                      <h2>Why noise re-clustering is still paused</h2>
+                      <h2>为什么 noise re-clustering 仍然暂停</h2>
                     </div>
                     <span className="panel-code">DEFER</span>
                   </div>
 
                   <div className="module-card-grid corridor-dominance-grid">
                     <article className="metric-spotlight-card">
-                      <span>Noise pool</span>
+                      <span>噪声池</span>
                       <strong>{noiseReason.count}</strong>
-                      <small>{formatSharePercent(noiseShare)} of raw segments still sit in the honest `dbscan_noise` pool.</small>
+                      <small>{formatSharePercent(noiseShare)} 的原始分段仍停留在诚实的 `dbscan_noise` 池中。</small>
                     </article>
                     <article className="metric-spotlight-card">
-                      <span>Blocked artifact</span>
-                      <strong>{noiseFallback.deferredArtifact.fileBytes} bytes</strong>
-                      <small>{noiseArtifactStatus}, so CLUS-03 cannot reopen truthfully yet.</small>
+                      <span>受阻产物</span>
+                      <strong>{noiseFallback.deferredArtifact.fileBytes} 字节</strong>
+                      <small>{noiseArtifactStatus}，因此 CLUS-03 目前还不能被真实重开。</small>
                     </article>
                     <article className="metric-spotlight-card">
-                      <span>Current boundary</span>
-                      <strong>Pre-reclustering only</strong>
-                      <small>Overview links to verified fallback statistics rather than inventing post-noise corridor geometry.</small>
+                      <span>当前边界</span>
+                      <strong>仅限重聚类前统计</strong>
+                      <small>总览页只回链可验证 fallback 统计，而不会虚构 noise 之后的 corridor 几何。</small>
                     </article>
                   </div>
 
                   <div className="corridor-story-note">
-                    <span>Cross-link</span>
-                    <strong>Deferred CLUS-03 now uses one site-wide explanation</strong>
+                    <span>跨页回链</span>
+                    <strong>Deferred CLUS-03 现在使用统一的整站解释</strong>
                     <p>
-                      The clustering page owns the fallback evidence, and overview now repeats the same reason: the distance artifact is present
-                      but unusable, so only pre-reclustering noise-pool statistics are safe to carry into the broader product story.
+                      聚类页负责 fallback 证据，总览页则复用同一套原因说明：距离矩阵产物虽然存在但不可用，因此只有重聚类前的 noise pool 统计可以安全进入更广义的产品叙事。
                     </p>
                   </div>
                 </div>
@@ -335,8 +334,8 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
         <aside className="frame module-side-panel">
           <div className="panel-title">
             <div>
-              <p className="panel-kicker">Framing Pillars</p>
-              <h2>Why this site reads as archived playback plus offline inference</h2>
+              <p className="panel-kicker">Framing 支柱</p>
+              <h2>为什么这个网站应被理解为归档回放加离线推理</h2>
             </div>
             <span className="panel-code">OVER-03</span>
           </div>
@@ -355,56 +354,56 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
 
           <div className="panel-title">
             <div>
-              <p className="panel-kicker">Scale Summary</p>
-              <h2>Current data scale and source lineage</h2>
+              <p className="panel-kicker">规模摘要</p>
+              <h2>当前数据规模与来源链路</h2>
             </div>
             <span className="panel-code">TRACE</span>
           </div>
 
           <div className="module-side-list">
             <article>
-              <span>Available forecast models</span>
-              <strong>{summary?.dataScale?.forecast?.availableModels?.join(', ') ?? 'Loading'}</strong>
+              <span>可用预测模型</span>
+              <strong>{summary?.dataScale?.forecast?.availableModels?.join(', ') ?? '加载中'}</strong>
             </article>
             <article>
-              <span>Repair model count</span>
+              <span>修复模型数</span>
               <strong>{summary?.dataScale?.repair?.availableModels?.length ?? '--'}</strong>
             </article>
             <article>
-              <span>Raw AIS rows</span>
+              <span>原始 AIS 行数</span>
               <strong>{summary?.dataScale?.clustering?.rawAisRows ?? '--'}</strong>
             </article>
             <article>
-              <span>Compressed clustering tracks</span>
+              <span>压缩后聚类轨迹数</span>
               <strong>{summary?.dataScale?.clustering?.compressedTracks ?? '--'}</strong>
             </article>
             <article>
-              <span>Runtime corridors</span>
+              <span>runtime corridor 数</span>
               <strong>{summary?.dataScale?.clustering?.corridorRuntimeCorridors ?? '--'}</strong>
             </article>
             <article>
-              <span>Runtime corridor tracks</span>
+              <span>runtime corridor 轨迹数</span>
               <strong>{summary?.dataScale?.clustering?.corridorRuntimeTracks ?? '--'}</strong>
             </article>
             <article>
-              <span>Lead corridor</span>
-              <strong>{corridorLeader ? corridorLeader.corridorId : 'Loading'}</strong>
-              <small>{corridorLeader ? `${corridorLeader.trackCount} tracks | ${formatSharePercent(corridorLeader.share)}` : 'Waiting for runtime corridor data.'}</small>
+              <span>主导 corridor</span>
+              <strong>{corridorLeader ? corridorLeader.corridorId : '加载中'}</strong>
+              <small>{corridorLeader ? `${corridorLeader.trackCount} 条轨迹 | ${formatSharePercent(corridorLeader.share)}` : '正在等待 runtime corridor 数据。'}</small>
             </article>
             <article>
-              <span>Dominant direction</span>
-              <strong>{leadingDirection ? leadingDirection.directionLabel : 'Loading'}</strong>
+              <span>主导方向</span>
+              <strong>{leadingDirection ? leadingDirection.directionLabel : '加载中'}</strong>
               <small>
                 {leadingDirection
-                  ? `${leadingDirection.corridorCount} corridors | ${formatSharePercent(leadingDirection.share)} of runtime traffic`
-                  : 'Direction-family rollup loads from clustering runtime.'}
+                  ? `${leadingDirection.corridorCount} 条 corridor | ${formatSharePercent(leadingDirection.share)} 的 runtime 流量`
+                  : '方向家族汇总依赖 clustering runtime。'}
               </small>
             </article>
           </div>
 
           {entry.artifacts.length ? (
             <div className="module-inline-section overview-source-shell">
-              <p className="evaluation-trace-title">Committed artifacts</p>
+              <p className="evaluation-trace-title">已提交产物</p>
               <div className="module-side-list">
                 {entry.artifacts.map((artifact) => (
                   <article key={artifact.artifactId}>
@@ -419,13 +418,13 @@ export function OverviewPage({ entry, onNavigate }: OverviewPageProps) {
 
           {sourceEntries.length ? (
             <div className="module-inline-section overview-source-shell">
-              <p className="evaluation-trace-title">Source lineage</p>
+              <p className="evaluation-trace-title">来源 lineage</p>
               <div className="module-side-list">
                 {sourceEntries.map(([sourceId, path]) => (
                   <article key={sourceId}>
                     <span>{sourceId}</span>
                     <strong>{path}</strong>
-                    <small>Overview keeps the business loop tied to committed bundle and manifest sources.</small>
+                    <small>总览页会把业务闭环持续绑定到已提交的 bundle 与 manifest 来源上。</small>
                   </article>
                 ))}
               </div>

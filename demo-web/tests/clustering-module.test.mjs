@@ -54,7 +54,7 @@ test('clustering view model exposes layer switching, corridor statistics, and ru
   assert.equal(viewModel.stats.selectedCorridor?.rank, 1)
   assert.match(viewModel.recoveryChecklist.artifactId, /clustering-noise-reclustered/)
   assert.match(viewModel.recoveryChecklist.blocker, /normalized_distances|0 bytes|zero-byte|unreadable|stable/i)
-  assert.match(viewModel.recoveryChecklist.artifactStatus, /0 bytes|workspace|missing|unreadable/i)
+  assert.match(viewModel.recoveryChecklist.artifactStatus, /0 字节|0 bytes|工作区|workspace|缺失|missing|不可读取|unreadable/i)
   assert.equal(viewModel.recoveryChecklist.steps.length, 3)
 })
 
@@ -77,13 +77,13 @@ test('corridor dominance helper exposes the runtime corridor spine for cross-mod
 test('clustering page source exposes the phase 10 module affordances', () => {
   const clusteringSource = readSource('src/platform/pages/ClusteringPage.tsx')
 
-  for (const label of ['Layer Switcher', 'Cluster Statistics', 'Runtime vs Review', 'Open RouteEditor runtime', 'Noise re-clustering', 'Pipeline Story', 'Corridor Leaderboard', 'Selected Corridor Profile', 'Recovery Checklist', 'Noise Pool / Deferred CLUS-03', 'Honest fallback instead of fake re-clustering', '0 bytes', 'Artifact state']) {
+  for (const label of ['图层切换', '聚类统计', 'Runtime vs Review', '打开 RouteEditor runtime', 'noise 重聚类', '流水线叙事', 'corridor 排行', '当前 corridor 档案', '恢复清单', '噪声池 / Deferred CLUS-03', '诚实 fallback', '0 字节', '产物状态']) {
     assert.match(clusteringSource, new RegExp(label), `Expected ClusteringPage to expose ${label}`)
   }
 
   assert.match(clusteringSource, /clustering-layer-buttons/)
   assert.match(clusteringSource, /clustering-leaderboard/)
-  assert.match(clusteringSource, /Recovery Checklist/)
+  assert.match(clusteringSource, /恢复清单/)
   assert.match(clusteringSource, /CLUSTERING_NOISE_FALLBACK_PATH/)
   assert.match(clusteringSource, /entry\.entryFiles\.noiseFallback/)
   assert.match(clusteringSource, /main-corridor-tracks\.json/)
@@ -97,18 +97,18 @@ test('home, overview, and evaluation pages expose corridor dominance cross-links
   assert.match(homeSource, /Corridor dominance/)
   assert.match(homeSource, /corridor-dominance-card/)
   assert.match(homeSource, /CLUSTERING_CORRIDOR_RUNTIME_PATH/)
-  assert.match(overviewSource, /How clustering enters the site narrative/)
-  assert.match(overviewSource, /Corridor Dominance/)
+  assert.match(overviewSource, /聚类如何进入整站叙事/)
+  assert.match(overviewSource, /Corridor dominance/)
   assert.match(overviewSource, /Deferred CLUS-03/)
-  assert.match(overviewSource, /Why noise re-clustering is still paused/)
-  assert.match(overviewSource, /0 bytes|still 0 bytes/)
-  assert.match(overviewSource, /runtime movement spine/)
-  assert.match(evaluationSource, /Corridor Dominance Context/)
-  assert.match(evaluationSource, /Why the rankings need clustering context/)
+  assert.match(overviewSource, /为什么 noise re-clustering 仍然暂停/)
+  assert.match(overviewSource, /0 字节|0 bytes/)
+  assert.match(overviewSource, /整站桥梁/)
+  assert.match(evaluationSource, /Corridor dominance 上下文/)
+  assert.match(evaluationSource, /为什么排名需要聚类语境/)
   assert.match(evaluationSource, /Deferred CLUS-03/)
-  assert.match(evaluationSource, /Fallback evidence/)
-  assert.match(evaluationSource, /0 bytes|still 0 bytes/)
-  assert.match(evaluationSource, /dominant runtime corridor/)
+  assert.match(evaluationSource, /fallback 证据/)
+  assert.match(evaluationSource, /0 字节|0 bytes/)
+  assert.match(evaluationSource, /corridor-led 运动主线|主导 runtime corridor/)
 })
 
 test('package smoke script includes clustering module coverage', () => {

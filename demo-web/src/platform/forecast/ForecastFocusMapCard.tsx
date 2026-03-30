@@ -20,32 +20,32 @@ export function ForecastFocusMapCard({ viewModel, selectedGridId }: ForecastFocu
     <section className="forecast-tab-panel">
       <div className="panel-title">
         <div>
-          <p className="panel-kicker">Focus bridge</p>
-          <h2>Route and hotspot context for the selected grid</h2>
+          <p className="panel-kicker">焦点桥接</p>
+          <h2>所选网格的航线与热点上下文</h2>
         </div>
         <span className="panel-code">FOCUS</span>
       </div>
 
       <div className="forecast-selected-grid-shell">
         <article className="forecast-selected-grid-card">
-          <span>Active grid</span>
+          <span>当前网格</span>
           <strong>{selectedRow?.gridId ?? viewModel.summaryBand.focusGridId ?? '--'}</strong>
-          <p>{selectedRow?.routeId ?? viewModel.summaryBand.focusRouteId ?? '--'} linked route context</p>
+          <p>{selectedRow?.routeId ?? viewModel.summaryBand.focusRouteId ?? '--'} 对应航线上下文</p>
         </article>
 
         <article className="forecast-selected-grid-card">
-          <span>Current versus forecast</span>
+          <span>当前值与预测值</span>
           <strong>{selectedRow ? `${selectedRow.current.toFixed(1)} -> ${selectedRow.forecast.toFixed(1)}` : '--'}</strong>
           <p>
             {selectedRow
-              ? `${selectedRow.delta >= 0 ? '+' : ''}${selectedRow.delta.toFixed(1)} change for the selected horizon`
-              : 'Frame-level comparison becomes available once a hotspot row is selected.'}
+              ? `所选 horizon 变化 ${selectedRow.delta >= 0 ? '+' : ''}${selectedRow.delta.toFixed(1)}`
+              : '选择一个热点行后即可查看帧级对比。'}
           </p>
         </article>
 
         <article className="forecast-selected-grid-card">
-          <span>Geometry coverage</span>
-          <strong>{viewModel.focusMap.routeIds.length} routes / {viewModel.focusMap.hotspotIds.length} hotspots</strong>
+          <span>Geometry 覆盖</span>
+          <strong>{viewModel.focusMap.routeIds.length} 条航线 / {viewModel.focusMap.hotspotIds.length} 个热点</strong>
           <div className="forecast-chip-row">
             {viewModel.focusMap.hotspotIds.slice(0, 4).map((hotspotId) => (
               <span key={hotspotId} className="forecast-chip forecast-chip-inline">

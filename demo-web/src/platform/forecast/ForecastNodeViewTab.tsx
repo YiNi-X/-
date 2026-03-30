@@ -15,27 +15,27 @@ export function ForecastNodeViewTab({ viewModel, selectedGridId }: ForecastNodeV
     <div className="forecast-tab-grid">
       <PlatformStatusSurface
         tone={viewModel.meta.nodeViewReady ? 'loading' : 'deferred'}
-        title="Node-level forecast stays staged in this build"
-        summary="The page reserves a stable node-view home without pretending the 60-node runtime exports already ship."
+        title="当前版本仍保留节点级预测占位"
+        summary="页面为 node-view 保留了稳定入口，但不会假装 60 节点 runtime 导出已经上线。"
         detail={viewModel.readiness.nodeViewMessage}
       >
         <article className="forecast-drawer-card">
-          <span>Focus grid</span>
+          <span>焦点网格</span>
           <strong>{focusedGridId ?? '--'}</strong>
-          <p>{viewModel.summaryBand.focusRouteId ?? '--'} linked route in the current frame</p>
+          <p>{viewModel.summaryBand.focusRouteId ?? '--'} 是当前帧对应的关联航线</p>
         </article>
         <article className="forecast-drawer-card">
-          <span>Bridge node</span>
+          <span>桥接节点</span>
           <strong>{focusedLink ? `Node ${focusedLink.nodeId}` : '--'}</strong>
-          <p>{focusedLink?.routeId ?? 'No node-route mapping exported for this focus yet.'}</p>
+          <p>{focusedLink?.routeId ?? '当前焦点还没有导出的 node-route 映射。'}</p>
         </article>
       </PlatformStatusSurface>
 
       <section className="forecast-tab-panel">
         <div className="panel-title">
           <div>
-            <p className="panel-kicker">Node bridge</p>
-            <h2>Hotspot-to-node mapping kept visible for later paper-mode work</h2>
+            <p className="panel-kicker">节点桥接</p>
+            <h2>热点到节点的映射会继续保留，供后续论文模式使用</h2>
           </div>
           <span className="panel-code">NODE</span>
         </div>
@@ -45,7 +45,7 @@ export function ForecastNodeViewTab({ viewModel, selectedGridId }: ForecastNodeV
             <article key={link.gridId} className="forecast-drawer-card forecast-node-link-card">
               <span>{link.gridId}</span>
               <strong>Node {link.nodeId}</strong>
-              <p>{link.routeId ? `${link.routeId} linked corridor` : 'Route mapping not exported yet'}</p>
+              <p>{link.routeId ? `${link.routeId} 对应 corridor` : 'route 映射尚未导出'}</p>
             </article>
           ))}
         </div>

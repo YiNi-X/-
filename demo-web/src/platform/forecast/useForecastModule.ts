@@ -7,6 +7,7 @@ import {
   CLUSTERING_CORRIDOR_RUNTIME_PATH,
   type CorridorDominanceSummary,
 } from '../clustering/corridorDominance.ts'
+import { localizeFlowForecastData, localizeForecastMetrics } from '../zhCopy.ts'
 import { buildForecastViewModel } from './forecastViewModel.ts'
 import type {
   ForecastAnalysisTabId,
@@ -78,16 +79,20 @@ export function useForecastModule(entry: ModuleRegistryEntry) {
     let cancelled = false
 
     async function loadForecastAssets() {
-      const [metrics, geometry, corridorRuntime] = await Promise.all([
+      const [rawMetrics, geometry, corridorRuntime] = await Promise.all([
         loadPublicJson<ForecastMetricsFile>(`/${forecastEntryFiles.metrics}`),
         loadPublicJson<GeometryConfig>('/data/shared-geometry.json').catch(() => null),
         loadPublicJson<MainCorridorTracksFile>(CLUSTERING_CORRIDOR_RUNTIME_PATH).catch(() => null),
       ])
+      const metrics = localizeForecastMetrics(rawMetrics)
 
       const availableModels = getAvailableModels(metrics)
       const modelsToLoad = availableModels.length ? availableModels : ['STGCN']
       const runtimeEntries = await Promise.all(
-        modelsToLoad.map(async (model) => [model, await loadPublicJson<ForecastLoadedBundle['runtime']>(`/${getRuntimePath(forecastEntryFiles, model)}`)] as const),
+        modelsToLoad.map(async (model) => {
+          const runtime = await loadPublicJson<ForecastLoadedBundle['runtime']>(`/${getRuntimePath(forecastEntryFiles, model)}`)
+          return [model, localizeFlowForecastData(runtime)] as const
+        }),
       )
       const modelConfigEntries = await Promise.all(
         modelsToLoad.map(async (model) => {

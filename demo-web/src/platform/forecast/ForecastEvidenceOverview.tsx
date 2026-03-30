@@ -10,8 +10,8 @@ export function ForecastEvidenceOverview({ viewModel }: ForecastEvidenceOverview
       <section className="forecast-evidence-section">
         <div className="panel-title">
           <div>
-            <p className="panel-kicker">Runtime provenance</p>
-            <h2>Committed evidence behind the cockpit</h2>
+            <p className="panel-kicker">运行时来源</p>
+            <h2>驾驶舱背后的已提交证据</h2>
           </div>
           <span className="panel-code">RUNTIME</span>
         </div>
@@ -28,8 +28,8 @@ export function ForecastEvidenceOverview({ viewModel }: ForecastEvidenceOverview
       <section className="forecast-evidence-section">
         <div className="panel-title">
           <div>
-            <p className="panel-kicker">STGCN architecture</p>
-            <h2>Current model configuration surfaced honestly</h2>
+            <p className="panel-kicker">模型结构</p>
+            <h2>当前模型配置的诚实呈现</h2>
           </div>
           <span className="panel-code">MODEL</span>
         </div>
@@ -46,8 +46,8 @@ export function ForecastEvidenceOverview({ viewModel }: ForecastEvidenceOverview
       <section className="forecast-evidence-section">
         <div className="panel-title">
           <div>
-            <p className="panel-kicker">Hotspot to node map</p>
-            <h2>Bridge between product grids and paper-facing nodes</h2>
+            <p className="panel-kicker">热点到节点映射</p>
+            <h2>连接产品网格与论文节点的桥梁</h2>
           </div>
           <span className="panel-code">MAP</span>
         </div>
@@ -56,7 +56,7 @@ export function ForecastEvidenceOverview({ viewModel }: ForecastEvidenceOverview
             <article key={link.gridId} className="forecast-drawer-card forecast-node-link-card">
               <span>{link.gridId}</span>
               <strong>Node {link.nodeId}</strong>
-              <p>{link.routeId ? `${link.routeId} linked corridor` : 'No route mapping exported'}</p>
+              <p>{link.routeId ? `${link.routeId} 对应 corridor` : '尚未导出 route 映射'}</p>
             </article>
           ))}
         </div>

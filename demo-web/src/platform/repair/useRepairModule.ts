@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from 'react'
 import { loadPublicJson } from '../../sharedContracts'
 import type { ModuleRegistryEntry } from '../moduleContracts.ts'
+import { localizeRepairSampleCatalog } from '../zhCopy.ts'
 import { buildRepairViewModel } from './repairViewModel.ts'
 import type {
   RepairEntryFiles,
@@ -51,8 +52,9 @@ export function useRepairModule(entry: ModuleRegistryEntry) {
       loadPublicJson<RepairErrorsFile>(`/${entryFiles.errors}`),
       loadPublicJson<RepairMetricsFile>(`/${entryFiles.metrics}`),
     ])
-      .then(([samples, trajectories, errors, metrics]) => {
+      .then(([rawSamples, trajectories, errors, metrics]) => {
         if (cancelled) return
+        const samples = localizeRepairSampleCatalog(rawSamples)
 
         const firstSample = samples.samples[0]
         setState((current) => ({

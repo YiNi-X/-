@@ -29,22 +29,22 @@ export function ForecastFrameComparisonPanel({
     <section className="forecast-tab-panel">
       <div className="panel-title">
         <div>
-          <p className="panel-kicker">Frame comparison</p>
-          <h2>Current versus {selectedHorizon} forecast</h2>
+          <p className="panel-kicker">帧对比</p>
+          <h2>当前值与 {selectedHorizon} 预测对比</h2>
         </div>
         <span className="panel-code">FRAME</span>
       </div>
 
       {corridorLeader ? (
         <div className="forecast-context-note">
-          <span>Corridor-linked route comparison</span>
+          <span>Corridor 联动航线对比</span>
           <strong>
-            {corridorLeader.corridorId} anchors the route story at {formatSharePercent(corridorLeader.share)}
+            {corridorLeader.corridorId} 以 {formatSharePercent(corridorLeader.share)} 锚定当前航线叙事
           </strong>
           <small>
             {leadingDirection
-              ? `Read route deltas against the ${leadingDirection.directionLabel} corridor family, which carries ${formatSharePercent(leadingDirection.share)} of runtime corridor traffic.`
-              : `Read route deltas against the ${corridorLeader.directionLabel} corridor family from clustering runtime.`}
+              ? `请把航线差值放到 ${leadingDirection.directionLabel} 这一主导 corridor 家族中解读，它承载了 ${formatSharePercent(leadingDirection.share)} 的 runtime corridor 流量。`
+              : `请把航线差值放到 clustering runtime 中的 ${corridorLeader.directionLabel} corridor 家族中解读。`}
           </small>
         </div>
       ) : null}
@@ -70,7 +70,7 @@ export function ForecastFrameComparisonPanel({
 
             <div className="forecast-compare-bars">
               <div className="forecast-compare-bar-row">
-                <label>Now</label>
+                <label>当前</label>
                 <div className="forecast-compare-track">
                   <i className="is-current" style={{ width: widthRatio(row.current, maxValue) }} />
                 </div>
@@ -86,7 +86,7 @@ export function ForecastFrameComparisonPanel({
             </div>
 
             <p className="forecast-compare-card-note">
-              {row.alertLevel ?? row.hotspotLevel ?? 'normal'} {row.isFocus ? ' / focus grid' : ''}
+              {row.alertLevel ?? row.hotspotLevel ?? '正常'} {row.isFocus ? ' / 焦点网格' : ''}
             </p>
           </button>
         ))}

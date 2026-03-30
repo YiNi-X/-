@@ -148,8 +148,8 @@ function getRepairScopeOptions(metrics: EvaluationMetricsFile): EvaluationRepair
   const scopes: EvaluationRepairScopeOption[] = [
     {
       id: AGGREGATE_REPAIR_SCOPE_ID,
-      label: 'Aggregate',
-      description: `Aggregate scoreboard across ${aggregateSampleCount} curated repair samples.`,
+      label: '聚合',
+      description: `覆盖 ${aggregateSampleCount} 个精选修复样本的聚合记分板。`,
       kind: 'aggregate',
     },
   ]
@@ -157,8 +157,8 @@ function getRepairScopeOptions(metrics: EvaluationMetricsFile): EvaluationRepair
   for (const [index, sample] of (metrics.repair?.sampleMetrics ?? []).entries()) {
     scopes.push({
       id: sample.sampleId,
-      label: `Sample ${index + 1}`,
-      description: `${sample.targetId} sample-level comparison.`,
+      label: `样本 ${index + 1}`,
+      description: `${sample.targetId} 的样本级对比。`,
       kind: 'sample',
     })
   }
@@ -264,7 +264,7 @@ function getTraceabilityEntries(metrics: EvaluationMetricsFile, entry: ModuleReg
       id: `metric:${key}`,
       label: titleCase(key),
       path,
-      detail: 'Linked directly from evaluation-metrics.json',
+      detail: '直接来自 evaluation-metrics.json 的链路',
     })
   }
 
@@ -273,7 +273,7 @@ function getTraceabilityEntries(metrics: EvaluationMetricsFile, entry: ModuleReg
       id: `manifest:${key}`,
       label: titleCase(key),
       path,
-      detail: 'Linked from the evaluation module manifest',
+      detail: '来自评估模块 manifest 的链路',
     })
   }
 
@@ -302,34 +302,34 @@ function getSummaryCards(
   const repairSampleLeader = getRepairSampleLeaderSummary(metrics)
 
   return [
-    {
-      label: 'Forecast dominance',
-      value: topForecastLeader ? `${topForecastLeader[0]} ${topForecastLeader[1]}/${totalForecastLeaderSlots}` : '--',
-      detail: topForecastLeader
-        ? `${topForecastLeader[0]} leads the shipped forecast ranking slots across ${leaderCardCount} horizons and three core metrics.`
-        : 'Forecast leader slots are not available yet.',
-      tone: 'accent',
-    },
-    {
-      label: 'Repair aggregate leader',
-      value: repairAggregateLeader?.modelLabel ?? '--',
-      detail: repairSampleLeader
-        ? `${repairSampleLeader[0]} leads ${repairSampleLeader[1]} sample-level RMSE rankings, while aggregate RMSE is currently led by ${repairAggregateLeader?.modelLabel ?? 'the top model'}.`
-        : 'Repair sample-level leadership is not available yet.',
-      tone: 'accent',
-    },
-    {
-      label: 'Traceable evidence',
-      value: `${traceability.totalLinks} links`,
-      detail: `${traceability.artifactEntries.length} module artifacts and ${traceability.sourceEntries.length} lineage links are visible from this page.`,
-      tone: 'default',
-    },
-    {
-      label: 'Requirement coverage',
-      value: `${traceability.requirementCodes.length} codes`,
-      detail: `The evaluation module currently declares ${traceability.requirementCodes.join(', ')} as authoritative coverage.`,
-      tone: 'warning',
-    },
+      {
+        label: '预测主导度',
+        value: topForecastLeader ? `${topForecastLeader[0]} ${topForecastLeader[1]}/${totalForecastLeaderSlots}` : '--',
+        detail: topForecastLeader
+        ? `${topForecastLeader[0]} 在 ${leaderCardCount} 个 horizon 与 3 个核心指标组成的已上线预测排名位中占据最多领先席位。`
+        : '当前还没有可用的预测领先席位信息。',
+        tone: 'accent',
+      },
+      {
+        label: '修复聚合领先者',
+        value: repairAggregateLeader?.modelLabel ?? '--',
+        detail: repairSampleLeader
+        ? `${repairSampleLeader[0]} 在 ${repairSampleLeader[1]} 个样本级 RMSE 排名中领先，而聚合 RMSE 当前由 ${repairAggregateLeader?.modelLabel ?? '领先模型'} 占优。`
+        : '当前还没有可用的修复样本级领先信息。',
+        tone: 'accent',
+      },
+      {
+        label: '可追溯证据',
+        value: `${traceability.totalLinks} 条链路`,
+        detail: `本页当前可见 ${traceability.artifactEntries.length} 个模块产物与 ${traceability.sourceEntries.length} 条 lineage 链路。`,
+        tone: 'default',
+      },
+      {
+        label: '需求覆盖',
+        value: `${traceability.requirementCodes.length} 个代码`,
+        detail: `评估模块当前声明 ${traceability.requirementCodes.join(', ')} 为权威覆盖范围。`,
+        tone: 'warning',
+      },
   ]
 }
 
@@ -376,7 +376,7 @@ export function buildEvaluationViewModel(
   return {
     summary: {
       cards: summaryCards,
-      narrative: `Forecast currently compares ${forecastModelCount} shipped models across ${horizonOptions.length} horizons, while repair compares ${repairModelCount} methods across aggregate and sample-level views. The center keeps those scoreboards in one shell, then exposes the exact artifact lineage behind the displayed numbers.`,
+      narrative: `预测当前比较 ${forecastModelCount} 个已上线模型与 ${horizonOptions.length} 个 horizon，修复则在聚合与样本两个视角下比较 ${repairModelCount} 种方法。这个中心把两套记分板放进同一壳层，并显式暴露页面数字背后的 artifact lineage。`,
     },
     forecast: {
       modelCount: forecastModelCount,
@@ -392,8 +392,8 @@ export function buildEvaluationViewModel(
       selectedScope:
         selectedRepairScope ?? {
           id: AGGREGATE_REPAIR_SCOPE_ID,
-          label: 'Aggregate',
-          description: 'Aggregate scoreboard.',
+          label: '聚合',
+          description: '聚合记分板。',
           kind: 'aggregate',
         },
       selectedMetric: selectedRepairMetric,

@@ -128,11 +128,11 @@ export function useDashboardScene({
   const playbackWindowStart = playbackFrames[0]?.bucketTime ?? activeScenes[0]?.time ?? ''
   const playbackWindowEnd = playbackFrames[playbackFrames.length - 1]?.bucketTime ?? activeScenes[activeScenes.length - 1]?.time ?? ''
   const playbackWindowRangeLabel =
-    playbackWindowStart && playbackWindowEnd ? `${formatTimelineStamp(playbackWindowStart)} -> ${formatTimelineStamp(playbackWindowEnd)}` : 'Window unavailable'
+    playbackWindowStart && playbackWindowEnd ? `${formatTimelineStamp(playbackWindowStart)} -> ${formatTimelineStamp(playbackWindowEnd)}` : '观测窗口不可用'
   const playbackFrameLabel = playbackFrame ? formatTimelineStamp(playbackFrame.bucketTime) : scene.time
   const playbackFrameMeta = totalSceneCount
-    ? `Frame ${Math.min(safeSceneIndex + 1, totalSceneCount)} / ${totalSceneCount} 路 ${aisPlayback?.meta.bucketMinutes ?? 5} min step`
-    : 'No playback frames'
+    ? `第 ${Math.min(safeSceneIndex + 1, totalSceneCount)} / ${totalSceneCount} 帧，每步 ${aisPlayback?.meta.bucketMinutes ?? 5} 分钟`
+    : '暂无回放帧'
 
   const visiblePlaybackVessels = useMemo(() => {
     if (!playbackFrame) return [] as PlaybackVessel[]
@@ -292,7 +292,7 @@ export function useDashboardScene({
 
   const dialCards = [
     { label: '当前流量', value: objectiveTotalFlow, percent: Math.min(objectiveTotalFlow / 2200, 1) },
-    { label: 'Next Window', value: objectiveNext1h, percent: Math.min(objectiveNext1h / 2200, 1) },
+    { label: '下一窗口', value: objectiveNext1h, percent: Math.min(objectiveNext1h / 2200, 1) },
     { label: '热点网格', value: displayedHotspotCount, percent: Math.min(displayedHotspotCount / 5, 1) },
     { label: '展示船舶', value: currentVisibleVessels, percent: Math.min(currentVisibleVessels / 28, 1) },
   ]

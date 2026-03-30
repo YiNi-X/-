@@ -12,6 +12,7 @@ import type {
   ClusteringStagePreviews,
   ClusteringSummary,
 } from '../clustering/clusteringTypes.ts'
+import { localizeClusteringNoiseFallback } from '../zhCopy.ts'
 
 type ClusteringPageProps = {
   entry: ModuleRegistryEntry
@@ -55,28 +56,28 @@ function formatStatValue(value: number | string) {
 function describeDeferredArtifact(artifact: ClusteringNoiseFallback['deferredArtifact']) {
   if (artifact.status === 'zero-byte') {
     return {
-      headline: `${artifact.fileName} exists but is still 0 bytes`,
-      detail: 'The fallback stops at pre-reclustering evidence because the distance matrix file has no usable payload yet.',
+      headline: `${artifact.fileName} 已存在，但仍是 0 字节`,
+      detail: '由于距离矩阵文件还没有可用载荷，fallback 只能停留在重聚类前的证据层。',
     }
   }
 
   if (artifact.status === 'missing') {
     return {
-      headline: `${artifact.fileName} is still missing`,
-      detail: 'The fallback stops at pre-reclustering evidence because the distance matrix file is not available in the workspace.',
+      headline: `${artifact.fileName} 仍然缺失`,
+      detail: '由于工作区中还没有距离矩阵文件，fallback 只能停留在重聚类前的证据层。',
     }
   }
 
   if (artifact.status === 'present') {
     return {
-      headline: `${artifact.fileName} has returned but the export is still deferred`,
-      detail: 'The fallback remains active until a website-facing reclustering bundle is regenerated and validated.',
+      headline: `${artifact.fileName} 已恢复，但导出结果仍处于 deferred`,
+      detail: '只有在面向网站的重聚类 bundle 重新生成并通过校验后，fallback 才会退出。',
     }
   }
 
   return {
-    headline: `${artifact.fileName} is still unreadable`,
-    detail: 'The fallback stops at pre-reclustering evidence because the distance matrix file cannot be loaded reliably yet.',
+    headline: `${artifact.fileName} 仍然无法读取`,
+    detail: '由于距离矩阵文件暂时无法被可靠加载，fallback 只能停留在重聚类前的证据层。',
   }
 }
 
@@ -106,14 +107,14 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
           corridorRuntime,
           corridorReview,
         })
-        setNoiseFallback(fallback)
+        setNoiseFallback(fallback ? localizeClusteringNoiseFallback(fallback) : null)
         setSelectedLayer(getDefaultClusteringLayer(summary))
         setSelectedCorridorId(corridorRuntime.corridors[0]?.corridorId ?? '')
         setError('')
       })
       .catch((loadError) => {
         if (cancelled) return
-        setError(loadError instanceof Error ? loadError.message : 'Failed to load clustering module.')
+        setError(loadError instanceof Error ? loadError.message : '轨迹聚类模块加载失败。')
       })
 
     return () => {
@@ -138,41 +139,41 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
     <section className="module-page">
       <section className="frame module-summary-band clustering-summary-band">
         <div>
-          <p className="panel-kicker">Trajectory Clustering</p>
-          <h1>Raw to segmented to compressed to corridor extraction</h1>
+          <p className="panel-kicker">轨迹聚类</p>
+          <h1>从原始轨迹到分段、压缩与 corridor 提取</h1>
           <p className="module-takeaway">
             {viewModel
-              ? 'The Phase 10 clustering module now switches across provenance layers, exposes corridor statistics, and keeps the review-first promotion boundary visible without pretending the deferred noise path is already ready.'
-              : 'Loading clustering stage previews, corridor runtime data, and review metadata from the module bundle.'}
+              ? 'Phase 10 聚类模块现在可以在不同 provenance 图层间切换，展示 corridor 统计，并保持 review-first 的上线边界可见，而不会假装 deferred 的 noise 路径已经恢复。'
+              : '正在从模块 bundle 加载聚类阶段预览、corridor runtime 数据与评审元数据。'}
           </p>
         </div>
         <div className="module-kpi-grid">
           <article>
-            <span>Exposed layers</span>
+            <span>已开放图层</span>
             <strong>{viewModel?.meta.availableLayers.length ?? '--'}</strong>
-            <small>{viewModel?.meta.availableLayers.map((layer) => layer.shortLabel).join(' / ') ?? 'Loading layer registry'}</small>
+            <small>{viewModel?.meta.availableLayers.map((layer) => layer.shortLabel).join(' / ') ?? '正在加载图层注册表'}</small>
           </article>
           <article>
-            <span>Cluster count</span>
+            <span>corridor 数量</span>
             <strong>{viewModel ? formatNumber(viewModel.stats.totalCorridors) : '--'}</strong>
             <small>
               {viewModel
-                ? `${formatNumber(viewModel.stats.totalRuntimeTracks)} runtime tracks across directional corridor groups`
-                : 'Loading corridor count'}
+                ? `${formatNumber(viewModel.stats.totalRuntimeTracks)} 条 runtime 轨迹分布在方向性 corridor 家族中`
+                : '正在加载 corridor 数量'}
             </small>
           </article>
           <article>
-            <span>Review delta</span>
+            <span>评审差异</span>
             <strong>{viewModel ? formatNumber(viewModel.reviewComparison.trackDelta) : '--'}</strong>
-            <small>{viewModel?.reviewComparison.status ?? 'Loading runtime versus review comparison'}</small>
+            <small>{viewModel?.reviewComparison.status ?? '正在加载 runtime 与 review 的对比结果'}</small>
           </article>
         </div>
         <div className="clustering-summary-actions">
           <a className="module-primary-action" href={viewModel?.routeEditorLink ?? '/route-editor.html'}>
-            Open RouteEditor runtime
+            打开 RouteEditor runtime
           </a>
           <button type="button" className="module-primary-action clustering-secondary-action" onClick={() => onNavigate('overview')}>
-            Open overview
+            打开总览
           </button>
         </div>
       </section>
@@ -181,17 +182,17 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
         <section className="frame module-main-panel">
           <div className="panel-title">
             <div>
-              <p className="panel-kicker">Layer Switcher</p>
-              <h2>{viewModel?.selectedLayer.descriptor.label ?? 'Clustering stage progression'}</h2>
+              <p className="panel-kicker">图层切换</p>
+              <h2>{viewModel?.selectedLayer.descriptor.label ?? '聚类阶段推进'}</h2>
             </div>
             <span className="panel-code">{viewModel?.selectedLayer.descriptor.stageCode ?? 'CLUS'}</span>
           </div>
 
           {error ? (
-            <PlatformStatusSurface tone="error" title="Clustering data unavailable" summary="The clustering module files could not be opened." detail={error} />
+            <PlatformStatusSurface tone="error" title="聚类数据不可用" summary="轨迹聚类模块文件无法打开。" detail={error} />
           ) : viewModel && stageBounds ? (
             <>
-              <div className="clustering-layer-buttons" aria-label="Layer Switcher">
+              <div className="clustering-layer-buttons" aria-label="图层切换">
                 {viewModel.meta.availableLayers.map((layer) => (
                   <button
                     key={layer.id}
@@ -219,8 +220,8 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
               <section className="clustering-story-shell">
                 <div className="panel-title">
                   <div>
-                    <p className="panel-kicker">Pipeline Story</p>
-                    <h2>How the corridor result is formed</h2>
+                    <p className="panel-kicker">流水线叙事</p>
+                    <h2>corridor 结果是如何形成的</h2>
                   </div>
                   <span className="panel-code">TRACE</span>
                 </div>
@@ -238,14 +239,14 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
 
                 <div className="module-card-grid clustering-story-grid">
                   <article className="metric-spotlight-card">
-                    <span>Compression ratio</span>
+                    <span>压缩比例</span>
                     <strong>{viewModel.pipelineStory.compressionRatio}</strong>
-                    <small>Share of segmented points that remain after compression while preserving corridor shape.</small>
+                    <small>在保持 corridor 形状的前提下，分段点经过压缩后仍被保留的占比。</small>
                   </article>
                   <article className="metric-spotlight-card">
-                    <span>Corridor yield</span>
+                    <span>corridor 产出率</span>
                     <strong>{viewModel.pipelineStory.corridorYield}</strong>
-                    <small>Share of compressed tracks that appear in the website-facing runtime corridor package.</small>
+                    <small>压缩后轨迹中最终进入网站 runtime corridor 包的占比。</small>
                   </article>
                 </div>
               </section>
@@ -253,10 +254,10 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
               <section className="clustering-stage-shell">
                 <div className="panel-title">
                   <div>
-                    <p className="panel-kicker">Stage Preview</p>
+                    <p className="panel-kicker">阶段预览</p>
                     <h2>{viewModel.selectedLayer.descriptor.label}</h2>
                   </div>
-                  <span className="panel-code">{previewTracks.length} traces</span>
+                  <span className="panel-code">{previewTracks.length} 条轨迹</span>
                 </div>
 
                 <div className="clustering-stage-grid">
@@ -274,9 +275,9 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
                       ))}
                     </svg>
                     <div className="clustering-stage-overlay">
-                      <span>Sampling mode</span>
+                      <span>采样模式</span>
                       <strong>{viewModel.selectedLayer.samplingMode}</strong>
-                      <small>{previewTracks.length} preview traces shown on the stage</small>
+                      <small>当前舞台展示 {previewTracks.length} 条预览轨迹</small>
                     </div>
                   </div>
 
@@ -285,10 +286,10 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
                       <article key={track.id} className="module-flow-card clustering-track-card">
                         <span>{track.corridorId ?? viewModel.selectedLayer.descriptor.shortLabel}</span>
                         <strong>{track.label}</strong>
-                        <p>{track.directionLabel ?? 'Trajectory preview track'}</p>
+                        <p>{track.directionLabel ?? '轨迹预览样本'}</p>
                         <small>
-                          {formatNumber(track.pointCount)} points
-                          {track.startTime && track.endTime ? ` | ${track.startTime} to ${track.endTime}` : ''}
+                          {formatNumber(track.pointCount)} 个点
+                          {track.startTime && track.endTime ? ` | ${track.startTime} 至 ${track.endTime}` : ''}
                         </small>
                       </article>
                     ))}
@@ -308,36 +309,36 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
         <aside className="frame module-side-panel">
           <div className="panel-title">
             <div>
-              <p className="panel-kicker">Cluster Statistics</p>
-              <h2>Corridor counts and selection</h2>
+              <p className="panel-kicker">聚类统计</p>
+              <h2>corridor 数量与选择</h2>
             </div>
             <span className="panel-code">STATS</span>
           </div>
 
           <div className="module-side-list">
             <article>
-              <span>Cluster count</span>
-              <strong>{viewModel ? formatNumber(viewModel.stats.totalCorridors) : 'Loading'}</strong>
-              <small>Directional corridor groups now stand in for the shipped clustering result set.</small>
+              <span>corridor 数量</span>
+              <strong>{viewModel ? formatNumber(viewModel.stats.totalCorridors) : '加载中'}</strong>
+              <small>面向网站上线的聚类结果目前以方向性 corridor 家族作为交付形态。</small>
             </article>
             <article>
-              <span>Average tracks per cluster</span>
+              <span>每个 corridor 的平均轨迹数</span>
               <strong>{viewModel ? formatNumber(viewModel.stats.averageTracksPerCorridor) : '--'}</strong>
-              <small>{viewModel ? `${formatNumber(viewModel.stats.totalRuntimeTracks)} runtime tracks in total` : 'Loading corridor density'}</small>
+              <small>{viewModel ? `${formatNumber(viewModel.stats.totalRuntimeTracks)} 条 runtime 轨迹总计` : '正在加载 corridor 密度'}</small>
             </article>
             <article>
-              <span>Selected corridor</span>
-              <strong>{selectedCorridor?.corridorId ?? 'Loading'}</strong>
+              <span>当前 corridor</span>
+              <strong>{selectedCorridor?.corridorId ?? '加载中'}</strong>
               <small>
                 {selectedCorridor
-                  ? `${selectedCorridor.directionLabel} | rank ${selectedCorridor.rank} | ${formatNumber(selectedCorridor.runtimeTrackCount)} runtime tracks | ${formatPercent(selectedCorridor.shareOfRuntimeTracks)} of runtime`
-                  : 'Loading selected corridor'}
+                  ? `${selectedCorridor.directionLabel} | 排名 ${selectedCorridor.rank} | ${formatNumber(selectedCorridor.runtimeTrackCount)} 条 runtime 轨迹 | 占 runtime 的 ${formatPercent(selectedCorridor.shareOfRuntimeTracks)}`
+                  : '正在加载当前 corridor'}
               </small>
             </article>
             <article>
-              <span>Noise re-clustering</span>
-              <strong>{viewModel?.meta.noiseReclusterReady ? 'Ready' : 'Deferred'}</strong>
-              <small>{viewModel?.stats.noiseStatusMessage ?? 'Loading deferred artifact status'}</small>
+              <span>noise 重聚类</span>
+              <strong>{viewModel?.meta.noiseReclusterReady ? '已就绪' : '已延后'}</strong>
+              <small>{viewModel?.stats.noiseStatusMessage ?? '正在加载 deferred 产物状态'}</small>
             </article>
           </div>
 
@@ -345,7 +346,7 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
             <section className="clustering-profile-shell">
               <div className="panel-title">
                 <div>
-                  <p className="panel-kicker">Selected Corridor Profile</p>
+                  <p className="panel-kicker">当前 corridor 档案</p>
                   <h2>{selectedCorridor.corridorId}</h2>
                 </div>
                 <span className="panel-code">FOCUS</span>
@@ -353,19 +354,19 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
 
               <div className="module-side-list">
                 <article>
-                  <span>Direction family</span>
+                  <span>方向家族</span>
                   <strong>{selectedCorridor.directionLabel}</strong>
                   <small>{viewModel?.stats.directionFamilyLabel}</small>
                 </article>
                 <article>
-                  <span>Share of runtime</span>
+                  <span>runtime 占比</span>
                   <strong>{formatPercent(selectedCorridor.shareOfRuntimeTracks)}</strong>
-                  <small>{formatNumber(selectedCorridor.runtimeTrackCount)} runtime tracks and {formatNumber(selectedCorridor.reviewTrackCount)} review tracks.</small>
+                  <small>{formatNumber(selectedCorridor.runtimeTrackCount)} 条 runtime 轨迹，{formatNumber(selectedCorridor.reviewTrackCount)} 条 review 轨迹。</small>
                 </article>
                 <article>
-                  <span>Label point</span>
+                  <span>标注点</span>
                   <strong>{selectedCorridor.labelPoint.lon.toFixed(4)}, {selectedCorridor.labelPoint.lat.toFixed(4)}</strong>
-                  <small>This point anchors the corridor entity that is shared with RouteEditor.</small>
+                  <small>该点用于锚定与 RouteEditor 共享的 corridor 实体。</small>
                 </article>
               </div>
             </section>
@@ -375,8 +376,8 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
             <section className="clustering-corridor-picker">
               <div className="panel-title">
                 <div>
-                  <p className="panel-kicker">Corridor Leaderboard</p>
-                  <h2>Dominant route families</h2>
+                  <p className="panel-kicker">corridor 排行</p>
+                  <h2>主导航路家族</h2>
                 </div>
                 <span className="panel-code">LINK</span>
               </div>
@@ -392,13 +393,13 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
                     <span>{String(corridor.rank).padStart(2, '0')}</span>
                     <strong>{corridor.corridorId}</strong>
                     <small>{corridor.directionLabel}</small>
-                    <em>{formatPercent(corridor.runtimeShare)} of runtime</em>
+                    <em>占 runtime 的 {formatPercent(corridor.runtimeShare)}</em>
                   </button>
                 ))}
               </div>
 
               <p className="clustering-link-copy">
-                The selected corridor can be traced back to the shared <code>main-corridor-tracks.json</code> runtime used by RouteEditor, so the leaderboard doubles as a product-facing corridor entity selector.
+                当前选中的 corridor 可以回链到 RouteEditor 复用的 <code>main-corridor-tracks.json</code> runtime，因此这个排行榜也兼具产品侧 corridor 实体选择器的作用。
               </p>
             </section>
           ) : null}
@@ -407,29 +408,29 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
             <div className="panel-title">
               <div>
                 <p className="panel-kicker">Runtime vs Review</p>
-                <h2>Promotion boundary</h2>
+                <h2>上线边界</h2>
               </div>
               <span className="panel-code">REVIEW</span>
             </div>
 
             <div className="module-card-grid clustering-review-grid">
               <article className="metric-spotlight-card">
-                <span>Promotion state</span>
-                <strong>{bundle?.summary.reviewStatus.corridorPromotion ?? 'Loading'}</strong>
-                <small>{viewModel?.reviewComparison.status ?? 'Loading review status'}</small>
+                <span>上线状态</span>
+                <strong>{bundle?.summary.reviewStatus.corridorPromotion ?? '加载中'}</strong>
+                <small>{viewModel?.reviewComparison.status ?? '正在加载评审状态'}</small>
               </article>
               <article className="metric-spotlight-card">
-                <span>Corridor delta</span>
+                <span>corridor 差异</span>
                 <strong>{viewModel ? formatNumber(viewModel.reviewComparison.corridorDelta) : '--'}</strong>
-                <small>{viewModel ? `Track delta ${formatNumber(viewModel.reviewComparison.trackDelta)}` : 'Loading contract delta'}</small>
+                <small>{viewModel ? `轨迹差异 ${formatNumber(viewModel.reviewComparison.trackDelta)}` : '正在加载契约差异'}</small>
               </article>
               <article className="metric-spotlight-card">
-                <span>Selected corridor match</span>
-                <strong>{viewModel?.reviewComparison.selectedCorridorMatches ? 'Yes' : 'Review-first'}</strong>
+                <span>当前 corridor 是否一致</span>
+                <strong>{viewModel?.reviewComparison.selectedCorridorMatches ? '一致' : '以 review 为准'}</strong>
                 <small>
                   {selectedCorridor
-                    ? `${selectedCorridor.corridorId} review tracks ${formatNumber(selectedCorridor.reviewTrackCount)}`
-                    : 'Select a corridor to compare runtime and review counts'}
+                    ? `${selectedCorridor.corridorId} 的 review 轨迹数为 ${formatNumber(selectedCorridor.reviewTrackCount)}`
+                    : '选择一个 corridor 以比较 runtime 与 review 计数'}
                 </small>
               </article>
             </div>
@@ -439,8 +440,8 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
             <section className="clustering-noise-panel">
               <div className="panel-title">
                 <div>
-                  <p className="panel-kicker">Noise Pool / Deferred CLUS-03</p>
-                  <h2>Honest fallback instead of fake re-clustering</h2>
+                  <p className="panel-kicker">噪声池 / Deferred CLUS-03</p>
+                  <h2>使用诚实 fallback，而不是伪造重聚类</h2>
                 </div>
                 <span className="panel-code">FALLBACK</span>
               </div>
@@ -449,30 +450,30 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
 
               <div className="module-card-grid clustering-review-grid">
                 <article className="metric-spotlight-card">
-                  <span>Candidate pool</span>
+                  <span>候选池</span>
                   <strong>{formatNumber(noiseCounts?.candidateSegments ?? 0)}</strong>
                   <small>
                     {noiseCounts
-                      ? `${formatPercent(candidateShare)} of ${formatNumber(noiseCounts.rawSegments)} raw segments survived into the clustering candidate pool.`
-                      : 'Loading candidate pool stats'}
+                      ? `${formatPercent(candidateShare)} 的 ${formatNumber(noiseCounts.rawSegments)} 条原始分段进入了聚类候选池。`
+                      : '正在加载候选池统计'}
                   </small>
                 </article>
                 <article className="metric-spotlight-card">
-                  <span>Kept runtime corridors</span>
+                  <span>保留到 runtime 的 corridor</span>
                   <strong>{formatNumber(noiseCounts?.keptSegments ?? 0)}</strong>
                   <small>
                     {noiseCounts
-                      ? `${formatPercent(keptShare)} of raw segments remain in the shipped corridor runtime after filtering.`
-                      : 'Loading kept corridor stats'}
+                      ? `${formatPercent(keptShare)} 的原始分段在过滤后仍留在已交付的 corridor runtime 中。`
+                      : '正在加载保留统计'}
                   </small>
                 </article>
                 <article className="metric-spotlight-card">
-                  <span>Noise pool</span>
+                  <span>噪声池</span>
                   <strong>{formatNumber(dbscanNoise?.count ?? 0)}</strong>
                   <small>
                     {dbscanNoise && noiseCounts
-                      ? `${formatPercent(dbscanNoiseShare)} of raw segments still sit in dbscan_noise, which is the only truthful stand-in for deferred CLUS-03.`
-                      : 'Loading dbscan noise stats'}
+                      ? `${formatPercent(dbscanNoiseShare)} 的原始分段仍停留在 dbscan_noise 中，这是 Deferred CLUS-03 唯一诚实的替代视角。`
+                      : '正在加载 dbscan noise 统计'}
                   </small>
                 </article>
               </div>
@@ -483,7 +484,7 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
                     <span>{reason.label}</span>
                     <strong>{formatNumber(reason.count)}</strong>
                     <small>
-                      {noiseCounts?.rawSegments ? `${formatPercent(reason.count / noiseCounts.rawSegments)} of raw segments.` : 'Loading share.'}
+                      {noiseCounts?.rawSegments ? `占原始分段的 ${formatPercent(reason.count / noiseCounts.rawSegments)}。` : '正在加载占比。'}
                     </small>
                     <p>{reason.narrative}</p>
                   </article>
@@ -491,27 +492,25 @@ export function ClusteringPage({ entry, onNavigate }: ClusteringPageProps) {
               </div>
 
               <div className="corridor-story-note clustering-noise-note">
-                <span>Evidence boundary</span>
-                <strong>{noiseArtifactCopy?.headline ?? `${noiseFallback.deferredArtifact.fileName} is still unreadable`}</strong>
+                <span>证据边界</span>
+                <strong>{noiseArtifactCopy?.headline ?? `${noiseFallback.deferredArtifact.fileName} 仍然无法读取`}</strong>
                 <p>
-                  {noiseArtifactCopy?.detail ?? 'This panel intentionally stops at pre-reclustering evidence.'} The artifact currently reports{' '}
-                  {noiseFallback.deferredArtifact.fileBytes} bytes, so the site shows what the pipeline truly knows today without inventing
-                  post-noise geometry or fake corridor promotion.
+                  {noiseArtifactCopy?.detail ?? '该面板会有意识地停在重聚类之前的证据层。'} 当前产物大小为 {noiseFallback.deferredArtifact.fileBytes} 字节，因此网站只展示流程今天真正知道的内容，不会虚构 noise 之后的几何结果或伪造 corridor 上线。
                 </p>
-                {noiseFallback.deferredArtifact.filePath ? <small>Workspace path: {noiseFallback.deferredArtifact.filePath}</small> : null}
+                {noiseFallback.deferredArtifact.filePath ? <small>工作区路径：{noiseFallback.deferredArtifact.filePath}</small> : null}
               </div>
             </section>
           ) : null}
 
           <section className="module-deferred-note clustering-recovery-panel">
-            <span>Recovery Checklist</span>
-            <strong>Reopen CLUS-03 only after the distance artifact becomes usable</strong>
-            <p>{viewModel?.recoveryChecklist.blocker ?? entry.deferredItems[0]?.reason ?? 'Noise re-clustering remains deferred.'}</p>
-            <small>Missing artifact: {viewModel?.recoveryChecklist.artifactId ?? 'clustering-noise-reclustered'}</small>
-            <small>Artifact state: {viewModel?.recoveryChecklist.artifactStatus ?? 'Deferred'}</small>
-            {viewModel?.recoveryChecklist.artifactBytes !== undefined ? <small>Artifact bytes: {viewModel.recoveryChecklist.artifactBytes}</small> : null}
-            {viewModel?.recoveryChecklist.artifactPath ? <small>Workspace path: {viewModel.recoveryChecklist.artifactPath}</small> : null}
-            <small>Depends on: {viewModel?.recoveryChecklist.dependsOn.join(' -> ') ?? 'CLUS-03 -> Phase 10'}</small>
+            <span>恢复清单</span>
+            <strong>只有距离产物可用后，才重新打开 CLUS-03</strong>
+            <p>{viewModel?.recoveryChecklist.blocker ?? entry.deferredItems[0]?.reason ?? 'noise 重聚类仍处于 deferred 状态。'}</p>
+            <small>缺失产物：{viewModel?.recoveryChecklist.artifactId ?? 'clustering-noise-reclustered'}</small>
+            <small>产物状态：{viewModel?.recoveryChecklist.artifactStatus ?? 'Deferred'}</small>
+            {viewModel?.recoveryChecklist.artifactBytes !== undefined ? <small>产物字节数：{viewModel.recoveryChecklist.artifactBytes}</small> : null}
+            {viewModel?.recoveryChecklist.artifactPath ? <small>工作区路径：{viewModel.recoveryChecklist.artifactPath}</small> : null}
+            <small>依赖关系：{viewModel?.recoveryChecklist.dependsOn.join(' -> ') ?? 'CLUS-03 -> Phase 10'}</small>
             <div className="clustering-recovery-list">
               {viewModel?.recoveryChecklist.steps.map((step, index) => (
                 <article key={step}>

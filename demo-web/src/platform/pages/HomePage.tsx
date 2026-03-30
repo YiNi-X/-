@@ -19,6 +19,7 @@ import { loadPublicJson } from '../../sharedContracts'
 import type { MainCorridorTracksFile } from '../../sharedContracts'
 import type { ShellRouteId } from '../../sharedContracts'
 import type { OverviewSummary } from '../overview/overviewTypes.ts'
+import { localizeOverviewSummary, localizeReadinessLabel } from '../zhCopy.ts'
 
 type HomePageProps = {
   selectedDatasetId: string
@@ -119,7 +120,7 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
     ])
       .then(([overviewData, evaluationData, corridorRuntime]) => {
         if (cancelled) return
-        setOverviewSummary(overviewData)
+        setOverviewSummary(overviewData ? localizeOverviewSummary(overviewData) : null)
         setEvaluationMetrics(evaluationData)
         setCorridorDominance(corridorRuntime ? buildCorridorDominanceSummary(corridorRuntime) : null)
       })
@@ -160,81 +161,81 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
   const previewCards: HomePreviewCard[] = [
     {
       routeId: 'overview',
-      kicker: 'Project Overview',
-      title: 'Overview',
-      summary: overviewSummary?.framing ?? 'Archived AIS playback and offline inference form one coherent demo loop.',
-      primaryLabel: 'Loop steps',
+      kicker: '项目总览',
+      title: '总览',
+      summary: overviewSummary?.framing ?? '归档 AIS 回放与离线推理共同构成一个连贯的演示闭环。',
+      primaryLabel: '闭环步骤',
       primaryValue: String(overviewSteps),
-      secondaryLabel: 'Data-ready modules',
+      secondaryLabel: '已就绪模块',
       secondaryValue: String(readyOverviewEntries || 0),
-      actionLabel: 'View Details',
-      stateLabel: 'Ready',
+      actionLabel: '查看详情',
+      stateLabel: localizeReadinessLabel('ready'),
     },
     {
       routeId: 'forecast',
-      kicker: 'Flow Prediction',
-      title: 'Flow Prediction',
-      summary: `${displayedAlerts.length} hotspot alerts are active in the current scene and the next window projects ${metricNumber(objectiveNext1h)} total flow.`,
-      primaryLabel: 'Current total flow',
+      kicker: '流量预测',
+      title: '流量预测',
+      summary: `当前场景有 ${displayedAlerts.length} 条热点告警生效，下一窗口预计总流量为 ${metricNumber(objectiveNext1h)}。`,
+      primaryLabel: '当前总流量',
       primaryValue: metricNumber(objectiveTotalFlow),
-      secondaryLabel: 'Available models',
+      secondaryLabel: '可用模型数',
       secondaryValue: String(forecastModelCount),
-      actionLabel: 'View Details',
-      stateLabel: 'Ready',
+      actionLabel: '查看详情',
+      stateLabel: localizeReadinessLabel('ready'),
     },
     {
       routeId: 'repair',
-      kicker: 'Trajectory Repair',
-      title: 'Trajectory Repair',
-      summary: `${repairSamples} curated samples are available and ${repairLeader?.modelLabel ?? 'ATT-BILSTM'} is currently the best RMSE performer.`,
-      primaryLabel: 'Curated samples',
+      kicker: '轨迹修复',
+      title: '轨迹修复',
+      summary: `当前已上线 ${repairSamples} 个精选样本，${repairLeader?.modelLabel ?? 'ATT-BILSTM'} 暂时是 RMSE 最优模型。`,
+      primaryLabel: '精选样本数',
       primaryValue: String(repairSamples),
-      secondaryLabel: 'Best model',
+      secondaryLabel: '最佳模型',
       secondaryValue: repairLeader?.modelLabel ?? 'ATT-BILSTM',
-      actionLabel: 'View Trajectory',
-      stateLabel: 'Ready',
+      actionLabel: '查看轨迹',
+      stateLabel: localizeReadinessLabel('ready'),
     },
     {
       routeId: 'clustering',
-      kicker: 'Trajectory Clustering',
-      title: 'Trajectory Clustering',
+      kicker: '轨迹聚类',
+      title: '轨迹聚类',
       summary: corridorLeader
-        ? `${corridorLeader.corridorId} (${corridorLeader.directionLabel}) now acts as the runtime movement spine, so clustering hands a concrete corridor-dominance story into overview and evaluation.`
-        : 'The clustering story moves from raw AIS to segmented, compressed, and corridor-ready layers without forcing the research-only noise stage.',
-      primaryLabel: 'Compressed tracks',
+        ? `${corridorLeader.corridorId}（${corridorLeader.directionLabel}）已经成为 runtime 运动主线，因此聚类会把 corridor dominance 叙事显式传递到总览与评估页。`
+        : '聚类叙事从原始 AIS 进入分段、压缩与 corridor-ready 图层，同时保持 noise 阶段的研究边界。 ',
+      primaryLabel: '压缩轨迹数',
       primaryValue: String(compressedTracks),
-      secondaryLabel: 'Lead corridor',
+      secondaryLabel: '主导 corridor',
       secondaryValue: corridorLeader?.corridorId ?? '--',
-      actionLabel: 'View Pipeline',
-      stateLabel: 'Ready',
+      actionLabel: '查看流水线',
+      stateLabel: localizeReadinessLabel('ready'),
     },
     {
       routeId: 'evaluation',
-      kicker: 'Evaluation Center',
-      title: 'Evaluation Center',
+      kicker: '评估中心',
+      title: '评估中心',
       summary: corridorLeader
-        ? `${forecastLeader?.model ?? 'STGCN'} leads the 1h forecast ranking while ${repairLeader?.modelLabel ?? 'ATT-BILSTM'} leads repair RMSE, with ${corridorLeader.corridorId} anchoring the shared runtime context.`
-        : `${forecastLeader?.model ?? 'STGCN'} leads the 1h forecast ranking while ${repairLeader?.modelLabel ?? 'ATT-BILSTM'} leads repair RMSE.`,
-      primaryLabel: 'Timeline frames',
+        ? `${forecastLeader?.model ?? 'STGCN'} 当前在 1h 预测排名中领先，${repairLeader?.modelLabel ?? 'ATT-BILSTM'} 在修复 RMSE 中领先，而 ${corridorLeader.corridorId} 提供了共享的 runtime 背景。`
+        : `${forecastLeader?.model ?? 'STGCN'} 当前在 1h 预测排名中领先，${repairLeader?.modelLabel ?? 'ATT-BILSTM'} 在修复 RMSE 中领先。`,
+      primaryLabel: '时间线帧数',
       primaryValue: String(forecastFrames),
-      secondaryLabel: 'Top forecast model',
+      secondaryLabel: '预测领先模型',
       secondaryValue: forecastLeader?.model ?? 'STGCN',
-      actionLabel: 'Compare Results',
-      stateLabel: 'Ready',
+      actionLabel: '对比结果',
+      stateLabel: localizeReadinessLabel('ready'),
     },
     {
       routeId: 'forward-looking',
-      kicker: 'Forward-Looking Analysis',
-      title: 'Forward-Looking Analysis',
+      kicker: '前瞻分析',
+      title: '前瞻分析',
       summary:
         forwardLookingEntry?.summary ??
-        'Collaborative decision evidence remains intentionally deferred until the curated scenario contract is shipped.',
-      primaryLabel: forwardLookingEntry?.primaryMetric.label ?? 'Status',
-      primaryValue: forwardLookingEntry?.primaryMetric.value ?? 'Later update',
-      secondaryLabel: forwardLookingEntry?.secondaryMetric.label ?? 'Current phase',
-      secondaryValue: forwardLookingEntry?.secondaryMetric.value ?? 'Reserved',
-      actionLabel: forwardLookingEntry ? 'Open Analysis' : 'See Status',
-      stateLabel: forwardLookingEntry ? `${forwardLookingEntry.status[0].toUpperCase()}${forwardLookingEntry.status.slice(1)}` : 'Deferred',
+        '在精选场景契约正式上线前，协同决策证据仍会保持明确的 deferred 状态。',
+      primaryLabel: forwardLookingEntry?.primaryMetric.label ?? '状态',
+      primaryValue: forwardLookingEntry?.primaryMetric.value ?? '后续更新',
+      secondaryLabel: forwardLookingEntry?.secondaryMetric.label ?? '当前阶段',
+      secondaryValue: forwardLookingEntry?.secondaryMetric.value ?? '预留',
+      actionLabel: forwardLookingEntry ? '打开分析' : '查看状态',
+      stateLabel: forwardLookingEntry ? localizeReadinessLabel(forwardLookingEntry.status) : localizeReadinessLabel('deferred'),
     },
   ]
 
@@ -318,19 +319,19 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
       <section className="map-column">
         <section className="frame map-frame">
           <div className="map-stage">
-            <img src="/static-port-map.jpg" alt="Static estuary basemap" className="map-image" />
+            <img src="/static-port-map.jpg" alt="静态港口底图" className="map-image" />
             <div className="map-grid"></div>
 
             <div className="map-panel-title">
               <div>
-                <p className="panel-kicker">Command Center</p>
-                <h2>Archived AIS traffic scene and module entry stage</h2>
+                <p className="panel-kicker">指挥中枢</p>
+                <h2>归档 AIS 交通场景与模块入口舞台</h2>
               </div>
               <span className="panel-code">{hoveredPreview?.title ?? scene.phase}</span>
             </div>
 
             <div className="map-hud map-hud-left">
-              <span>Scene Focus</span>
+              <span>场景焦点</span>
               <strong>{selectedDatasetLabel}</strong>
               <strong>{hoveredPreview?.summary ?? (planApplied ? scene.appliedSummary : scene.summary)}</strong>
             </div>
@@ -338,9 +339,9 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
             <div className="map-right-rail">
               <div className="map-hud focus-card">
                 <div className="focus-card-head">
-                  <span className="focus-card-label">Current focus</span>
+                  <span className="focus-card-label">当前焦点</span>
                   <span className={!strategyEnabled ? 'focus-card-state disabled' : planApplied ? 'focus-card-state applied' : 'focus-card-state'}>
-                    {!strategyEnabled ? 'strategy off' : planApplied ? 'applied' : 'preview'}
+                    {!strategyEnabled ? '策略关闭' : planApplied ? '已应用' : '预览'}
                   </span>
                 </div>
                 <div className="focus-card-tags">
@@ -349,44 +350,44 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
                   <strong>{focusFeed.tag}</strong>
                 </div>
                 <div className="focus-card-metric">
-                  <small>Current to next</small>
+                  <small>当前到下一步</small>
                   <strong>
                     {focusAlert.current} <span>-&gt;</span> {focusAlert.future}
                   </strong>
                 </div>
                 <p className="focus-card-summary">{planApplied ? scene.appliedSummary : scene.strategySummary}</p>
                 <button type="button" className={planApplied ? 'focus-card-action applied' : 'focus-card-action'} onClick={handleApplyPlan} disabled={!strategyAvailable}>
-                  {planApplied ? 'Plan applied' : 'Apply plan'}
+                  {planApplied ? '方案已应用' : '应用方案'}
                 </button>
               </div>
 
               <div className="map-control-stack">
                 <div className="map-control-card">
-                  <span>Current status</span>
+                  <span>当前状态</span>
                   <strong>{displayedStatus}</strong>
                   <small>{scene.phase}</small>
                 </div>
                 <div className="map-control-card">
-                  <span>1h projection</span>
+                  <span>1h 预测</span>
                   <strong>{metricNumber(objectiveNext1h)}</strong>
                   <small>
-                    Delta {objectiveNext1h - objectiveTotalFlow > 0 ? '+' : ''}
+                    变化 {objectiveNext1h - objectiveTotalFlow > 0 ? '+' : ''}
                     {objectiveNext1h - objectiveTotalFlow}
                   </small>
                 </div>
                 <div className="map-control-card corridor-dominance-card">
                   <span>Corridor dominance</span>
-                  <strong>{corridorLeader ? `${corridorLeader.corridorId} ${formatSharePercent(corridorLeader.share)}` : 'Loading'}</strong>
+                  <strong>{corridorLeader ? `${corridorLeader.corridorId} ${formatSharePercent(corridorLeader.share)}` : '加载中'}</strong>
                   <small>
                     {corridorLeader && leadingDirection
-                      ? `${leadingDirection.directionLabel} traffic carries ${formatSharePercent(leadingDirection.share)} of runtime tracks, while the top three corridors cover ${formatSharePercent(corridorDominance?.topThreeShare ?? 0)}.`
-                        : 'Loading the clustering runtime spine for cross-module narration.'}
+                      ? `${leadingDirection.directionLabel} 方向流量承载了 ${formatSharePercent(leadingDirection.share)} 的 runtime 轨迹，前三条 corridor 合计覆盖 ${formatSharePercent(corridorDominance?.topThreeShare ?? 0)}。`
+                        : '正在加载聚类 runtime 主线，以支撑跨模块叙事。'}
                   </small>
                 </div>
                 <div className="map-control-card home-storyline-card">
-                  <span>Offline showcase framing</span>
-                  <strong>{framingLead?.title ?? 'Archived playback is the scene clock'}</strong>
-                  <small>{framingSupport?.detail ?? overviewSummary?.framing ?? 'The site presents archived AIS playback plus offline-computed evidence, not a live AIS backend.'}</small>
+                  <span>离线展示 framing</span>
+                  <strong>{framingLead?.title ?? '归档回放就是场景时钟'}</strong>
+                  <small>{framingSupport?.detail ?? overviewSummary?.framing ?? '网站呈现的是归档 AIS 回放与离线计算证据，而不是实时 AIS 后端。'}</small>
                   {homeScenarioHighlights.length ? (
                     <div className="home-entry-chip-row">
                       {homeScenarioHighlights.map((item) => (
@@ -399,16 +400,16 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
                 </div>
                 <div className="map-button-grid home-map-actions">
                   <button type="button" onClick={() => onNavigate('overview')}>
-                    Overview
+                    总览
                   </button>
                   <button type="button" onClick={() => onNavigate('forecast')}>
-                    Forecast
+                    预测
                   </button>
                   <button type="button" onClick={() => onNavigate('repair')}>
-                    Repair
+                    修复
                   </button>
                   <button type="button" onClick={() => onNavigate('evaluation')}>
-                    Evaluation
+                    评估
                   </button>
                 </div>
               </div>
@@ -515,7 +516,7 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
 
             <div className="map-bottom-strip">
               <div className="map-bottom-summary">
-                <span>Preview summary</span>
+                <span>预览摘要</span>
                 <strong>{hoveredPreview?.summary ?? (planApplied ? scene.appliedSummary : scene.summary)}</strong>
               </div>
 
@@ -526,18 +527,18 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
                   {objectiveFocusGrid} {focusAlert.current}
                 </span>
                 <button type="button" className="panel-action subtle" onClick={handleAutoplayToggle}>
-                  {autoplay ? 'Pause replay' : 'Resume replay'}
+                  {autoplay ? '暂停回放' : '继续回放'}
                 </button>
               </div>
 
               <div className="map-bottom-timeline">
                 <div className="map-bottom-timeline-head">
                   <div>
-                    <span>Observed window</span>
+                    <span>观测窗口</span>
                     <strong>{playbackWindowRangeLabel}</strong>
                   </div>
                   <div>
-                    <span>Current frame</span>
+                    <span>当前帧</span>
                     <strong>{playbackFrameLabel}</strong>
                   </div>
                 </div>
@@ -569,8 +570,8 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
 
                 <div className="map-bottom-timeline-meta">
                   <span>{playbackFrameMeta}</span>
-                  <span>{playbackFrame?.activeVesselCount ?? 0} visible ships</span>
-                  <span>{metricNumber(dialCards[0]?.value ?? objectiveTotalFlow)} current flow</span>
+                  <span>{playbackFrame?.activeVesselCount ?? 0} 艘可见船舶</span>
+                  <span>{metricNumber(dialCards[0]?.value ?? objectiveTotalFlow)} 当前流量</span>
                 </div>
               </div>
             </div>

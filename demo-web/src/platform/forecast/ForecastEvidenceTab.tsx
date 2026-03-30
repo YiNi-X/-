@@ -11,8 +11,8 @@ export function ForecastEvidenceTab({ viewModel, onOpenEvidenceDrawer }: Forecas
       <section className="forecast-tab-panel">
         <div className="panel-title">
           <div>
-            <p className="panel-kicker">Evidence assets</p>
-            <h2>Paper-facing support kept behind the cockpit</h2>
+            <p className="panel-kicker">证据资源</p>
+            <h2>面向论文的支持视图保留在驾驶舱后方</h2>
           </div>
           <span className="panel-code">EVID</span>
         </div>
@@ -21,7 +21,7 @@ export function ForecastEvidenceTab({ viewModel, onOpenEvidenceDrawer }: Forecas
           {viewModel.evidenceAssets.map((asset) => (
             <article key={asset.id} className="forecast-drawer-card">
               <span>{asset.label}</span>
-              <strong>{asset.readiness === 'ready' ? 'Ready in current shell' : 'Planned asset'}</strong>
+              <strong>{asset.readiness === 'ready' ? '当前壳层可用' : '规划中资源'}</strong>
               <p>{asset.description}</p>
             </article>
           ))}
@@ -31,29 +31,29 @@ export function ForecastEvidenceTab({ viewModel, onOpenEvidenceDrawer }: Forecas
       <section className="forecast-tab-panel forecast-evidence-cta">
         <div className="panel-title">
           <div>
-            <p className="panel-kicker">Evidence drawer</p>
-            <h2>Open the deeper research view only when the reviewer asks for proof</h2>
+            <p className="panel-kicker">证据抽屉</p>
+            <h2>只在评审需要证据时再打开更深一层研究视图</h2>
           </div>
           <span className="panel-code">{viewModel.meta.evidenceReady ? 'READY' : 'STAGED'}</span>
         </div>
 
         <div className="forecast-selected-grid-shell">
           <article className="forecast-selected-grid-card">
-            <span>Runtime facts</span>
+            <span>Runtime 事实</span>
             <strong>{viewModel.evidence.runtimeFacts.length}</strong>
-            <p>Committed provenance fields already available in the current module package.</p>
+            <p>当前模块包中已经可见的已提交 provenance 字段。</p>
           </article>
           <article className="forecast-selected-grid-card">
-            <span>Deferred models</span>
+            <span>延后模型</span>
             <strong>{viewModel.meta.deferredModels.length}</strong>
-            <p>{viewModel.meta.deferredModels[0]?.reason ?? 'No deferred model notice is needed for this module.'}</p>
+            <p>{viewModel.meta.deferredModels[0]?.reason ?? '当前模块不需要额外的 deferred model 提示。'}</p>
           </article>
         </div>
 
         <p className="forecast-panel-note">{viewModel.readiness.evidenceMessage}</p>
 
         <button type="button" className="module-primary-action forecast-inline-action" onClick={onOpenEvidenceDrawer}>
-          Open Evidence Drawer
+          打开证据抽屉
         </button>
       </section>
     </div>

@@ -32,18 +32,18 @@ export function RepairTrajectoryPlot({ missing, groundTruth, repair, showMissing
     <div className="repair-trajectory-shell">
       <div className="repair-trajectory-caption">
         <div>
-          <span>Primary visualization</span>
-          <strong>Missing, ground-truth, and repaired trajectory overlay</strong>
+          <span>主可视化</span>
+          <strong>缺失、真实与修复轨迹叠加图</strong>
         </div>
         <div className="repair-trajectory-legend">
-          {showMissing ? <span className="legend-missing">Missing / noisy</span> : null}
-          {showGroundTruth ? <span className="legend-ground">Ground truth</span> : null}
+          {showMissing ? <span className="legend-missing">缺失 / 噪声</span> : null}
+          {showGroundTruth ? <span className="legend-ground">真实轨迹</span> : null}
           {showRepair ? <span className="legend-repair">{selectedModelLabel}</span> : null}
         </div>
       </div>
 
       <div className="repair-trajectory-canvas">
-        <svg viewBox={`0 0 ${width} ${height}`} className="repair-trajectory-svg" role="img" aria-label="Trajectory repair comparison">
+        <svg viewBox={`0 0 ${width} ${height}`} className="repair-trajectory-svg" role="img" aria-label="轨迹修复对比图">
           {[20, 40, 60, 80].map((line) => (
             <g key={line}>
               <line x1="0" y1={String(line)} x2={String(width)} y2={String(line)} className="repair-grid-line" />

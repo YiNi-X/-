@@ -8,6 +8,7 @@ import type {
   ForwardLookingScenarioCatalog,
   ForwardLookingSummary,
 } from '../forwardLooking/forwardLookingTypes.ts'
+import { localizeForwardLookingCatalog, localizeForwardLookingSummary, localizeReadinessLabel } from '../zhCopy.ts'
 
 type ForwardLookingPageProps = {
   entry: ModuleRegistryEntry
@@ -43,7 +44,24 @@ function formatSignedDecimal(value: number) {
 }
 
 function formatStatusLabel(value: string) {
-  return value ? `${value[0].toUpperCase()}${value.slice(1)}` : 'Unknown'
+  switch (value) {
+    case 'ready':
+      return localizeReadinessLabel('ready')
+    case 'partial':
+      return localizeReadinessLabel('partial')
+    case 'deferred':
+      return localizeReadinessLabel('deferred')
+    case 'zero-byte':
+      return '0 字节'
+    case 'missing':
+      return '缺失'
+    case 'present':
+      return '已恢复'
+    case 'unreadable':
+      return '不可读取'
+    default:
+      return value || '未知'
+  }
 }
 
 function widthRatio(value: number, maxValue: number) {
@@ -124,8 +142,10 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
       loadPublicJson<ForwardLookingScenarioCatalog>(`/${entry.entryFiles.scenarios}`),
       loadPublicJson<GeometryConfig>('/data/shared-geometry.json').catch(() => null),
     ])
-      .then(([summaryData, scenarioData, geometryData]) => {
+      .then(([rawSummary, rawScenarioData, geometryData]) => {
         if (cancelled) return
+        const summaryData = localizeForwardLookingSummary(rawSummary)
+        const scenarioData = localizeForwardLookingCatalog(rawScenarioData, summaryData)
         setSummary(summaryData)
         setCatalog(scenarioData)
         setGeometry(geometryData)
@@ -133,7 +153,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
       })
       .catch((loadError) => {
         if (cancelled) return
-        setError(loadError instanceof Error ? loadError.message : 'Failed to load forward-looking analysis.')
+        setError(loadError instanceof Error ? loadError.message : '前瞻分析模块加载失败。')
       })
 
     return () => {
@@ -199,7 +219,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
     ...gridBridges.flatMap((item) => [item.beforeAlert?.future ?? 0, item.afterAlert?.future ?? 0]),
   )
   const comparisonModes: ComparisonMode[] = ['before', 'after']
-  const activeStateTitle = comparisonMode === 'before' ? 'Before strategy' : 'Applied-state preview'
+  const activeStateTitle = comparisonMode === 'before' ? '策略前' : '应用态预览'
   const activeAlertCount = selectedScenario
     ? comparisonMode === 'before'
       ? selectedScenario.alertCountBefore
@@ -227,52 +247,52 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
     : null
   const activeStateSummary = selectedScenario
     ? comparisonMode === 'before'
-      ? `Reads directly from the shipped ${selectedScenario.selectedModel} ${selectedScenario.selectedHorizon} forecast frame before any rule-driven intervention is applied.`
-      : `Reads from the curated rule-driven applied-state preview for the same ${selectedScenario.focusGrid} / ${selectedScenario.focusRoute} scenario frame.`
+      ? `直接读取已交付的 ${selectedScenario.selectedModel} ${selectedScenario.selectedHorizon} 预测帧，此时尚未施加任何规则驱动干预。`
+      : `读取同一 ${selectedScenario.focusGrid} / ${selectedScenario.focusRoute} 场景帧对应的规则驱动应用态预览。`
     : ''
   const activeExplanation = selectedScenario
     ? comparisonMode === 'before'
-      ? `Explanation linkage: baseline pressure and alerts come from the selected ${selectedScenario.selectedModel} ${selectedScenario.selectedHorizon} runtime frame, which stays grounded in evaluation-backed ranking authority.`
-      : `Explanation linkage: the after-state keeps the same evaluation authority and corridor context, but the values shown here come from the curated offline applied-state preview instead of a live optimizer.`
+      ? `解释链路：基线压力和告警来自选定的 ${selectedScenario.selectedModel} ${selectedScenario.selectedHorizon} runtime 帧，其权威性仍锚定在评估页支持的模型排名上。`
+      : `解释链路：后态仍沿用同一套评估权威和 corridor 上下文，但这里展示的数值来自策划好的离线应用态预览，而不是实时优化器。`
     : ''
 
   return (
     <section className="module-page">
       <section className="frame module-summary-band forward-looking-summary-band">
         <div>
-          <p className="panel-kicker">Forward-Looking Analysis</p>
-          <h1>Rule-driven collaborative decision over shipped forecast and corridor evidence</h1>
+          <p className="panel-kicker">前瞻分析</p>
+          <h1>在已交付预测与 corridor 证据之上进行规则驱动协同决策</h1>
           <p className="module-takeaway">
-            {summary?.summary ?? 'Loading the Phase 12 curated decision contract from the module bundle.'}
+            {summary?.summary ?? '正在从模块 bundle 加载 Phase 12 的精选决策契约。'}
           </p>
         </div>
         <div className="module-kpi-grid forward-looking-kpi-grid">
           <article>
-            <span>Curated scenarios</span>
+            <span>精选场景数</span>
             <strong>{summary?.scenarioCount ?? '--'}</strong>
           </article>
           <article>
-            <span>Authority model</span>
+            <span>权威模型</span>
             <strong>{summary ? `${summary.selectedModel} ${summary.selectedHorizon}` : '--'}</strong>
           </article>
           <article>
-            <span>Lead corridor</span>
+            <span>主导 corridor</span>
             <strong>{summary?.corridorContext.leadingCorridorId ?? '--'}</strong>
           </article>
           <article>
-            <span>Noise status</span>
+            <span>noise 状态</span>
             <strong>{summary ? formatStatusLabel(summary.noiseContext.status) : '--'}</strong>
           </article>
         </div>
         <div className="overview-summary-actions">
           <button type="button" className="module-primary-action" onClick={() => onNavigate('forecast')}>
-            View Forecast
+            打开预测页
           </button>
           <button type="button" className="module-primary-action evaluation-secondary-action" onClick={() => onNavigate('evaluation')}>
-            Open Evaluation
+            打开评估页
           </button>
           <button type="button" className="module-primary-action evaluation-secondary-action" onClick={() => onNavigate('overview')}>
-            Open Overview
+            打开总览
           </button>
         </div>
       </section>
@@ -283,8 +303,8 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
             error ? (
               <PlatformStatusSurface
                 tone="error"
-                title="Forward-looking data unavailable"
-                summary="The forward-looking bundle could not be opened."
+                title="前瞻分析数据不可用"
+                summary="前瞻分析 bundle 无法打开。"
                 detail={error}
               />
             ) : (
@@ -299,8 +319,8 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
               <div className="module-inline-section">
                 <div className="panel-title">
                   <div>
-                    <p className="panel-kicker">Curated Scenarios</p>
-                    <h2>Select one rule-driven decision frame</h2>
+                    <p className="panel-kicker">精选场景</p>
+                    <h2>选择一个规则驱动决策帧</h2>
                   </div>
                   <span className="panel-code">12-01</span>
                 </div>
@@ -321,8 +341,8 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                       <small>{scenario.title}</small>
                       <em>{formatMomentLabel(scenario.time)}</em>
                       <div className="corridor-chip-row">
-                        <span className="corridor-chip">{`drop ${formatDecimal(scenario.focusPressureDrop)}`}</span>
-                        <span className="corridor-chip">{`${scenario.alertCountBefore} -> ${scenario.alertCountAfter} hotspots`}</span>
+                        <span className="corridor-chip">{`下降 ${formatDecimal(scenario.focusPressureDrop)}`}</span>
+                        <span className="corridor-chip">{`${scenario.alertCountBefore} -> ${scenario.alertCountAfter} 个热点`}</span>
                       </div>
                     </button>
                   ))}
@@ -334,32 +354,32 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                   <div className="module-inline-section">
                     <div className="panel-title">
                       <div>
-                        <p className="panel-kicker">Focus Surface</p>
-                        <h2>Interactive route and grid context grounded in shipped geometry</h2>
+                        <p className="panel-kicker">焦点面板</p>
+                        <h2>基于已交付 geometry 的交互式 route 与 grid 语境</h2>
                       </div>
                       <span className="panel-code">12-02</span>
                     </div>
 
                     <div className="module-card-grid forward-looking-context-grid">
                       <article className="metric-spotlight-card forward-looking-context-card">
-                        <span>Evaluation anchor</span>
-                        <strong>{`${selectedScenario.selectedModel} ranks #${selectedScenario.evaluationContext.rank}`}</strong>
+                        <span>评估锚点</span>
+                        <strong>{`${selectedScenario.selectedModel} 排名第 ${selectedScenario.evaluationContext.rank}`}</strong>
                         <small>{selectedScenario.evaluationContext.summary}</small>
                       </article>
                       <article className="metric-spotlight-card forward-looking-context-card">
-                        <span>Corridor dominance spine</span>
+                        <span>corridor dominance 主线</span>
                         <strong>{summary.corridorContext.leadingCorridorId}</strong>
                         <small>{selectedScenario.corridorContext.detail}</small>
                       </article>
                       <article className="metric-spotlight-card forward-looking-context-card">
-                        <span>Delivery boundary</span>
-                        <strong>No fake optimizer or fake re-clustering</strong>
-                        <small>The before/after toggle now updates one shared state surface, but every value still comes from committed offline evidence rather than a live control loop.</small>
+                        <span>交付边界</span>
+                        <strong>不伪造 optimizer，也不伪造重聚类</strong>
+                        <small>before/after 切换现在会更新同一块状态面板，但所有数值仍来自已提交的离线证据，而不是实时控制回路。</small>
                       </article>
                     </div>
 
                     <div className="forward-looking-toggle-shell">
-                      <div className="forward-looking-toggle-group" role="tablist" aria-label="Strategy state toggle">
+                      <div className="forward-looking-toggle-group" role="tablist" aria-label="策略状态切换">
                         {comparisonModes.map((mode) => (
                           <button
                             key={mode}
@@ -369,18 +389,18 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                             className={`forward-looking-toggle-button${comparisonMode === mode ? ' is-active' : ''}`}
                             onClick={() => setComparisonMode(mode)}
                           >
-                            {mode === 'before' ? 'Before strategy' : 'Applied-state preview'}
+                            {mode === 'before' ? '策略前' : '应用态预览'}
                           </button>
                         ))}
                       </div>
 
                       <article className="metric-spotlight-card forward-looking-state-summary-card">
-                        <span>State Summary</span>
+                        <span>状态摘要</span>
                         <strong>{`${activeStateTitle} | ${selectedScenario.focusGrid} / ${selectedScenario.focusRoute}`}</strong>
                         <small>{activeStateSummary}</small>
                         <div className="corridor-chip-row">
-                          <span className="corridor-chip">{`${formatDecimal(activeFocusPressure)} focus pressure`}</span>
-                          <span className="corridor-chip">{`${activeAlertCount} hotspot alerts`}</span>
+                          <span className="corridor-chip">{`${formatDecimal(activeFocusPressure)} 焦点压力`}</span>
+                          <span className="corridor-chip">{`${activeAlertCount} 个热点告警`}</span>
                           <span className="corridor-chip">{`${selectedScenario.selectedModel} ${selectedScenario.selectedHorizon}`}</span>
                         </div>
                         <p className="forward-looking-state-summary-note">{activeExplanation}</p>
@@ -389,9 +409,9 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
 
                     <div className="forward-looking-focus-shell">
                       <article className="metric-spotlight-card forward-looking-map-card">
-                        <span>Route and Grid Context</span>
+                        <span>Route 与 Grid 语境</span>
                         <strong>{selectedGridBridge ? `${selectedGridBridge.gridId} -> ${selectedRouteId ?? '--'}` : '--'}</strong>
-                        <small>Interactive focus route/grid panel grounded in shared geometry.</small>
+                        <small>基于共享 geometry 的交互式焦点 route/grid 面板。</small>
 
                         {geometry ? (
                           <>
@@ -481,36 +501,36 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                           </>
                         ) : (
                           <article className="module-deferred-note">
-                            <span>Geometry fallback</span>
-                            <strong>Shared geometry did not load for the focus surface</strong>
-                            <p>The decision layer still renders from scenario evidence, but the route/grid surface becomes fully interactive only when shared geometry is available.</p>
+                            <span>geometry fallback</span>
+                            <strong>焦点面板未能加载共享 geometry</strong>
+                            <p>决策层仍可依据场景证据渲染，但 route/grid 面板只有在共享 geometry 可用时才能完全交互。</p>
                           </article>
                         )}
                       </article>
 
                       <div className="forward-looking-focus-stack">
                         <article className="metric-spotlight-card forward-looking-pressure-card">
-                          <span>Focus Grid Pressure</span>
+                          <span>焦点 Grid 压力</span>
                           <strong>{selectedGridBridge ? `${selectedGridBridge.gridId} / ${selectedRouteId ?? '--'} | ${activeStateTitle}` : '--'}</strong>
                           <small>
                             {comparisonMode === 'before'
                               ? selectedGridBridge?.isFocus
                                 ? selectedScenario.emphasis
-                                : `Pinned secondary hotspot from the same scenario frame at ${formatMomentLabel(selectedScenario.time)}.`
-                              : `Applied-state preview stays tied to ${selectedScenario.strategyHeadline} and does not imply a live optimization pass.`}
+                                : `已钉住同一场景帧 ${formatMomentLabel(selectedScenario.time)} 下的次级热点。`
+                              : `应用态预览仍然绑定到 ${selectedScenario.strategyHeadline}，并不意味着存在实时优化过程。`}
                           </small>
 
                           {selectedGridBridge ? (
                             <div className="forward-looking-pressure-stack">
                               <div className={`forward-looking-pressure-row${comparisonMode === 'before' ? ' is-active' : ''}`}>
-                                <label>Forecast before</label>
+                                <label>预测基线</label>
                                 <div className="forward-looking-pressure-track">
                                   <i className="is-before" style={{ width: widthRatio(selectedGridBridge.beforeAlert?.future ?? 0, maxPressure) }} />
                                 </div>
                                 <span>{formatDecimal(selectedGridBridge.beforeAlert?.future ?? 0)}</span>
                               </div>
                               <div className={`forward-looking-pressure-row${comparisonMode === 'after' ? ' is-active' : ''}`}>
-                                <label>Applied preview</label>
+                                <label>应用态预览</label>
                                 <div className="forward-looking-pressure-track">
                                   <i className="is-after" style={{ width: widthRatio(selectedGridBridge.afterAlert?.future ?? 0, maxPressure) }} />
                                 </div>
@@ -520,22 +540,22 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                           ) : null}
 
                           <div className="corridor-chip-row">
-                            <span className="corridor-chip">{`${activeAlertCount} active hotspot alerts`}</span>
-                            <span className="corridor-chip">{`${formatDecimal(selectedScenario.currentTotalFlow)} -> ${formatDecimal(selectedScenario.forecastTotalFlow)} total flow`}</span>
-                            {activeGridAlert ? <span className="corridor-chip">{`${activeGridAlert.level} active state`}</span> : null}
+                            <span className="corridor-chip">{`${activeAlertCount} 条活跃热点告警`}</span>
+                            <span className="corridor-chip">{`${formatDecimal(selectedScenario.currentTotalFlow)} -> ${formatDecimal(selectedScenario.forecastTotalFlow)} 总流量`}</span>
+                            {activeGridAlert ? <span className="corridor-chip">{`${activeGridAlert.level} 当前状态`}</span> : null}
                           </div>
 
                           {selectedGridBridge && activeGridAlert ? (
                             <em>
                               {comparisonMode === 'before'
-                                ? `Switch to applied-state preview to inspect ${formatSignedDecimal((selectedGridBridge.afterAlert?.future ?? 0) - (selectedGridBridge.beforeAlert?.future ?? 0))} pressure change for the selected grid.`
-                                : `Applied-state preview currently lands at ${formatDecimal(activeGridAlert.future ?? 0)} versus ${formatDecimal(inactiveGridAlert?.future ?? 0)} in the baseline frame.`}
+                                ? `切换到应用态预览，即可查看当前 grid 相比基线的 ${formatSignedDecimal((selectedGridBridge.afterAlert?.future ?? 0) - (selectedGridBridge.beforeAlert?.future ?? 0))} 压力变化。`
+                                : `当前应用态预览的数值为 ${formatDecimal(activeGridAlert.future ?? 0)}，而基线帧对应值为 ${formatDecimal(inactiveGridAlert?.future ?? 0)}。`}
                             </em>
                           ) : null}
                         </article>
 
                         <article className="corridor-story-note forward-looking-strategy-card">
-                          <span>Strategy Summary</span>
+                          <span>策略摘要</span>
                           <strong>{selectedScenario.strategyHeadline}</strong>
                           <p>{comparisonMode === 'before' ? selectedScenario.strategySummary : activeExplanation}</p>
                         </article>
@@ -546,8 +566,8 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                   <div className="module-inline-section">
                     <div className="panel-title">
                       <div>
-                        <p className="panel-kicker">Strategy Recommendations</p>
-                        <h2>Recommendation Stack tied to explicit forecast evidence</h2>
+                        <p className="panel-kicker">策略建议</p>
+                        <h2>与明确预测证据绑定的建议栈</h2>
                       </div>
                       <span className="panel-code">DECI-02</span>
                     </div>
@@ -562,21 +582,21 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
 
                         return (
                           <article key={`${selectedScenario.id}-${recommendation.target}`} className="metric-spotlight-card forward-looking-recommendation-card">
-                            <span>{`Step ${index + 1}`}</span>
+                            <span>{`步骤 ${index + 1}`}</span>
                             <strong>{recommendation.action}</strong>
                             <small>{recommendation.reason}</small>
                             <em>{recommendation.effect}</em>
                             <div className="corridor-chip-row">
                               <span className="corridor-chip">{recommendation.target}</span>
-                              {linkedBridge ? <span className="corridor-chip">{`${linkedBridge.gridId} focus bridge`}</span> : null}
+                              {linkedBridge ? <span className="corridor-chip">{`${linkedBridge.gridId} 焦点桥接`}</span> : null}
                             </div>
                             {linkedBridge ? (
                               <button type="button" className="panel-action subtle forward-looking-link-button" onClick={() => setSelectedGridId(linkedBridge.gridId)}>
-                                Pin on focus surface
+                                固定到焦点面板
                               </button>
                             ) : recommendation.target === 'Evidence drawer' ? (
                               <button type="button" className="panel-action subtle forward-looking-link-button" onClick={() => onNavigate('evaluation')}>
-                                Open Evaluation
+                                打开评估页
                               </button>
                             ) : null}
                           </article>
@@ -588,15 +608,15 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                   <div className="module-inline-section">
                     <div className="panel-title">
                       <div>
-                        <p className="panel-kicker">Scenario Route Comparison</p>
-                        <h2>Corridor dominance enters the route stack without inventing reclustering facts</h2>
+                        <p className="panel-kicker">场景 route 对比</p>
+                        <h2>让 corridor dominance 进入 route 层叙事，同时不虚构重聚类事实</h2>
                       </div>
-                      <span className="panel-code">cross-link</span>
+                      <span className="panel-code">回链</span>
                     </div>
 
                     <article className="forward-looking-route-note">
-                      <span>Corridor-linked route comparison</span>
-                      <strong>{`${summary.corridorContext.leadingCorridorId} remains the site-wide movement spine`}</strong>
+                      <span>corridor 关联的 route 对比</span>
+                      <strong>{`${summary.corridorContext.leadingCorridorId} 仍是整站运动主线`}</strong>
                       <p>{selectedScenario.corridorContext.detail}</p>
                     </article>
 
@@ -621,28 +641,28 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                             <div className="forward-looking-route-card-head">
                               <div>
                                 <span>{routeId}</span>
-                                <strong>{linkedBridge ? linkedBridge.gridId : 'Context only'}</strong>
+                                <strong>{linkedBridge ? linkedBridge.gridId : '仅上下文'}</strong>
                               </div>
-                              <em>{routeId === selectedScenario.focusRoute ? 'Focus route' : recommendation ? 'Recommended watch' : 'Context route'}</em>
+                              <em>{routeId === selectedScenario.focusRoute ? '焦点 route' : recommendation ? '建议关注' : '上下文 route'}</em>
                             </div>
 
                             <small>
                               {linkedBridge
-                                ? recommendation?.reason ?? `Shared geometry links ${linkedBridge.gridId} to ${routeId}, so this route can inherit hotspot pressure without inventing a new clustering pass.`
-                                : 'No shipped hotspot node is mapped to this route, so it stays in corridor context only.'}
+                                ? recommendation?.reason ?? `共享 geometry 会把 ${linkedBridge.gridId} 连接到 ${routeId}，因此该 route 可以继承热点压力，而不必虚构新的聚类轮次。`
+                                : '当前没有已交付热点节点映射到这条 route，因此它只保留 corridor 上下文角色。'}
                             </small>
 
                             {linkedBridge ? (
                               <div className="forward-looking-pressure-stack">
                                 <div className={`forward-looking-pressure-row${comparisonMode === 'before' ? ' is-active' : ''}`}>
-                                  <label>Before</label>
+                                  <label>前态</label>
                                   <div className="forward-looking-pressure-track">
                                     <i className="is-before" style={{ width: widthRatio(linkedBridge.beforeAlert?.future ?? 0, maxPressure) }} />
                                   </div>
                                   <span>{formatDecimal(linkedBridge.beforeAlert?.future ?? 0)}</span>
                                 </div>
                                 <div className={`forward-looking-pressure-row${comparisonMode === 'after' ? ' is-active' : ''}`}>
-                                  <label>After</label>
+                                  <label>后态</label>
                                   <div className="forward-looking-pressure-track">
                                     <i className="is-after" style={{ width: widthRatio(linkedBridge.afterAlert?.future ?? 0, maxPressure) }} />
                                   </div>
@@ -651,14 +671,14 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                               </div>
                             ) : (
                               <p className="forward-looking-route-fallback">
-                                Corridor dominance can shape narration here, but the page does not fabricate a route-level hotspot value where shipped geometry has none.
+                                corridor dominance 可以塑造这里的叙事，但在已交付 geometry 没有对应映射时，页面不会伪造 route 级热点值。
                               </p>
                             )}
 
                             <div className="corridor-chip-row">
-                              {delta !== null ? <span className="corridor-chip">{`${formatSignedDecimal(delta)} delta`}</span> : null}
+                              {delta !== null ? <span className="corridor-chip">{`${formatSignedDecimal(delta)} 变化量`}</span> : null}
                               {recommendation ? <span className="corridor-chip">{recommendation.target}</span> : null}
-                              {!linkedBridge ? <span className="corridor-chip">geometry only</span> : null}
+                              {!linkedBridge ? <span className="corridor-chip">仅 geometry 上下文</span> : null}
                             </div>
                           </button>
                         )
@@ -669,8 +689,8 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                   <div className="module-inline-section">
                     <div className="panel-title">
                       <div>
-                        <p className="panel-kicker">Benefit Switching</p>
-                        <h2>One shared toggle now drives benefit cards and state summaries</h2>
+                        <p className="panel-kicker">收益切换</p>
+                        <h2>同一个切换器同时驱动收益卡片与状态摘要</h2>
                       </div>
                       <span className="panel-code">DECI-03</span>
                     </div>
@@ -684,11 +704,11 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                           <article key={`${selectedScenario.id}-${benefit.label}`} className="metric-spotlight-card forward-looking-benefit-card">
                             <span>{benefit.label}</span>
                             <strong>{`${activeValue}${benefit.unit ?? ''}`}</strong>
-                            <small>{comparisonMode === 'before' ? 'Baseline before strategy' : 'Applied-state preview after strategy'}</small>
-                            <em>{`Compare ${benefit.before}${benefit.unit ?? ''} -> ${benefit.after}${benefit.unit ?? ''}`}</em>
+                            <small>{comparisonMode === 'before' ? '策略前基线' : '策略后的应用态预览'}</small>
+                            <em>{`对比 ${benefit.before}${benefit.unit ?? ''} -> ${benefit.after}${benefit.unit ?? ''}`}</em>
                             <div className="corridor-chip-row">
                               <span className="corridor-chip">{activeStateTitle}</span>
-                              <span className="corridor-chip">{`other state ${inactiveValue}${benefit.unit ?? ''}`}</span>
+                              <span className="corridor-chip">{`另一状态 ${inactiveValue}${benefit.unit ?? ''}`}</span>
                             </div>
                           </article>
                         )
@@ -699,8 +719,8 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                   <div className="module-inline-section">
                     <div className="panel-title">
                       <div>
-                        <p className="panel-kicker">Alert Comparison</p>
-                        <h2>Hotspot alerts and explanation copy now follow the same state toggle</h2>
+                        <p className="panel-kicker">告警对比</p>
+                        <h2>热点告警与解释文案现在跟随同一个状态切换</h2>
                       </div>
                       <span className="panel-code">DECI-03 / DECI-04</span>
                     </div>
@@ -708,7 +728,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                     <div className="module-card-grid forward-looking-alert-grid">
                       <article className="metric-spotlight-card forward-looking-alert-state-card">
                         <span>{activeStateTitle}</span>
-                        <strong>{`${activeAlertCount} elevated hotspots`}</strong>
+                        <strong>{`${activeAlertCount} 个高等级热点`}</strong>
                         <small>{activeStateSummary}</small>
                         <div className="module-side-list">
                           {activeAlerts.map((alert) => (
@@ -721,23 +741,23 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                         </div>
                       </article>
                       <article className="metric-spotlight-card forward-looking-alert-state-card">
-                        <span>Explanation linkage</span>
-                        <strong>{`${selectedScenario.alertCountBefore} -> ${selectedScenario.alertCountAfter} elevated hotspots`}</strong>
+                        <span>解释链路</span>
+                        <strong>{`${selectedScenario.alertCountBefore} -> ${selectedScenario.alertCountAfter} 个高等级热点`}</strong>
                         <small>{activeExplanation}</small>
                         <div className="corridor-chip-row">
-                          <span className="corridor-chip">{`${formatDecimal(selectedScenario.focusPressureBefore)} -> ${formatDecimal(selectedScenario.focusPressureAfter)} focus pressure`}</span>
+                          <span className="corridor-chip">{`${formatDecimal(selectedScenario.focusPressureBefore)} -> ${formatDecimal(selectedScenario.focusPressureAfter)} 焦点压力`}</span>
                           <span className="corridor-chip">{`${selectedScenario.focusGrid} / ${selectedScenario.focusRoute}`}</span>
                           <span className="corridor-chip">{summary.corridorContext.leadingCorridorId}</span>
                         </div>
                         <p className="forward-looking-route-fallback">
-                          The toggle switches between the shipped forecast baseline and the curated applied-state preview for the same frame. It does not invent new clustering evidence or imply a live optimizer.
+                          这个切换器只是在同一帧的已交付预测基线与精选应用态预览之间切换，不会虚构新的聚类证据，也不暗示存在实时 optimizer。
                         </p>
                       </article>
                     </div>
 
                     <article className="module-deferred-note">
-                      <span>Honest boundary</span>
-                      <strong>No live optimizer is implied here</strong>
+                      <span>诚实边界</span>
+                      <strong>这里不暗示存在实时 optimizer</strong>
                       <p>{selectedScenario.honestBoundary}</p>
                     </article>
                   </div>
@@ -751,43 +771,43 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
           {summary ? (
             <>
               <div className="module-inline-section">
-                <p className="evaluation-trace-title">Evidence Authority</p>
+                <p className="evaluation-trace-title">证据权威</p>
                 <div className="module-side-list">
                   <article>
-                    <span>Selected model</span>
+                    <span>选定模型</span>
                     <strong>{`${summary.evidenceAuthority.selectedModel} ${summary.evidenceAuthority.selectedHorizon}`}</strong>
                     <small>{summary.evidenceAuthority.rationale}</small>
                   </article>
                   <article>
-                    <span>Ranking value</span>
+                    <span>排名值</span>
                     <strong>{formatDecimal(summary.evidenceAuthority.rankingValue)}</strong>
                     <small>{summary.evidenceAuthority.rankingLabel}</small>
                   </article>
                   <article>
-                    <span>Compared models</span>
+                    <span>对比模型</span>
                     <strong>{summary.evidenceAuthority.comparedModels.map((item) => item.model).join(' / ')}</strong>
-                    <small>The decision layer inherits authority from the shipped 1h RMSE ordering in evaluation.</small>
+                    <small>决策层的权威性继承自评估页里已交付的 1h RMSE 排序。</small>
                   </article>
                 </div>
               </div>
 
               <div className="module-inline-section">
-                <p className="evaluation-trace-title">Corridor Dominance</p>
+                <p className="evaluation-trace-title">Corridor dominance</p>
                 <div className="module-side-list">
                   <article>
-                    <span>Lead corridor</span>
+                    <span>主导 corridor</span>
                     <strong>{summary.corridorContext.leadingCorridorId}</strong>
                     <small>{summary.corridorContext.narrative}</small>
                   </article>
                   <article>
-                    <span>Lead direction</span>
+                    <span>主导方向</span>
                     <strong>{summary.corridorContext.leadingDirection}</strong>
-                    <small>{`${formatPercent(summary.corridorContext.leadingShare)} lead share | ${formatPercent(summary.corridorContext.topThreeShare)} top-three coverage`}</small>
+                    <small>{`${formatPercent(summary.corridorContext.leadingShare)} 主导占比 | ${formatPercent(summary.corridorContext.topThreeShare)} 前三覆盖率`}</small>
                   </article>
                   <article>
-                    <span>Route mapping claim</span>
+                    <span>route 映射说明</span>
                     <strong>{summary.corridorContext.routeMappingClaim}</strong>
-                    <small>Corridor dominance enters as context only, not as an invented route-level reclustering fact.</small>
+                    <small>corridor dominance 只作为上下文进入这里，而不是被伪造成 route 级重聚类事实。</small>
                   </article>
                 </div>
               </div>
@@ -797,7 +817,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                 <div className="module-side-list">
                   <article>
                     <span>{summary.noiseContext.fileName}</span>
-                    <strong>{`${formatStatusLabel(summary.noiseContext.status)} | ${summary.noiseContext.fileBytes} bytes`}</strong>
+                    <strong>{`${formatStatusLabel(summary.noiseContext.status)} | ${summary.noiseContext.fileBytes} 字节`}</strong>
                     <small>{summary.noiseContext.reason}</small>
                   </article>
                 </div>
@@ -805,7 +825,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
 
               {selectedScenario ? (
                 <div className="module-inline-section">
-                  <p className="evaluation-trace-title">Scenario Lineage</p>
+                  <p className="evaluation-trace-title">场景 lineage</p>
                   <div className="module-side-list">
                     {selectedScenario.evidenceLineage.map((item) => (
                       <article key={`${selectedScenario.id}-${item.artifactId}`}>
@@ -820,7 +840,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
 
               {crossLinks.length ? (
                 <div className="module-inline-section">
-                  <p className="evaluation-trace-title">Cross-links</p>
+                  <p className="evaluation-trace-title">跨页回链</p>
                   <div className="module-side-list">
                     {crossLinks.map((link) => (
                       <article key={link.routeId}>
@@ -828,7 +848,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
                         <strong>{link.routeId}</strong>
                         <small>{link.summary}</small>
                         <button type="button" className="panel-action subtle forward-looking-link-button" onClick={() => onNavigate(link.routeId)}>
-                          Open {link.label}
+                          打开{link.label}
                         </button>
                       </article>
                     ))}
@@ -838,7 +858,7 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
 
               {deferredItems.length ? (
                 <div className="module-inline-section">
-                  <p className="evaluation-trace-title">Deferred Next Steps</p>
+                  <p className="evaluation-trace-title">Deferred 后续步骤</p>
                   <div className="module-side-list">
                     {deferredItems.map((item) => (
                       <article key={item.id}>
@@ -854,8 +874,8 @@ export function ForwardLookingPage({ entry, onNavigate }: ForwardLookingPageProp
           ) : error ? (
             <PlatformStatusSurface
               tone="error"
-              title="Forward-looking analysis unavailable"
-              summary="The forward-looking bundle could not be opened."
+              title="前瞻分析不可用"
+              summary="前瞻分析 bundle 无法打开。"
               detail={error}
             />
           ) : (

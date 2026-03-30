@@ -20,38 +20,38 @@ const ORDER_TO_LAYER_KEY: Record<string, ClusteringLayerKey> = {
 const LAYER_DESCRIPTORS: Record<ClusteringLayerKey, ClusteringLayerDescriptor> = {
   raw: {
     id: 'raw',
-    label: 'Original trajectories',
-    shortLabel: 'Raw',
+    label: '原始轨迹',
+    shortLabel: '原始',
     stageCode: 'RAW',
-    description: 'Curated AIS trajectories before segmentation, kept as the provenance entry point for the clustering story.',
+    description: '分段之前的精选 AIS 轨迹，是聚类叙事的 provenance 起点。',
   },
   segmented: {
     id: 'segmented',
-    label: 'Segmented trajectories',
-    shortLabel: 'Segmented',
+    label: '分段轨迹',
+    shortLabel: '分段',
     stageCode: 'SEGM',
-    description: 'Track fragments after the segmentation step, which expose the sequence units fed into later compression and clustering.',
+    description: '分段后的轨迹片段，展示后续压缩与聚类真正消费的序列单元。',
   },
   compressed: {
     id: 'compressed',
-    label: 'Compressed trajectories',
-    shortLabel: 'Compressed',
+    label: '压缩轨迹',
+    shortLabel: '压缩',
     stageCode: 'COMP',
-    description: 'Simplified trajectory shapes that preserve corridor intent while cutting point density before clustering export.',
+    description: '在聚类导出前降低点密度、但保留 corridor 形态意图的简化轨迹。',
   },
   corridorExported: {
     id: 'corridorExported',
-    label: 'Runtime corridor extraction',
+    label: 'runtime corridor 提取',
     shortLabel: 'Runtime',
     stageCode: 'CORR',
-    description: 'The promoted corridor runtime package that powers the shared website route and RouteEditor experience.',
+    description: '已提升为正式 runtime 的 corridor 包，支撑网站共享路线与 RouteEditor 体验。',
   },
   corridorReview: {
     id: 'corridorReview',
-    label: 'Review corridor extraction',
+    label: 'review corridor 提取',
     shortLabel: 'Review',
     stageCode: 'REVIEW',
-    description: 'The review-first corridor export kept separate from the live runtime dataset until promotion is explicitly approved.',
+    description: 'review-first 的 corridor 导出，在明确批准提升前与当前 runtime 数据集保持分离。',
   },
 }
 
@@ -126,15 +126,15 @@ function createLayerStats(bundle: ClusteringBundle, layer: ClusteringLayerKey, s
       {
         label: 'Raw AIS rows',
         value: stageCounts.rawAisRows,
-        detail: `${stageCounts.rawMmsiCount} MMSI identities remain in the archive window.`,
+        detail: `${stageCounts.rawMmsiCount} 个 MMSI 身份保留在归档窗口中。`,
       },
       {
-        label: 'Filtered research rows',
+        label: '研究侧过滤后行数',
         value: stageCounts.filteredResearchRows,
-        detail: `${stageCounts.filteredResearchMmsiCount} MMSI identities survive the research-side filtering pass.`,
+        detail: `${stageCounts.filteredResearchMmsiCount} 个 MMSI 身份通过研究侧过滤。`,
       },
       {
-        label: 'Preview traces',
+        label: '预览轨迹数',
         value: bundle.stagePreviews.previews.raw.trackCount,
         detail: bundle.stagePreviews.previews.raw.samplingMode,
       },
@@ -146,17 +146,17 @@ function createLayerStats(bundle: ClusteringBundle, layer: ClusteringLayerKey, s
       {
         label: 'Segmented tracks',
         value: stageCounts.segmentedTracks,
-        detail: `${stageCounts.segmentedPoints} points remain after segmentation.`,
+        detail: `分段后保留 ${stageCounts.segmentedPoints} 个点。`,
       },
       {
-        label: 'Preview traces',
+        label: '预览轨迹数',
         value: bundle.stagePreviews.previews.segmented.trackCount,
         detail: bundle.stagePreviews.previews.segmented.samplingMode,
       },
       {
-        label: 'Compression next',
+        label: '后续压缩占比',
         value: `${Math.round((stageCounts.compressedPoints / stageCounts.segmentedPoints) * 100)}%`,
-        detail: 'Point density that remains after the compression stage.',
+        detail: '压缩阶段之后保留下来的点密度比例。',
       },
     ]
   }
@@ -167,15 +167,15 @@ function createLayerStats(bundle: ClusteringBundle, layer: ClusteringLayerKey, s
       {
         label: 'Compressed tracks',
         value: stageCounts.compressedTracks,
-        detail: `${stageCounts.compressedPoints} retained points stay available for corridor export.`,
+        detail: `${stageCounts.compressedPoints} 个保留点继续用于 corridor 导出。`,
       },
       {
-        label: 'Points removed',
+        label: '移除点数',
         value: savedPoints,
-        detail: `${Math.round((savedPoints / stageCounts.segmentedPoints) * 100)}% reduction from the segmented stage.`,
+        detail: `相对分段阶段减少 ${Math.round((savedPoints / stageCounts.segmentedPoints) * 100)}%。`,
       },
       {
-        label: 'Preview traces',
+        label: '预览轨迹数',
         value: bundle.stagePreviews.previews.compressed.trackCount,
         detail: bundle.stagePreviews.previews.compressed.samplingMode,
       },
@@ -184,19 +184,19 @@ function createLayerStats(bundle: ClusteringBundle, layer: ClusteringLayerKey, s
 
   return [
     {
-      label: 'Cluster count',
+      label: 'cluster 数',
       value: layer === 'corridorExported' ? stageCounts.corridorRuntimeCorridors : stageCounts.corridorReviewCorridors,
-      detail: 'Directional corridor groups are the product-facing clustering outcome in this release.',
+      detail: '当前版本对外呈现的聚类结果是按方向分组后的 corridor。',
     },
     {
-      label: 'Corridor tracks',
+      label: 'corridor 轨迹数',
       value: layer === 'corridorExported' ? stageCounts.corridorRuntimeTracks : stageCounts.corridorReviewTracks,
       detail: selectedCorridor
-        ? `${selectedCorridor.corridorId} contributes ${selectedCorridor.trackCount} tracks in the selected corridor group.`
-        : 'Select a corridor on the right to inspect its contribution.',
+        ? `${selectedCorridor.corridorId} 在当前 corridor 组中贡献 ${selectedCorridor.trackCount} 条轨迹。`
+        : '在右侧选择一条 corridor 查看其贡献。',
     },
     {
-      label: 'Preview traces',
+      label: '预览轨迹数',
       value: bundle.stagePreviews.previews[layer].trackCount,
       detail: bundle.stagePreviews.previews[layer].samplingMode,
     },
@@ -206,7 +206,7 @@ function createLayerStats(bundle: ClusteringBundle, layer: ClusteringLayerKey, s
 function createLayerSummary(layer: ClusteringLayerDescriptor, selectedCorridor: MainCorridorSummaryEntry | null) {
   if (layer.id === 'corridorExported' || layer.id === 'corridorReview') {
     return selectedCorridor
-      ? `${layer.description} The current corridor focus is ${selectedCorridor.corridorId} (${selectedCorridor.directionLabel}).`
+      ? `${layer.description} 当前聚焦的 corridor 为 ${selectedCorridor.corridorId}（${selectedCorridor.directionLabel}）。`
       : layer.description
   }
 
@@ -218,10 +218,10 @@ function formatPercent(value: number) {
 }
 
 function describeNoiseArtifactStatus(status: string | undefined, fileBytes: number | undefined) {
-  if (status === 'zero-byte') return `Present in workspace but ${fileBytes ?? 0} bytes`
-  if (status === 'missing') return 'Missing from workspace'
-  if (status === 'present') return 'Recovered but not yet exported'
-  return 'Unreadable in current environment'
+  if (status === 'zero-byte') return `工作区中存在，但仍为 ${fileBytes ?? 0} 字节`
+  if (status === 'missing') return '工作区中缺失'
+  if (status === 'present') return '已恢复，但尚未重新导出'
+  return '当前环境下不可读'
 }
 
 function createPipelineStory(bundle: ClusteringBundle): { steps: ClusteringStoryStep[]; compressionRatio: string; corridorYield: string } {
@@ -235,31 +235,31 @@ function createPipelineStory(bundle: ClusteringBundle): { steps: ClusteringStory
     steps: [
       {
         id: 'raw',
-        label: 'Archive Window',
+        label: '归档窗口',
         stageCode: 'RAW',
         value: `${stageCounts.rawAisRows} rows`,
-        detail: `${stageCounts.rawMmsiCount} vessels appear in the raw AIS archive before research-side filtering starts.`,
+        detail: `研究侧过滤开始前，原始 AIS 归档中出现 ${stageCounts.rawMmsiCount} 艘船舶。`,
       },
       {
         id: 'segmented',
-        label: 'Trajectory Segments',
+        label: '轨迹分段',
         stageCode: 'SEGM',
         value: `${stageCounts.segmentedTracks} tracks`,
-        detail: `${stageCounts.segmentedPoints} points remain once the archive is split into clustering-ready trajectory fragments.`,
+        detail: `归档数据切分为可聚类轨迹片段后，保留 ${stageCounts.segmentedPoints} 个点。`,
       },
       {
         id: 'compressed',
-        label: 'Compressed Geometry',
+        label: '压缩后几何',
         stageCode: 'COMP',
         value: `${stageCounts.compressedPoints} points`,
-        detail: `Compression preserves ${compressionRatio} of segmented point density while keeping ${stageCounts.compressedTracks} corridor candidates intact.`,
+        detail: `压缩阶段保留了 ${compressionRatio} 的分段点密度，同时维持 ${stageCounts.compressedTracks} 条 corridor 候选轨迹。`,
       },
       {
         id: 'corridor',
         label: 'Corridor Runtime',
         stageCode: 'CORR',
         value: `${stageCounts.corridorRuntimeCorridors} corridors`,
-        detail: `${stageCounts.corridorRuntimeTracks} tracks survive into the website-facing corridor runtime, or ${corridorYield} of compressed trajectories.`,
+        detail: `${stageCounts.corridorRuntimeTracks} 条轨迹进入面向网站的 corridor runtime，占压缩轨迹的 ${corridorYield}。`,
       },
     ],
     compressionRatio,
@@ -290,11 +290,11 @@ export function buildClusteringViewModel(
     reviewPath: bundle.summary.reviewStatus.reviewCorridorPath,
     status:
       bundle.summary.reviewStatus.corridorPromotion === 'promoted'
-        ? 'The review export is already promoted into the runtime corridor payload.'
+        ? 'review 导出已经被提升进入 runtime corridor 载荷。'
         : bundle.corridorReview.corridorCount === bundle.corridorRuntime.corridorCount &&
             bundle.corridorReview.trackCount === bundle.corridorRuntime.trackCount
-          ? 'Runtime and review corridor exports currently match at the contract level, so the review-first boundary can stay visible without blocking the module.'
-          : 'Runtime and review corridor exports differ, so promotion should stay gated behind manual review.',
+          ? 'runtime 与 review 的 corridor 导出在契约层面当前一致，因此可以保留 review-first 边界而不阻塞模块上线。'
+          : 'runtime 与 review 的 corridor 导出仍有差异，因此提升动作应继续由人工审核把关。',
   }
 
   const corridorLeaderboard = bundle.corridorRuntime.corridors
@@ -311,26 +311,26 @@ export function buildClusteringViewModel(
   const selectedCorridorRank =
     runtimeCorridor ? corridorLeaderboard.find((corridor) => corridor.corridorId === runtimeCorridor.corridorId)?.rank ?? 0 : 0
   const selectedDirectionFamilyLabel = runtimeCorridor
-    ? `${runtimeCorridor.directionLabel} family | ${
+    ? `${runtimeCorridor.directionLabel} 家族 | ${
         corridorLeaderboard.filter((corridor) => corridor.directionLabel === runtimeCorridor.directionLabel).length
-      } corridors in this direction group`
-    : 'Direction family unavailable'
+      } 条 corridor 属于该方向组`
+    : '方向家族信息不可用'
   const deferredItem = bundle.summary.deferred?.[0]
   const recoveryChecklist = {
     artifactId: deferredItem?.artifactId ?? 'clustering-noise-reclustered',
     blocker:
       deferredItem?.reason ??
-      'The notebook-side noise re-clustering artifact is unavailable, so the website cannot ship a truthful CLUS-03 comparison yet.',
+      'notebook 侧 noise re-clustering 产物当前不可用，因此网站还不能上线一个真实可信的 CLUS-03 对比结果。',
     dependsOn: deferredItem?.dependsOn ?? ['CLUS-03', 'Phase 10'],
     artifactStatus: describeNoiseArtifactStatus(deferredItem?.status, deferredItem?.fileBytes),
     artifactBytes: deferredItem?.fileBytes,
     artifactPath: deferredItem?.filePath,
     steps: [
       deferredItem?.status === 'zero-byte'
-        ? 'Replace the zero-byte `normalized_distances(60,90,0.03).pkl` with a readable authoritative distance artifact.'
-        : 'Recover a readable `normalized_distances(60,90,0.03).pkl` or regenerate an equivalent authoritative distance artifact.',
-      'Re-run the notebook-grade noise re-clustering path in a stable local environment and export a website-facing bundle.',
-      'Validate that runtime and recovery outputs stay aligned with the existing corridor entity model before reopening CLUS-03 surfaces.',
+        ? '先用可读、可信的距离矩阵产物替换当前 0 字节的 `normalized_distances(60,90,0.03).pkl`。'
+        : '恢复一个可读的 `normalized_distances(60,90,0.03).pkl`，或重新生成等价且可信的距离矩阵产物。',
+      '在稳定的本地环境中重跑 notebook 级 noise re-clustering 路径，并导出面向网站的 bundle。',
+      '确认恢复结果与现有 corridor 实体模型保持一致后，再重新开放 CLUS-03 相关界面。',
     ],
   }
 
@@ -370,7 +370,7 @@ export function buildClusteringViewModel(
         : null,
       noiseStatusMessage:
         bundle.summary.deferred?.[0]?.reason ??
-        'Noise re-clustering remains deferred because the missing notebook artifact is not stable in the current environment.',
+        'noise re-clustering 仍保持 deferred，因为缺失的 notebook 产物在当前环境中还不稳定。',
       directionFamilyLabel: selectedDirectionFamilyLabel,
     },
     corridorLeaderboard,

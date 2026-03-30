@@ -42,8 +42,8 @@ test('forecast view model exposes multi-model readiness, focus context, and evid
   assert.ok(viewModel.summaryBand.focusRouteId)
   assert.equal(viewModel.frameComparison.rows.length, viewModel.hotspotSeries.gridIds.length)
   assert.ok(viewModel.evidence.hotspotNodeLinks.length > 0)
-  assert.match(viewModel.readiness.nodeViewMessage, /node-level/i)
-  assert.match(viewModel.readiness.evidenceMessage, /drawer/i)
+  assert.match(viewModel.readiness.nodeViewMessage, /节点级|node-level/i)
+  assert.match(viewModel.readiness.evidenceMessage, /抽屉|drawer/i)
   assert.match(viewModel.evidence.architectureFacts[0]?.value ?? '', /lstm/i)
 })
 
@@ -55,21 +55,21 @@ test('forecast source exposes corridor-dominance cross-links in summary, route c
   const alertSource = readSource('src/platform/forecast/ForecastAlertTable.tsx')
 
   assert.match(pageSource, /corridorDominance/)
-  assert.match(summarySource, /corridor-dominance spine/)
+  assert.match(summarySource, /corridor dominance 主线/i)
   assert.match(summarySource, /Corridor dominance/)
-  assert.match(primaryStageSource, /Corridor context/)
-  assert.match(primaryStageSource, /site-wide movement spine/)
-  assert.match(comparisonSource, /Corridor-linked route comparison/)
-  assert.match(comparisonSource, /route story/)
-  assert.match(alertSource, /Corridor-linked hotspot context/)
-  assert.match(alertSource, /movement regime/)
+  assert.match(primaryStageSource, /Corridor 上下文/)
+  assert.match(primaryStageSource, /全站运动主线/)
+  assert.match(comparisonSource, /Corridor 联动航线对比/)
+  assert.match(comparisonSource, /航线叙事/)
+  assert.match(alertSource, /Corridor 联动热点上下文/)
+  assert.match(alertSource, /运动结构|corridor 家族/)
 })
 
 test('forecast analysis source exposes overview, grid, node, and evidence layers', () => {
   const analysisSource = readSource('src/platform/forecast/ForecastAnalysisTabs.tsx')
   const pageSource = readSource('src/platform/pages/ForecastPage.tsx')
 
-  for (const label of ['Overview', 'Grid Focus', 'Node View', 'Evidence']) {
+  for (const label of ['概览', '网格焦点', '节点视图', '证据']) {
     assert.match(analysisSource, new RegExp(label), `Expected ForecastAnalysisTabs to expose ${label}`)
   }
 

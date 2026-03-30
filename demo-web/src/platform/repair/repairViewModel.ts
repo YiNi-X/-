@@ -12,8 +12,8 @@ const MODEL_LABELS: Record<string, string> = {
   'att-bilstm': 'ATT-BILSTM',
   bilstm: 'BiLSTM',
   lstm: 'LSTM',
-  'linear-interpolation': 'Linear Interpolation',
-  'spline-interpolation': 'Spline Interpolation',
+  'linear-interpolation': '线性插值',
+  'spline-interpolation': '样条插值',
 }
 
 function normalizeModelLabel(modelId: string, fallback?: string) {
@@ -186,8 +186,8 @@ export function buildRepairViewModel(
       selectedSeriesByModel: buildErrorSeries(bundle.errors, selectedCatalogSample.sampleId, selectedErrorMetric, selectedRepair.modelId),
     },
     readiness: {
-      trajectoryMessage: 'The repair stage overlays missing, ground-truth, and repaired trajectories from the committed Phase 6 export without pretending to be a live replay.',
-      errorMessage: 'Error curves are indexed by repaired point order, not real time, to stay honest with the exported notebook evidence.',
+      trajectoryMessage: '修复主舞台叠加展示缺失轨迹、真实轨迹与修复轨迹，这些都来自已提交导出结果，而不是实时回放。',
+      errorMessage: '误差曲线按修复点序号索引，而不按真实时间展开，以保持对 notebook 导出证据的忠实表达。',
     },
   }
 }

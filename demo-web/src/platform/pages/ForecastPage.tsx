@@ -18,22 +18,22 @@ export function ForecastPage({ entry, onNavigate }: ForecastPageProps) {
   const [analysisOpen, setAnalysisOpen] = useState(false)
 
   return (
-    <section className="module-page forecast-page" data-deferred-label="Not available in this version">
+    <section className="module-page forecast-page" data-deferred-label="当前版本暂未提供">
       {forecast.error ? (
         <PlatformStatusSurface
           tone="error"
-          title="Forecast data unavailable"
-          summary="The forecast runtime files could not be opened."
+          title="预测数据不可用"
+          summary="预测 runtime 文件无法打开。"
           detail={forecast.error}
-          actions={[{ label: 'Return to evaluation', onClick: () => onNavigate('evaluation') }]}
+          actions={[{ label: '返回评估中心', onClick: () => onNavigate('evaluation') }]}
         />
       ) : forecast.loading || !forecast.viewModel ? (
         <section className="forecast-loading-shell">
           <section className="frame module-summary-band forecast-summary-band">
             <div>
-              <p className="panel-kicker">Flow Prediction</p>
-              <h1>Loading forecast cockpit</h1>
-              <p className="module-takeaway">Preparing forecast runtime, metrics, model configuration, and geometry references.</p>
+              <p className="panel-kicker">流量预测</p>
+              <h1>正在加载预测驾驶舱</h1>
+              <p className="module-takeaway">正在准备预测 runtime、指标、模型配置与 geometry 引用。</p>
             </div>
             <div className="module-skeleton-grid forecast-summary-skeleton-grid">
               <div className="module-skeleton-card"></div>

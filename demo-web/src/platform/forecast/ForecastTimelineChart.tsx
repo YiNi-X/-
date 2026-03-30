@@ -41,18 +41,18 @@ export function ForecastTimelineChart({
     <div className="forecast-timeline-shell">
       <div className="forecast-chart-caption">
         <div>
-          <span>Primary timeline</span>
-          <strong>Total flow aligned to the replay window</strong>
+          <span>主时间线</span>
+          <strong>与回放窗口对齐的总流量</strong>
         </div>
-        <div className="forecast-chart-legend" aria-label="chart legend">
-          <span className="legend-actual">Actual</span>
-          <span className="legend-selected">{selectedHorizon} forecast</span>
-          <span className="legend-secondary">Other horizons</span>
+        <div className="forecast-chart-legend" aria-label="图例">
+          <span className="legend-actual">实际值</span>
+          <span className="legend-selected">{selectedHorizon} 预测</span>
+          <span className="legend-secondary">其他 horizon</span>
         </div>
       </div>
 
       <div className="forecast-timeline-svg-shell">
-        <svg viewBox={`0 0 ${width} ${height}`} className="forecast-timeline-svg" role="img" aria-label="Forecast timeline chart">
+        <svg viewBox={`0 0 ${width} ${height}`} className="forecast-timeline-svg" role="img" aria-label="预测时间线图">
           <defs>
             <linearGradient id="forecastActualStroke" x1="0%" x2="100%" y1="0%" y2="0%">
               <stop offset="0%" stopColor="#6fd9c7" />
@@ -89,7 +89,7 @@ export function ForecastTimelineChart({
 
       <div className="forecast-frame-slider">
         <div className="forecast-frame-label">
-          <span>Selected frame</span>
+          <span>当前帧</span>
           <strong>{getFrameLabel(labels, selectedFrameIndex)}</strong>
         </div>
         <input

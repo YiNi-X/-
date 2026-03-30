@@ -39,34 +39,34 @@ function getAvailableModels(metrics: ForecastMetricsFile) {
 }
 
 function buildEvidenceAssets(runtime: FlowForecastData, geometry: GeometryConfig | null): ForecastEvidenceAsset[] {
-  const architectureLabel = runtime.meta.model === 'STGCN' ? 'STGCN Architecture' : `${runtime.meta.model} Architecture`
+  const architectureLabel = runtime.meta.model === 'STGCN' ? 'STGCN 架构' : `${runtime.meta.model} 架构`
   const assets: ForecastEvidenceAsset[] = [
     {
       id: 'correlation-matrix',
-      label: 'Correlation Matrix',
+      label: '相关性矩阵',
       type: 'matrix',
-      description: 'Correlation evidence exists in the research base and should surface through the evidence drawer rather than the main stage.',
+      description: '相关性证据已经存在于研究底稿中，更适合通过证据抽屉呈现，而不是直接塞进主舞台。',
       readiness: 'pending',
     },
     {
       id: 'distance-matrix',
-      label: 'Distance Matrix',
+      label: '距离矩阵',
       type: 'matrix',
-      description: 'Distance-matrix support can be added as a paper-facing evidence card without changing the forecast cockpit shell.',
+      description: '距离矩阵可以作为论文向证据卡后续补充，而不必改动当前预测驾驶舱壳层。',
       readiness: 'pending',
     },
     {
       id: 'scatter-matrix',
-      label: 'Scatter Matrix',
+      label: '散点矩阵',
       type: 'scatter',
-      description: 'Pairwise scatter evidence belongs in a later evidence asset pack, not the first-pass primary chart.',
+      description: '成对散点证据应放进后续证据资源包，而不是第一版主图的一部分。',
       readiness: 'pending',
     },
     {
       id: `${runtime.meta.model.toLowerCase()}-architecture`,
       label: architectureLabel,
       type: 'metadata',
-      description: `Current runtime uses ${runtime.meta.model} with ${runtime.meta.historyWindowHours}h history and ${runtime.meta.horizons.length} shipped horizons.`,
+      description: `当前 runtime 使用 ${runtime.meta.model}，历史窗口为 ${runtime.meta.historyWindowHours}h，并已上线 ${runtime.meta.horizons.length} 个 horizon。`,
       readiness: 'ready',
     },
   ]
@@ -74,9 +74,9 @@ function buildEvidenceAssets(runtime: FlowForecastData, geometry: GeometryConfig
   if (geometry?.hotspots?.length) {
     assets.push({
       id: 'hotspot-geometry',
-      label: 'Hotspot Geometry',
+      label: '热点几何',
       type: 'metadata',
-      description: `Shared geometry currently ships ${geometry.hotspots.length} product-facing hotspot points for map-linked forecast storytelling.`,
+      description: `共享 geometry 当前提供 ${geometry.hotspots.length} 个产品侧热点点位，用于地图联动预测叙事。`,
       readiness: 'ready',
     })
   }
@@ -146,41 +146,41 @@ function buildEvidenceFacts(bundle: ForecastLoadedBundle): {
   hotspotNodeLinks: ForecastHotspotNodeLink[]
 } {
   const runtimeFacts: ForecastEvidenceFact[] = [
-    { label: 'Replay source', value: shortLabel(bundle.runtime.meta.source) },
-    { label: 'Forecast mode', value: bundle.runtime.meta.forecastMode },
+    { label: '回放来源', value: shortLabel(bundle.runtime.meta.source) },
+    { label: '预测模式', value: bundle.runtime.meta.forecastMode },
     {
-      label: 'Time resolution',
-      value: `${bundle.runtime.meta.inferenceResolutionMinutes}m inference / ${bundle.runtime.meta.playbackResolutionMinutes}m replay`,
+      label: '时间分辨率',
+      value: `${bundle.runtime.meta.inferenceResolutionMinutes} 分钟推理 / ${bundle.runtime.meta.playbackResolutionMinutes} 分钟回放`,
     },
     {
-      label: 'Window',
+      label: '时间窗口',
       value: `${formatFrameLabel(bundle.runtime.meta.windowStart)} -> ${formatFrameLabel(bundle.runtime.meta.windowEnd)}`,
     },
-    { label: 'Metric basis', value: bundle.metrics.metricBasis },
+    { label: '指标口径', value: bundle.metrics.metricBasis },
   ]
 
   const architectureFacts: ForecastEvidenceFact[] = bundle.modelConfig
     ? [
-        { label: 'Model family', value: bundle.modelConfig.architecture.modelFamily ?? bundle.runtime.meta.model },
-        { label: 'History / prediction', value: `${bundle.modelConfig.architecture.n_his} -> ${bundle.modelConfig.architecture.n_pred}` },
-        { label: 'Routes / nodes', value: String(bundle.modelConfig.architecture.n_route) },
-        { label: 'Train / val / test', value: `${formatPercent(bundle.modelConfig.split.trainRatio)} / ${formatPercent(bundle.modelConfig.split.valRatio)} / ${formatPercent(bundle.modelConfig.split.testRatio)}` },
-        ...(typeof bundle.modelConfig.architecture.inputDim === 'number' ? [{ label: 'Input dim', value: String(bundle.modelConfig.architecture.inputDim) }] : []),
-        ...(typeof bundle.modelConfig.architecture.hiddenDim === 'number' ? [{ label: 'Hidden dim', value: String(bundle.modelConfig.architecture.hiddenDim) }] : []),
-        ...(typeof bundle.modelConfig.architecture.numLayers === 'number' ? [{ label: 'Layers', value: String(bundle.modelConfig.architecture.numLayers) }] : []),
+        { label: '模型族', value: bundle.modelConfig.architecture.modelFamily ?? bundle.runtime.meta.model },
+        { label: '历史 / 预测步长', value: `${bundle.modelConfig.architecture.n_his} -> ${bundle.modelConfig.architecture.n_pred}` },
+        { label: '航线 / 节点数', value: String(bundle.modelConfig.architecture.n_route) },
+        { label: '训练 / 验证 / 测试', value: `${formatPercent(bundle.modelConfig.split.trainRatio)} / ${formatPercent(bundle.modelConfig.split.valRatio)} / ${formatPercent(bundle.modelConfig.split.testRatio)}` },
+        ...(typeof bundle.modelConfig.architecture.inputDim === 'number' ? [{ label: '输入维度', value: String(bundle.modelConfig.architecture.inputDim) }] : []),
+        ...(typeof bundle.modelConfig.architecture.hiddenDim === 'number' ? [{ label: '隐藏维度', value: String(bundle.modelConfig.architecture.hiddenDim) }] : []),
+        ...(typeof bundle.modelConfig.architecture.numLayers === 'number' ? [{ label: '层数', value: String(bundle.modelConfig.architecture.numLayers) }] : []),
         ...(typeof bundle.modelConfig.architecture.bidirectional === 'boolean'
-          ? [{ label: 'Bidirectional', value: bundle.modelConfig.architecture.bidirectional ? 'Yes' : 'No' }]
+          ? [{ label: '双向', value: bundle.modelConfig.architecture.bidirectional ? '是' : '否' }]
           : []),
         ...(typeof bundle.modelConfig.architecture.Ks === 'number' && typeof bundle.modelConfig.architecture.Kt === 'number'
           ? [{ label: 'Ks / Kt', value: `${bundle.modelConfig.architecture.Ks} / ${bundle.modelConfig.architecture.Kt}` }]
           : []),
-        ...(bundle.modelConfig.architecture.blocks?.length ? [{ label: 'Blocks', value: formatBlocks(bundle.modelConfig.architecture.blocks) }] : []),
+        ...(bundle.modelConfig.architecture.blocks?.length ? [{ label: '卷积块', value: formatBlocks(bundle.modelConfig.architecture.blocks) }] : []),
         ...(typeof bundle.modelConfig.architecture.dropProb === 'number'
           ? [{ label: 'Drop prob', value: bundle.modelConfig.architecture.dropProb.toFixed(2) }]
           : []),
       ]
     : [
-        { label: 'Architecture', value: 'Model configuration file is not available in the current shell.' },
+        { label: '模型配置', value: '当前壳层尚未提供可读取的模型配置文件。' },
       ]
 
   const hotspotNodeLinks: ForecastHotspotNodeLink[] = bundle.modelConfig
@@ -260,13 +260,13 @@ export function buildForecastViewModel(
     evidenceAssets,
     evidence: evidenceFacts,
     readiness: {
-      selectedModelDeferredReason:
-        bundle.metrics.deferredModels?.find((item) => item.model === selectedModel)?.reason ??
-        (bundle.metrics.models[selectedModel]?.status === 'deferred' ? 'This model is not exported yet.' : undefined),
+        selectedModelDeferredReason:
+          bundle.metrics.deferredModels?.find((item) => item.model === selectedModel)?.reason ??
+        (bundle.metrics.models[selectedModel]?.status === 'deferred' ? '该模型尚未导出到当前版本。' : undefined),
       nodeViewMessage:
-        'Node-level forecast exports are intentionally staged for a later extension so the current cockpit does not pretend to have full 60-node runtime evidence.',
+        '节点级预测导出被明确保留到后续扩展阶段，当前驾驶舱不会假装已经拥有完整的 60 节点 runtime 证据。',
       evidenceMessage:
-        'Paper-facing evidence can grow behind this drawer without displacing the main forecast cockpit or inventing unsupported interactions.',
+        '论文向证据可以继续在这个抽屉后方扩展，但不会挤占主预测驾驶舱，也不会伪造当前并不存在的交互。',
     },
   }
 }

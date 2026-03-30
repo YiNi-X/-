@@ -39,8 +39,8 @@ export function ForecastPrimaryStage({
       <section className="frame forecast-primary-panel">
         <div className="panel-title">
           <div>
-            <p className="panel-kicker">Primary Stage</p>
-            <h2>Total flow forecast timeline</h2>
+            <p className="panel-kicker">主舞台</p>
+            <h2>总流量预测时间线</h2>
           </div>
           <span className="panel-code">{selectedModel}</span>
         </div>
@@ -58,14 +58,14 @@ export function ForecastPrimaryStage({
       <aside className="frame forecast-control-rail">
         <div className="panel-title forecast-control-rail-header">
           <div>
-            <p className="panel-kicker">Control Rail</p>
-            <h2>Model, horizon, and frame interpretation</h2>
+            <p className="panel-kicker">控制侧栏</p>
+            <h2>模型、horizon 与帧解释</h2>
           </div>
-          <span className="panel-code">LIVE</span>
+          <span className="panel-code">RUNTIME</span>
         </div>
 
         <section className="forecast-control-group">
-          <span className="forecast-control-label">Model readiness</span>
+          <span className="forecast-control-label">模型就绪情况</span>
           <div className="forecast-segmented-row">
             {availableModels.map((model) => (
               <button
@@ -87,14 +87,14 @@ export function ForecastPrimaryStage({
 
         {deferredModels.length ? (
           <section className="forecast-rail-card">
-            <span>Deferred models</span>
+            <span>延后模型</span>
             <strong>{deferredModels.map((model) => model.model).join(' / ')}</strong>
             <small>{deferredModels[0]?.reason}</small>
           </section>
         ) : null}
 
         <section className="forecast-control-group">
-          <span className="forecast-control-label">Horizon</span>
+          <span className="forecast-control-label">预测 horizon</span>
           <div className="forecast-segmented-row">
             {viewModel.meta.availableHorizons.map((horizon) => (
               <button
@@ -110,39 +110,39 @@ export function ForecastPrimaryStage({
         </section>
 
         <section className="forecast-rail-card">
-          <span>Selected frame</span>
+          <span>当前帧</span>
           <strong>{viewModel.summaryBand.frameLabel}</strong>
-          <small>{viewModel.summaryBand.visibleVessels ?? '--'} vessels visible in the replay window</small>
+          <small>回放窗口内可见 {viewModel.summaryBand.visibleVessels ?? '--'} 艘船舶</small>
         </section>
 
         <section className="forecast-rail-card">
-          <span>Frame summary</span>
+          <span>帧摘要</span>
           <strong>
             {formatValue(viewModel.frame?.current.totalFlow)} {'->'} {formatValue(selectedForecast?.totalFlow)}
           </strong>
           <small>
-            {viewModel.summaryBand.focusGridId ?? '--'} / {viewModel.summaryBand.focusRouteId ?? '--'} in focus
+            当前焦点：{viewModel.summaryBand.focusGridId ?? '--'} / {viewModel.summaryBand.focusRouteId ?? '--'}
           </small>
         </section>
 
         {corridorLeader ? (
           <section className="forecast-rail-card forecast-corridor-rail-card">
-            <span>Corridor context</span>
+            <span>Corridor 上下文</span>
             <strong>
-              {viewModel.summaryBand.focusRouteId ?? '--'} against {corridorLeader.corridorId}
+              {viewModel.summaryBand.focusRouteId ?? '--'} 对照 {corridorLeader.corridorId}
             </strong>
             <small>
               {leadingDirection
-                ? `${leadingDirection.directionLabel} is the dominant corridor family at ${formatSharePercent(leadingDirection.share)}, so this route-level forecast should be read against that site-wide movement spine.`
-                : `${corridorLeader.directionLabel} remains the strongest corridor family in clustering runtime.`}
+                ? `${leadingDirection.directionLabel} 以 ${formatSharePercent(leadingDirection.share)} 成为主导 corridor 家族，因此当前航线级预测需要放到这条全站运动主线下解释。`
+                : `${corridorLeader.directionLabel} 仍是 clustering runtime 中最强的 corridor 家族。`}
             </small>
           </section>
         ) : null}
 
         <section className="forecast-rail-copy">
-          <span>Narrative status</span>
-          <strong>{viewModel.frame?.narrative.status ?? 'Loading frame narrative'}</strong>
-          <p>{viewModel.frame?.narrative.summary ?? 'Frame-level narrative will appear once the runtime bundle is loaded.'}</p>
+          <span>叙事状态</span>
+          <strong>{viewModel.frame?.narrative.status ?? '正在加载帧叙事'}</strong>
+          <p>{viewModel.frame?.narrative.summary ?? 'runtime bundle 加载完成后会显示帧级叙事。'}</p>
         </section>
 
         {viewModel.frame?.narrative.recommendations?.length ? (

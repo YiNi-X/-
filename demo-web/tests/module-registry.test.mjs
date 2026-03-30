@@ -60,7 +60,7 @@ test('shell routes preserve the locked navigation order and overview remains add
   const forwardLookingRoute = getShellRouteDescriptor('forward-looking')
   assert.equal(forwardLookingRoute.kind, 'module')
   assert.equal(forwardLookingRoute.moduleId, 'forward-looking')
-  assert.equal(forwardLookingRoute.entryActionLabel, 'Open Analysis')
+  assert.equal(forwardLookingRoute.entryActionLabel, '打开分析')
 })
 
 test('artifact index parses and normalizes into the shell discovery order', () => {

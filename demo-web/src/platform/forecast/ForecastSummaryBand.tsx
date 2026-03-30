@@ -20,8 +20,8 @@ export function ForecastSummaryBand({ viewModel, corridorDominance, onNavigateTo
       <div className="forecast-summary-copy">
         <div className="forecast-summary-heading-row">
           <div className="forecast-summary-heading">
-            <p className="panel-kicker">Flow Prediction</p>
-            <h1>Archived AIS Forecast Cockpit</h1>
+            <p className="panel-kicker">流量预测</p>
+            <h1>归档 AIS 预测驾驶舱</h1>
           </div>
 
           <div className="forecast-chip-row forecast-chip-inline-row">
@@ -33,32 +33,32 @@ export function ForecastSummaryBand({ viewModel, corridorDominance, onNavigateTo
 
         <p className="module-takeaway">
           {corridorLeader
-            ? `Prediction cockpit for archived AIS plus offline-computed forecast bundles, with ${corridorLeader.corridorId} carrying the corridor-dominance spine that now grounds hotspot and route interpretation across the page.`
-            : 'Prediction cockpit for archived AIS plus offline-computed forecast bundles, with node-level paper visuals intentionally reserved for later exports.'}
+            ? `本页围绕归档 AIS 与离线预测 bundle 组织叙事，${corridorLeader.corridorId} 作为 corridor dominance 主线，会显式进入热点与航线解释。`
+            : '本页围绕归档 AIS 与离线预测 bundle 组织叙事，节点级论文视图则明确留给后续导出版本。'}
         </p>
       </div>
 
       <div className="forecast-summary-meta">
         <div className="module-kpi-grid forecast-kpi-grid">
           <article>
-            <span>Current total flow</span>
+            <span>当前总流量</span>
             <strong>{formatNumber(viewModel.summaryBand.currentTotal, 1)}</strong>
-            <small>{viewModel.summaryBand.visibleVessels ?? '--'} visible vessels</small>
+            <small>{viewModel.summaryBand.visibleVessels ?? '--'} 艘可见船舶</small>
           </article>
           <article>
-            <span>Selected forecast</span>
+            <span>当前预测值</span>
             <strong>{formatNumber(viewModel.summaryBand.selectedForecastTotal, 1)}</strong>
             <small>{viewModel.summaryBand.horizonLabel} horizon</small>
           </article>
           <article>
-            <span>Hotspot count</span>
+            <span>热点数量</span>
             <strong>{viewModel.summaryBand.hotspotCount ?? '--'}</strong>
-            <small>{viewModel.summaryBand.focusGridId ?? '--'} in focus</small>
+            <small>{viewModel.summaryBand.focusGridId ?? '--'} 为当前焦点</small>
           </article>
           <article>
-            <span>Focus route</span>
+            <span>焦点航线</span>
             <strong>{viewModel.summaryBand.focusRouteId ?? '--'}</strong>
-            <small>{viewModel.summaryBand.focusGridId ?? '--'} linked hotspot</small>
+            <small>{viewModel.summaryBand.focusGridId ?? '--'} 对应热点</small>
           </article>
           {corridorLeader ? (
             <article>
@@ -68,8 +68,8 @@ export function ForecastSummaryBand({ viewModel, corridorDominance, onNavigateTo
               </strong>
               <small>
                 {leadingDirection
-                  ? `${leadingDirection.directionLabel} carries ${formatSharePercent(leadingDirection.share)} of runtime corridor traffic.`
-                  : `${corridorLeader.directionLabel} remains the strongest corridor family in clustering runtime.`}
+                  ? `${leadingDirection.directionLabel} 方向家族承载了 ${formatSharePercent(leadingDirection.share)} 的 runtime corridor 流量。`
+                  : `${corridorLeader.directionLabel} 仍是 clustering runtime 中最强的 corridor 家族。`}
               </small>
             </article>
           ) : null}
@@ -77,7 +77,7 @@ export function ForecastSummaryBand({ viewModel, corridorDominance, onNavigateTo
       </div>
 
       <button type="button" className="module-primary-action forecast-primary-action" onClick={onNavigateToEvaluation}>
-        Compare Results
+        查看评估
       </button>
     </section>
   )

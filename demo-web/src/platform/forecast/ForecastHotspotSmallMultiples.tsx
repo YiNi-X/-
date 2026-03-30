@@ -45,8 +45,8 @@ export function ForecastHotspotSmallMultiples({
     <section className="forecast-tab-panel">
       <div className="panel-title">
         <div>
-          <p className="panel-kicker">Hotspot small multiples</p>
-          <h2>Productized grid focus</h2>
+          <p className="panel-kicker">热点小倍图</p>
+          <h2>产品化网格焦点视图</h2>
         </div>
         <span className="panel-code">GRID</span>
       </div>
@@ -87,7 +87,7 @@ export function ForecastHotspotSmallMultiples({
 
               <div className="forecast-grid-card-metrics">
                 <strong>{comparison.current.toFixed(1)} {'->'} {comparison.forecast.toFixed(1)}</strong>
-                <small>{selectedHorizon} delta {comparison.delta >= 0 ? '+' : ''}{comparison.delta.toFixed(1)}</small>
+                <small>{selectedHorizon} 变化 {comparison.delta >= 0 ? '+' : ''}{comparison.delta.toFixed(1)}</small>
               </div>
             </button>
           )

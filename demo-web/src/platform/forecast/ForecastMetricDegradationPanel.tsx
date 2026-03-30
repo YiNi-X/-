@@ -16,12 +16,12 @@ export function ForecastMetricDegradationPanel({ rows, metricBasis }: ForecastMe
       <section className="forecast-tab-panel">
         <div className="panel-title">
           <div>
-            <p className="panel-kicker">Metric degradation</p>
-            <h2>Per-horizon quality is not available</h2>
+            <p className="panel-kicker">指标退化</p>
+            <h2>当前还没有可用的逐 horizon 质量数据</h2>
           </div>
           <span className="panel-code">N/A</span>
         </div>
-        <p className="module-takeaway">The current runtime does not expose horizon-level metrics for the selected model yet.</p>
+        <p className="module-takeaway">当前 runtime 还没有为所选模型暴露逐 horizon 指标。</p>
       </section>
     )
   }
@@ -33,8 +33,8 @@ export function ForecastMetricDegradationPanel({ rows, metricBasis }: ForecastMe
     <section className="forecast-tab-panel">
       <div className="panel-title">
         <div>
-          <p className="panel-kicker">Metric degradation</p>
-          <h2>Per-horizon quality for the selected model</h2>
+          <p className="panel-kicker">指标退化</p>
+          <h2>所选模型的逐 horizon 质量</h2>
         </div>
         <span className="panel-code">RMSE / MAE / R²</span>
       </div>
@@ -44,7 +44,7 @@ export function ForecastMetricDegradationPanel({ rows, metricBasis }: ForecastMe
           <article key={row.horizon} className="metric-spotlight-card forecast-metric-card">
             <div className="forecast-metric-card-header">
               <span>{row.horizon}</span>
-              <strong>{row.sampleCount} samples</strong>
+              <strong>{row.sampleCount} 个样本</strong>
             </div>
 
             <div className="forecast-metric-lines">

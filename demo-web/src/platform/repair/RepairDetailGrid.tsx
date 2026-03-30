@@ -21,11 +21,11 @@ function toPath(values: number[], width: number, height: number, maxValue: numbe
 function metricLabel(metric: RepairErrorMetricKey) {
   switch (metric) {
     case 'lonDifference':
-      return 'Longitude difference'
+      return '经度差'
     case 'latDifference':
-      return 'Latitude difference'
+      return '纬度差'
     default:
-      return 'Euclidean distance'
+      return '欧氏距离'
   }
 }
 
@@ -40,8 +40,8 @@ export function RepairDetailGrid({ viewModel, selectedModelId, selectedErrorMetr
       <section className="frame repair-detail-panel">
         <div className="panel-title">
           <div>
-            <p className="panel-kicker">Error Stage</p>
-            <h2>{metricLabel(selectedErrorMetric)} by repaired point index</h2>
+            <p className="panel-kicker">误差舞台</p>
+            <h2>{metricLabel(selectedErrorMetric)} 按修复点序号展开</h2>
           </div>
           <span className="panel-code">ERROR</span>
         </div>
@@ -61,7 +61,7 @@ export function RepairDetailGrid({ viewModel, selectedModelId, selectedErrorMetr
               <strong>{selectedMetrics.dtwSimilarity.toFixed(3)}</strong>
             </article>
             <article className="repair-selected-metric-card">
-              <span>R-squared</span>
+              <span>R²</span>
               <strong>{selectedMetrics.r2.toFixed(6)}</strong>
             </article>
             <article className="repair-selected-metric-card">
@@ -84,7 +84,7 @@ export function RepairDetailGrid({ viewModel, selectedModelId, selectedErrorMetr
             ))}
           </div>
           <div className="repair-error-canvas">
-            <svg viewBox={`0 0 ${width} ${height}`} className="repair-error-svg" role="img" aria-label="Repair error chart">
+            <svg viewBox={`0 0 ${width} ${height}`} className="repair-error-svg" role="img" aria-label="修复误差图">
               {[0.25, 0.5, 0.75].map((ratio) => (
                 <line
                   key={ratio}
@@ -111,8 +111,8 @@ export function RepairDetailGrid({ viewModel, selectedModelId, selectedErrorMetr
       <aside className="frame repair-detail-panel repair-ranking-panel">
         <div className="panel-title">
           <div>
-            <p className="panel-kicker">Sample Ranking</p>
-            <h2>Model comparison for the selected sample</h2>
+            <p className="panel-kicker">样本排名</p>
+            <h2>所选样本的模型对比</h2>
           </div>
           <span className="panel-code">RANK</span>
         </div>
@@ -132,7 +132,7 @@ export function RepairDetailGrid({ viewModel, selectedModelId, selectedErrorMetr
               <div className="repair-ranking-metrics">
                 <small>MAE {model.mae.toExponential(3)}</small>
                 <small>DTW {model.dtwSimilarity.toFixed(3)}</small>
-                <small>R-squared {model.r2.toFixed(6)}</small>
+                <small>R² {model.r2.toFixed(6)}</small>
                 <small>ADE {model.ade.toExponential(3)}</small>
                 <small>Hausdorff {model.hausdorffDistance.toExponential(3)}</small>
               </div>
