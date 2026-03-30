@@ -1,87 +1,102 @@
-﻿# Port Traffic AIS Demo Web
+# Port Traffic AIS Demo Web
 
 ## What This Is
 
-This is a brownfield Vite/React demo project for presenting port-traffic research outputs with archived AIS data. The next milestone turns the current offline dashboard into a structured showcase website with dedicated modules for flow prediction, trajectory repair, trajectory clustering, collaborative decision, evaluation, and project overview, all driven by precomputed historical results rather than live feeds.
+This is a brownfield Vite/React site for presenting port-traffic research outputs through archived AIS playback and offline-generated analysis bundles. After `v1.1`, the product now ships as a modular showcase with dedicated overview, forecast, repair, clustering, evaluation, and forward-looking routes instead of one dense demo page.
 
-The product remains a presentation-grade offline demonstration for teaching, defense, and website display. It is not intended to become a realtime AIS platform or a full harbor operations system in this milestone.
+The product remains a presentation-grade offline website for teaching, defense, and portfolio display. It is still not a realtime AIS platform or a live harbor-operations system.
 
 ## Core Value
 
 The website must clearly, credibly, and repeatably present our algorithms and model outputs using archived AIS data plus offline-computed results, while preserving a convincing quasi-realtime demo experience.
 
-## Current Milestone: v1.1 Offline Showcase Expansion
+## Current State
 
-**Goal:** Reorganize the demo into a modular showcase site that presents the full algorithm story from archived playback through model analysis and decision support.
+**Latest shipped milestone:** `v1.1 Offline Showcase Expansion` on 2026-03-30
 
-**Target features:**
-- Flow prediction module with model switching, horizon switching, key metrics, hotspot grids, and total flow trends
-- Trajectory repair module with curated sample selection, missing-vs-repaired comparison, error charts, and metric summaries
-- Trajectory clustering module with raw/segmented/compressed/clustered/corridor views plus noise re-clustering
-- Collaborative decision module, unified evaluation center, and a project overview page that explains the end-to-end business loop
+**What shipped:**
+
+- A reproducible module-bundle export pipeline for forecast, repair, clustering, evaluation, overview, and forward-looking analysis
+- A registry-driven shell with lazy-loaded module discovery, shared runtime validation, and one coherent navigation model
+- Module-deep UI for multi-model forecasting, curated trajectory repair, corridor-led clustering, unified evaluation, overview framing, and forward-looking before/after strategy evidence
+- One site-wide narrative for corridor dominance and deferred `CLUS-03`, instead of disconnected module-local copy
+
+**Truth boundary:**
+
+- Archived playback plus offline-computed evidence only
+- No live optimizer
+- No fake noise re-clustering while `normalized_distances(60,90,0.03).pkl` remains zero-byte
 
 ## Requirements
 
 ### Validated
 
-- [x] Historical AIS playback renders from static JSON with synchronized map, timeline, hotspot, and narrative panels - existing
-- [x] Offline forecast datasets drive dashboard scenes, recommendations, and benchmark summaries - existing
-- [x] RouteEditor loads cleaned main corridor tracks and supports pan, zoom, inspection, and export interactions - existing
-- [x] Static multi-entry deployment exists for both the dashboard and the RouteEditor - existing
-- [x] Runtime data-contract validation exists at the boundary for shipped dashboard/editor JSON payloads - existing
-- [x] The frontend now has safer seams than the original monolithic `App.tsx` and `RouteEditor.tsx` versions - existing
+- [x] Historical AIS playback, dashboard/editor runtime validation, and safer frontend seams from `v1.0`
+- [x] Module shell that links overview, forecast, repair, clustering, evaluation, and forward-looking through one coherent product surface
+- [x] Static artifact pipeline with bundle exporters, lineage manifests, and repeatable verification for shipped module data
+- [x] Forecast cockpit with model switching, horizon switching, metric visibility, hotspot context, and total-flow analysis
+- [x] Repair cockpit with curated sample selection, method switching, synchronized comparison, and full metric summaries
+- [x] Clustering module with layered provenance, corridor-dominance storytelling, and an honest deferred `CLUS-03` boundary
+- [x] Unified evaluation, overview business-loop framing, and forward-looking before/after evidence layer
 
 ### Active
 
-- [ ] Complete the missing data products and lineage decisions before freezing frontend contracts or page composition
-- [ ] Build a module-oriented showcase shell that links overview, flow prediction, trajectory repair, trajectory clustering, collaborative decision, and evaluation
-- [ ] Package website-facing static artifacts for each module directly from the archived `代码依据` materials and existing cleaned outputs
-- [ ] Replace hardcoded placeholder comparisons with structured offline result bundles for prediction, repair, clustering, and evaluation
-- [ ] Keep the site honest about archived playback plus offline inference while still delivering a convincing quasi-realtime demo
-- [ ] Scale the static website architecture by splitting data and loading paths by module, scenario, and artifact type instead of growing one monolithic runtime payload
+- [ ] Define the next milestone after `v1.1` closeout
+- [ ] Reopen a true `CLUS-03` comparison only if `normalized_distances(60,90,0.03).pkl` becomes a trustworthy non-zero input
+- [ ] Decide whether node-level forecast evidence and animation are worth another showcase wave
+- [ ] Decide whether future work should remain an offline presentation product or move toward live / service-backed capabilities
 
 ### Out of Scope
 
-- Realtime AIS ingestion, live backend APIs, and online inference - we do not have a reliable data source and they are not required for this milestone
-- Auth, roles, business workflows, or multi-tenant operations - the current product is still a demo/research showcase
-- Full framework migration away from Vite + React + TypeScript - architecture needs to improve, but a platform rewrite would slow the milestone down
-- User-uploaded arbitrary datasets and ad hoc online computation - the milestone should present curated offline results, not become a generic analysis platform
-- Replacing or retraining the research models from scratch - the immediate need is packaging, explanation, and stable presentation of the results we already have
+- Realtime AIS ingestion, live backend APIs, and online inference until a dependable data source and service model exist
+- Auth, roles, business workflows, or multi-tenant operations
+- Full framework migration away from Vite + React + TypeScript
+- Arbitrary user uploads or ad hoc online compute jobs
+- Retraining or replacing research models from scratch as part of showcase packaging work
 
 ## Context
 
-- The working web app lives under `demo-web/` and is already deployable as a static Vite build with dashboard and RouteEditor entry points.
-- Runtime data is served from `demo-web/public/data/*.json`, including AIS playback, flow forecast, shared geometry, dataset catalog, model config, and main corridor tracks.
-- The canonical research and provenance inputs available to us live under `代码依据`.
-- `代码依据/流量预测` already contains STGCN code, benchmark notebooks, matrices, and saved model weights that are strong enough to support a forecast showcase, but only STGCN has been productized into current website-facing JSON so far.
-- `代码依据/轨迹修复` contains multiple repair-model experiments, metric computation, optimization history, parameter importance, and exported HTML result artifacts, but it does not yet provide website-ready structured JSON bundles.
-- `代码依据/轨迹聚类` contains segmentation, compression, distance fusion, clustering, noise re-clustering, and corridor export logic, but it remains notebook-centric research provenance rather than a stable website-facing data contract.
-- `compressed_segments(60,90,0.03).pkl` is already sufficient to regenerate the current website corridor export, but it should be treated as the authoritative source for corridor extraction only, not as a replacement for all raw or segmented clustering provenance.
-- The current collaborative-decision experience in `flow-forecast.json` is already presentation-friendly, but it is largely tied to forecast narrative output and not backed by a separate decision algorithm package under `代码依据`.
-- Current runtime payload sizes already approach a few megabytes per major artifact, so future expansion must avoid pushing all modules through a single eager-loading page.
+- The working web app lives under `demo-web/` and remains deployable as a static Vite build.
+- Shipped module data now lives under `demo-web/public/data/modules/`.
+- The research source tree still provides the offline evidence inputs and regeneration anchors for the website.
+- `compressed_segments(60,90,0.03).pkl` remains sufficient for corridor extraction, but not for all clustering provenance layers.
+- `normalized_distances(60,90,0.03).pkl` exists in the workspace but is still zero-byte, so real noise re-clustering remains blocked.
+- The forward-looking module is now `ready`, but it remains a curated rule-driven evidence layer over shipped forecast / clustering context rather than a standalone optimizer package.
+- Milestone archives now live under `.planning/milestones/`, with `v1.1` fully archived there.
 
 ## Constraints
 
-- **Tech stack**: Keep the current Vite + React + TypeScript frontend foundation - we need structure upgrades, not a risky platform migration
-- **Deployment model**: Preserve static-site deployment and static artifact delivery during this milestone - this matches the data we actually have and keeps demos portable
-- **Data source**: Work from archived files in `代码依据` and existing cleaned outputs - there is no dependable realtime AIS feed available
-- **Python pipeline**: Continue using Python scripts or notebooks as the offline computation layer - rewriting all data tooling would expand scope before the site story is stable
-- **Brownfield safety**: Respect the existing dashboard and RouteEditor behavior where they already provide demonstrable value
-- **Scalability approach**: Solve growth first through module boundaries, data catalogs, and lazy loading - not through premature backend introduction
+- **Tech stack:** Keep Vite + React + TypeScript as the core frontend foundation
+- **Deployment model:** Preserve static-site deployment and committed offline artifacts until requirements say otherwise
+- **Data source:** Work from archived research inputs and existing cleaned outputs
+- **Python pipeline:** Keep Python exporters / notebooks as the offline computation layer where they already hold the research truth
+- **Brownfield safety:** Respect the existing dashboard and RouteEditor where they still provide demonstrable value
+- **Scalability approach:** Solve growth through module boundaries, catalogs, and lazy loading before introducing backend complexity
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Treat v1.1 as an offline showcase expansion, not a live-system milestone | The real value is demonstrating research outputs with confidence, not pretending we have live infrastructure | Good |
-| Keep Vite + React + TypeScript as the core platform | The stack is already working; the problem is organization and data packaging, not framework capability | Good |
-| Move from one dense dashboard narrative toward module-oriented navigation | The number of algorithm views has outgrown a single monitoring-style surface | Good |
-| Use archived AIS playback and precomputed results to create quasi-realtime interaction | This matches what the team can actually reproduce and defend | Good |
-| Complete and verify missing data bundles before locking frontend contracts | Data-first sequencing reduces rework and prevents UI from depending on guessed structures | Good |
-| Require website-facing result bundles for repair and clustering before large UI buildout | Notebook outputs alone are not stable frontend contracts | Good |
-| Treat `compressed_segments(60,90,0.03).pkl` as the corridor-extraction authority for the website while preserving raw and segmented assets for provenance views | It is enough for main-corridor regeneration, but not for every clustering layer the site may want to show | Good |
-| Build collaborative decision as a rule-driven evidence layer over prediction and clustering outputs | `代码依据` does not currently contain a separate decision optimizer package strong enough to stand alone | Good |
-| Roll the unfinished hardening concerns from the prior roadmap into the new milestone foundation phase | Dataset packaging, verification, and lazy loading are now direct enablers for the showcase modules | Good |
+| Treat `v1.1` as an offline showcase expansion, not a live-system milestone | The real value is demonstrating research outputs credibly, not pretending live infrastructure exists | Good |
+| Use module manifests, bundles, and lazy loading as the frontend scaling model | The site had already outgrown one eager-loaded dashboard surface | Good |
+| Complete data packaging and lineage before deep UI work | Stable artifacts reduce rework and guessed contracts | Good |
+| Let corridor dominance become a site-wide narrative bridge | It ties clustering, evaluation, overview, and forward-looking into one coherent story | Good |
+| Ship an honest `CLUS-03` fallback instead of fake re-clustering visuals | The current `normalized_distances(60,90,0.03).pkl` artifact is still zero-byte | Good |
+| Treat forward-looking as a rule-driven evidence layer over shipped outputs | The repo does not yet contain a standalone optimizer package strong enough for direct productization | Good |
+| Package optimization evidence from committed exports instead of requiring fragile local pickle replay | This keeps `EVAL-04` truthful and shippable in the current environment | Good |
+
+## Next Milestone Goals
+
+- Define fresh requirements instead of extending the archived `v1.1` backlog
+- Choose whether the next step is showcase deepening, blocked-data recovery, or a move toward dynamic capabilities
+- If the evidence becomes trustworthy, decide whether restoring real noise re-clustering deserves first priority
+
+<details>
+<summary>Archived v1.1 planning stance</summary>
+
+`v1.1` began as a data-first milestone to turn the existing offline dashboard into a structured showcase site with dedicated modules for flow prediction, trajectory repair, trajectory clustering, collaborative decision, evaluation, and overview.
+
+</details>
 
 ---
-*Last updated: 2026-03-25 after switching milestone v1.1 to a data-first execution order*
+*Last updated: 2026-03-30 after v1.1 milestone closeout*

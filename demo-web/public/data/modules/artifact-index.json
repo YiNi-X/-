@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-03-25T10:47:59+00:00",
+  "generatedAt": "2026-03-30T08:10:45+00:00",
   "generatedBy": "demo-web/scripts/phase6_bundle_common.py",
   "modules": [
     {
@@ -35,6 +35,7 @@
         "EVAL-01",
         "EVAL-02",
         "EVAL-03",
+        "EVAL-04",
         "EVAL-05",
         "BASE-02",
         "BASE-05"
@@ -57,6 +58,23 @@
         "FLOW-04",
         "BASE-02",
         "BASE-05"
+      ]
+    },
+    {
+      "module": "forward-looking",
+      "status": "ready",
+      "manifestPath": "data/modules/forward-looking/manifest.json",
+      "bundlePath": "data/modules/forward-looking/forward-looking-bundle.json",
+      "scenarioId": "phase12-forward-looking-v1",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "DECI-01",
+        "DECI-02",
+        "DECI-03",
+        "DECI-04"
       ]
     },
     {

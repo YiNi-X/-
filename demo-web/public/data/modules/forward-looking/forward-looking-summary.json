@@ -1,0 +1,97 @@
+{
+  "artifactId": "forward-looking-summary",
+  "module": "forward-looking",
+  "scenarioId": "phase12-forward-looking-v1",
+  "generatedAt": "2026-03-30T08:10:45+00:00",
+  "status": "ready",
+  "framing": "Rule-driven collaborative decision built from archived forecast, evaluation, and clustering evidence; not a live optimizer or live AIS control loop.",
+  "summary": "4 curated scenarios expose selected focus routes and grids from the best shipped BiLSTM 1h run. The module now ships an interactive focus surface and explicit before/after switching, while CLUS-03 remains an honest deferred boundary until noise re-clustering can be restored.",
+  "selectedModel": "BiLSTM",
+  "selectedHorizon": "1h",
+  "scenarioCount": 4,
+  "uniqueFocusRoutes": [
+    "C03",
+    "C08",
+    "C12",
+    "C14"
+  ],
+  "uniqueFocusGrids": [
+    "G60",
+    "G25",
+    "G03",
+    "G15"
+  ],
+  "evidenceAuthority": {
+    "selectedModel": "BiLSTM",
+    "selectedHorizon": "1h",
+    "rankingMetric": "RMSE",
+    "rankingValue": 36.448966,
+    "rankingLabel": "Evaluation center 1h ranking leader",
+    "rationale": "BiLSTM is selected because it currently ranks #1 in the shipped 1h RMSE table, so the decision layer inherits its scenario authority from the evaluation center instead of from hand-written narrative preference.",
+    "comparedModels": [
+      {
+        "model": "BiLSTM",
+        "rank": 1,
+        "value": 36.448966
+      },
+      {
+        "model": "LSTM",
+        "rank": 2,
+        "value": 40.834605
+      },
+      {
+        "model": "STGCN",
+        "rank": 3,
+        "value": 47.384377
+      }
+    ]
+  },
+  "corridorContext": {
+    "narrative": "D07-C01 leads the runtime corridor stack at 15%, and the top three corridors cover 41% of shipped runtime tracks. That dominance now informs the whole site story, but forward-looking analysis still treats it as context rather than as an exact route assignment.",
+    "leadingCorridorId": "D07-C01",
+    "leadingDirection": "SouthEast",
+    "leadingShare": 0.150643,
+    "topThreeShare": 0.413323,
+    "totalRuntimeTracks": 1321,
+    "routeMappingClaim": "context-only"
+  },
+  "noiseContext": {
+    "artifactId": "clustering-noise-reclustered",
+    "fileName": "normalized_distances(60,90,0.03).pkl",
+    "fileBytes": 0,
+    "filePath": "代码依据/轨迹聚类/normalized_distances(60,90,0.03).pkl",
+    "status": "zero-byte",
+    "reason": "Honest fallback for deferred CLUS-03. The notebook-grade noise re-clustering result cannot be shipped because normalized_distances(60,90,0.03).pkl exists in the workspace but is still 0 bytes, so this panel only exposes verified pre-reclustering statistics."
+  },
+  "deferred": [],
+  "crossLinks": [
+    {
+      "routeId": "forecast",
+      "label": "Flow Prediction",
+      "summary": "Open the forecast module to inspect the full selected-model timeline around each curated decision frame."
+    },
+    {
+      "routeId": "evaluation",
+      "label": "Evaluation Center",
+      "summary": "Verify why the chosen model owns the 1h authority before interpreting any rule-driven recommendation."
+    },
+    {
+      "routeId": "clustering",
+      "label": "Trajectory Clustering",
+      "summary": "Review corridor dominance and the deferred CLUS-03 boundary that still shapes the movement narrative."
+    },
+    {
+      "routeId": "overview",
+      "label": "Overview",
+      "summary": "See how collaborative decision now enters the archived-playback business loop as a shipped evidence layer."
+    }
+  ],
+  "sourceArtifacts": [
+    "forecast-bundle",
+    "forecast-selected-runtime",
+    "evaluation-metrics",
+    "clustering-corridor-runtime",
+    "clustering-noise-fallback",
+    "overview-summary"
+  ]
+}

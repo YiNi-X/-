@@ -1,0 +1,652 @@
+{
+  "artifactId": "forward-looking-scenarios",
+  "module": "forward-looking",
+  "scenarioId": "phase12-forward-looking-v1",
+  "generatedAt": "2026-03-30T08:10:45+00:00",
+  "scenarios": [
+    {
+      "id": "forward-looking-c03-g60",
+      "title": "C03 / G60 pressure window",
+      "emphasis": "Curated scenario #1: G60 shows a 19.4 drop in the applied-state preview.",
+      "sceneId": "dl300",
+      "frameIndex": 300,
+      "time": "2020-01-02T01:00:00",
+      "focusGrid": "G60",
+      "focusRoute": "C03",
+      "selectedModel": "BiLSTM",
+      "selectedHorizon": "1h",
+      "currentTotalFlow": 1039.0,
+      "forecastTotalFlow": 1149.98,
+      "focusGridCurrent": 66.0,
+      "focusGridFuture": 60.69,
+      "focusPressureBefore": 60.7,
+      "focusPressureAfter": 41.3,
+      "focusPressureDrop": 19.4,
+      "alertCountBefore": 4,
+      "alertCountAfter": 1,
+      "strategyHeadline": "C03 focus-route check",
+      "strategySummary": "Prioritize G60 on C03, keep G25 / C08 in secondary watch, and keep the chart, alert table, and evidence drawer aligned to the BiLSTM run.",
+      "recommendations": [
+        {
+          "target": "C03",
+          "action": "Prioritize the focus route in the operator readout.",
+          "reason": "G60 carries the strongest 1h hotspot signal in the current BiLSTM run.",
+          "effect": "The focus bridge and alert list remain aligned with the most relevant route."
+        },
+        {
+          "target": "C08",
+          "action": "Keep the secondary route under cross-check.",
+          "reason": "G25 is the next-most active hotspot and can compound congestion if it rises with G60.",
+          "effect": "Operators retain a fallback narrative instead of overfitting to one hotspot only."
+        },
+        {
+          "target": "Evidence drawer",
+          "action": "Cross-check metrics and architecture notes against the active model.",
+          "reason": "The cockpit now exposes model-specific runtime and evidence instead of a deferred placeholder.",
+          "effect": "Model switching remains honest across summary, chart, and evidence layers."
+        }
+      ],
+      "benefits": [
+        {
+          "label": "Focus-grid pressure",
+          "before": "60.7",
+          "after": "41.3"
+        },
+        {
+          "label": "Elevated hotspots",
+          "before": "4",
+          "after": "1"
+        },
+        {
+          "label": "Total-flow delta",
+          "before": "111.0",
+          "after": "86.6"
+        },
+        {
+          "label": "Focus-route load share",
+          "before": "5",
+          "after": "4",
+          "unit": "%"
+        }
+      ],
+      "alertsBefore": [
+        {
+          "grid": "G03",
+          "level": "medium",
+          "current": 37.0,
+          "future": 40.57,
+          "note": "BiLSTM keeps G03 in the hotspot watchlist for the active frame."
+        },
+        {
+          "grid": "G25",
+          "level": "medium",
+          "current": 40.0,
+          "future": 44.65,
+          "note": "BiLSTM keeps G25 in the hotspot watchlist for the active frame."
+        },
+        {
+          "grid": "G60",
+          "level": "high",
+          "current": 66.0,
+          "future": 60.69,
+          "note": "BiLSTM keeps G60 in the hotspot watchlist for the active frame."
+        },
+        {
+          "grid": "G15",
+          "level": "medium",
+          "current": 41.0,
+          "future": 38.93,
+          "note": "BiLSTM keeps G15 in the hotspot watchlist for the active frame."
+        }
+      ],
+      "alertsAfter": [
+        {
+          "grid": "G03",
+          "level": "watch",
+          "current": 33.3,
+          "future": 33.27,
+          "note": "Applied-state values illustrate a coordinated response pass for the current focus route."
+        },
+        {
+          "grid": "G25",
+          "level": "watch",
+          "current": 36.0,
+          "future": 36.61,
+          "note": "Applied-state values illustrate a coordinated response pass for the current focus route."
+        },
+        {
+          "grid": "G60",
+          "level": "high",
+          "current": 55.44,
+          "future": 41.27,
+          "note": "Applied-state values illustrate a coordinated response pass for the current focus route."
+        },
+        {
+          "grid": "G15",
+          "level": "watch",
+          "current": 36.9,
+          "future": 31.92,
+          "note": "Applied-state values illustrate a coordinated response pass for the current focus route."
+        }
+      ],
+      "evaluationContext": {
+        "rank": 1,
+        "metric": "1h RMSE",
+        "value": 36.448966,
+        "nextModel": "LSTM",
+        "nextModelGap": 4.385639,
+        "summary": "BiLSTM is the shipped 1h RMSE leader at 36.449. The next model is LSTM, trailing by 4.386 RMSE."
+      },
+      "corridorContext": {
+        "headline": "D07-C01 remains the site-wide movement spine",
+        "detail": "D07-C01 leads 15% of runtime corridor tracks in the SouthEast direction. The decision layer uses that as context only and does not claim a one-to-one corridor-to-route mapping."
+      },
+      "evidenceLineage": [
+        {
+          "artifactId": "forecast-selected-runtime",
+          "label": "BiLSTM runtime frame",
+          "detail": "Scene dl300 at 2020-01-02T01:00:00 anchors the selected focus route/grid pair."
+        },
+        {
+          "artifactId": "evaluation-metrics",
+          "label": "1h ranking authority",
+          "detail": "BiLSTM ranks #1 in the shipped 1h RMSE table, ahead of LSTM."
+        },
+        {
+          "artifactId": "clustering-corridor-runtime",
+          "label": "Corridor dominance context",
+          "detail": "D07-C01 leads 199 of 1321 runtime tracks (15%)."
+        },
+        {
+          "artifactId": "clustering-noise-fallback",
+          "label": "Deferred CLUS-03 boundary",
+          "detail": "normalized_distances(60,90,0.03).pkl remains zero-byte at 代码依据/轨迹聚类/normalized_distances(60,90,0.03).pkl, so no fake noise re-clustering evidence is injected into this decision layer."
+        }
+      ],
+      "honestBoundary": "This applied-state preview is a curated, rule-driven offline comparison built from committed forecast outputs. It is not a live optimizer, and it does not reopen CLUS-03 while normalized_distances(60,90,0.03).pkl remains zero-byte."
+    },
+    {
+      "id": "forward-looking-c08-g25",
+      "title": "C08 / G25 pressure window",
+      "emphasis": "Curated scenario #2: G25 shows a 16.8 drop in the applied-state preview.",
+      "sceneId": "dl48",
+      "frameIndex": 48,
+      "time": "2020-01-01T04:00:00",
+      "focusGrid": "G25",
+      "focusRoute": "C08",
+      "selectedModel": "BiLSTM",
+      "selectedHorizon": "1h",
+      "currentTotalFlow": 1280.0,
+      "forecastTotalFlow": 1244.54,
+      "focusGridCurrent": 50.0,
+      "focusGridFuture": 52.49,
+      "focusPressureBefore": 52.5,
+      "focusPressureAfter": 35.7,
+      "focusPressureDrop": 16.8,
+      "alertCountBefore": 4,
+      "alertCountAfter": 1,
+      "strategyHeadline": "C08 focus-route check",
+      "strategySummary": "Prioritize G25 on C08, keep G60 / C03 in secondary watch, and keep the chart, alert table, and evidence drawer aligned to the BiLSTM run.",
+      "recommendations": [
+        {
+          "target": "C08",
+          "action": "Prioritize the focus route in the operator readout.",
+          "reason": "G25 carries the strongest 1h hotspot signal in the current BiLSTM run.",
+          "effect": "The focus bridge and alert list remain aligned with the most relevant route."
+        },
+        {
+          "target": "C03",
+          "action": "Keep the secondary route under cross-check.",
+          "reason": "G60 is the next-most active hotspot and can compound congestion if it rises with G25.",
+          "effect": "Operators retain a fallback narrative instead of overfitting to one hotspot only."
+        },
+        {
+          "target": "Evidence drawer",
+          "action": "Cross-check metrics and architecture notes against the active model.",
+          "reason": "The cockpit now exposes model-specific runtime and evidence instead of a deferred placeholder.",
+          "effect": "Model switching remains honest across summary, chart, and evidence layers."
+        }
+      ],
+      "benefits": [
+        {
+          "label": "Focus-grid pressure",
+          "before": "52.5",
+          "after": "35.7"
+        },
+        {
+          "label": "Elevated hotspots",
+          "before": "4",
+          "after": "1"
+        },
+        {
+          "label": "Total-flow delta",
+          "before": "-35.5",
+          "after": "-27.7"
+        },
+        {
+          "label": "Focus-route load share",
+          "before": "4",
+          "after": "3",
+          "unit": "%"
+        }
+      ],
+      "alertsBefore": [
+        {
+          "grid": "G03",
+          "level": "medium",
+          "current": 43.0,
+          "future": 31.54,
+          "note": "BiLSTM keeps G03 in the hotspot watchlist for the active frame."
+        },
+        {
+          "grid": "G25",
+          "level": "medium",
+          "current": 50.0,
+          "future": 52.49,
+          "note": "BiLSTM keeps G25 in the hotspot watchlist for the active frame."
+        },
+        {
+          "grid": "G60",
+          "level": "medium",
+          "current": 36.0,
+          "future": 44.21,
+          "note": "BiLSTM keeps G60 in the hotspot watchlist for the active frame."
+        },
+        {
+          "grid": "G15",
+          "level": "medium",
+          "current": 29.0,
+          "future": 40.13,
+          "note": "BiLSTM keeps G15 in the hotspot watchlist for the active frame."
+        }
+      ],
+      "alertsAfter": [
+        {
+          "grid": "G03",
+          "level": "watch",
+          "current": 38.7,
+          "future": 25.86,
+          "note": "Applied-state values illustrate a coordinated response pass for the current focus route."
+        },
+        {
+          "grid": "G25",
+          "level": "medium",
+          "current": 42.0,
+          "future": 35.69,
+          "note": "Applied-state values illustrate a coordinated response pass for the current focus route."
+        },
+        {
+          "grid": "G60",
+          "level": "watch",
+          "current": 32.4,
+          "future": 36.25,
+          "note": "Applied-state values illustrate a coordinated response pass for the current focus route."
+        },
+        {
+          "grid": "G15",
+          "level": "watch",
+          "current": 26.1,
+          "future": 32.91,
+          "note": "Applied-state values illustrate a coordinated response pass for the current focus route."
+        }
+      ],
+      "evaluationContext": {
+        "rank": 1,
+        "metric": "1h RMSE",
+        "value": 36.448966,
+        "nextModel": "LSTM",
+        "nextModelGap": 4.385639,
+        "summary": "BiLSTM is the shipped 1h RMSE leader at 36.449. The next model is LSTM, trailing by 4.386 RMSE."
+      },
+      "corridorContext": {
+        "headline": "D07-C01 remains the site-wide movement spine",
+        "detail": "D07-C01 leads 15% of runtime corridor tracks in the SouthEast direction. The decision layer uses that as context only and does not claim a one-to-one corridor-to-route mapping."
+      },
+      "evidenceLineage": [
+        {
+          "artifactId": "forecast-selected-runtime",
+          "label": "BiLSTM runtime frame",
+          "detail": "Scene dl48 at 2020-01-01T04:00:00 anchors the selected focus route/grid pair."
+        },
+        {
+          "artifactId": "evaluation-metrics",
+          "label": "1h ranking authority",
+          "detail": "BiLSTM ranks #1 in the shipped 1h RMSE table, ahead of LSTM."
+        },
+        {
+          "artifactId": "clustering-corridor-runtime",
+          "label": "Corridor dominance context",
+          "detail": "D07-C01 leads 199 of 1321 runtime tracks (15%)."
+        },
+        {
+          "artifactId": "clustering-noise-fallback",
+          "label": "Deferred CLUS-03 boundary",
+          "detail": "normalized_distances(60,90,0.03).pkl remains zero-byte at 代码依据/轨迹聚类/normalized_distances(60,90,0.03).pkl, so no fake noise re-clustering evidence is injected into this decision layer."
+        }
+      ],
+      "honestBoundary": "This applied-state preview is a curated, rule-driven offline comparison built from committed forecast outputs. It is not a live optimizer, and it does not reopen CLUS-03 while normalized_distances(60,90,0.03).pkl remains zero-byte."
+    },
+    {
+      "id": "forward-looking-c12-g03",
+      "title": "C12 / G03 pressure window",
+      "emphasis": "Curated scenario #3: G03 shows a 14.7 drop in the applied-state preview.",
+      "sceneId": "dl340",
+      "frameIndex": 340,
+      "time": "2020-01-02T04:20:00",
+      "focusGrid": "G03",
+      "focusRoute": "C12",
+      "selectedModel": "BiLSTM",
+      "selectedHorizon": "1h",
+      "currentTotalFlow": 1101.67,
+      "forecastTotalFlow": 1094.29,
+      "focusGridCurrent": 50.33,
+      "focusGridFuture": 45.98,
+      "focusPressureBefore": 46.0,
+      "focusPressureAfter": 31.3,
+      "focusPressureDrop": 14.7,
+      "alertCountBefore": 4,
+      "alertCountAfter": 3,
+      "strategyHeadline": "C12 focus-route check",
+      "strategySummary": "Prioritize G03 on C12, keep G25 / C08 in secondary watch, and keep the chart, alert table, and evidence drawer aligned to the BiLSTM run.",
+      "recommendations": [
+        {
+          "target": "C12",
+          "action": "Prioritize the focus route in the operator readout.",
+          "reason": "G03 carries the strongest 1h hotspot signal in the current BiLSTM run.",
+          "effect": "The focus bridge and alert list remain aligned with the most relevant route."
+        },
+        {
+          "target": "C08",
+          "action": "Keep the secondary route under cross-check.",
+          "reason": "G25 is the next-most active hotspot and can compound congestion if it rises with G03.",
+          "effect": "Operators retain a fallback narrative instead of overfitting to one hotspot only."
+        },
+        {
+          "target": "Evidence drawer",
+          "action": "Cross-check metrics and architecture notes against the active model.",
+          "reason": "The cockpit now exposes model-specific runtime and evidence instead of a deferred placeholder.",
+          "effect": "Model switching remains honest across summary, chart, and evidence layers."
+        }
+      ],
+      "benefits": [
+        {
+          "label": "Focus-grid pressure",
+          "before": "46.0",
+          "after": "31.3"
+        },
+        {
+          "label": "Elevated hotspots",
+          "before": "4",
+          "after": "3"
+        },
+        {
+          "label": "Total-flow delta",
+          "before": "-7.4",
+          "after": "-5.8"
+        },
+        {
+          "label": "Focus-route load share",
+          "before": "4",
+          "after": "3",
+          "unit": "%"
+        }
+      ],
+      "alertsBefore": [
+        {
+          "grid": "G03",
+          "level": "medium",
+          "current": 50.33,
+          "future": 45.98,
+          "note": "BiLSTM keeps G03 in the hotspot watchlist for the active frame."
+        },
+        {
+          "grid": "G25",
+          "level": "medium",
+          "current": 50.0,
+          "future": 45.44,
+          "note": "BiLSTM keeps G25 in the hotspot watchlist for the active frame."
+        },
+        {
+          "grid": "G60",
+          "level": "medium",
+          "current": 48.0,
+          "future": 44.65,
+          "note": "BiLSTM keeps G60 in the hotspot watchlist for the active frame."
+        },
+        {
+          "grid": "G15",
+          "level": "medium",
+          "current": 39.67,
+          "future": 43.5,
+          "note": "BiLSTM keeps G15 in the hotspot watchlist for the active frame."
+        }
+      ],
+      "alertsAfter": [
+        {
+          "grid": "G03",
+          "level": "medium",
+          "current": 42.28,
+          "future": 31.27,
+          "note": "Applied-state values illustrate a coordinated response pass for the current focus route."
+        },
+        {
+          "grid": "G25",
+          "level": "medium",
+          "current": 45.0,
+          "future": 37.26,
+          "note": "Applied-state values illustrate a coordinated response pass for the current focus route."
+        },
+        {
+          "grid": "G60",
+          "level": "medium",
+          "current": 43.2,
+          "future": 36.61,
+          "note": "Applied-state values illustrate a coordinated response pass for the current focus route."
+        },
+        {
+          "grid": "G15",
+          "level": "watch",
+          "current": 35.7,
+          "future": 35.67,
+          "note": "Applied-state values illustrate a coordinated response pass for the current focus route."
+        }
+      ],
+      "evaluationContext": {
+        "rank": 1,
+        "metric": "1h RMSE",
+        "value": 36.448966,
+        "nextModel": "LSTM",
+        "nextModelGap": 4.385639,
+        "summary": "BiLSTM is the shipped 1h RMSE leader at 36.449. The next model is LSTM, trailing by 4.386 RMSE."
+      },
+      "corridorContext": {
+        "headline": "D07-C01 remains the site-wide movement spine",
+        "detail": "D07-C01 leads 15% of runtime corridor tracks in the SouthEast direction. The decision layer uses that as context only and does not claim a one-to-one corridor-to-route mapping."
+      },
+      "evidenceLineage": [
+        {
+          "artifactId": "forecast-selected-runtime",
+          "label": "BiLSTM runtime frame",
+          "detail": "Scene dl340 at 2020-01-02T04:20:00 anchors the selected focus route/grid pair."
+        },
+        {
+          "artifactId": "evaluation-metrics",
+          "label": "1h ranking authority",
+          "detail": "BiLSTM ranks #1 in the shipped 1h RMSE table, ahead of LSTM."
+        },
+        {
+          "artifactId": "clustering-corridor-runtime",
+          "label": "Corridor dominance context",
+          "detail": "D07-C01 leads 199 of 1321 runtime tracks (15%)."
+        },
+        {
+          "artifactId": "clustering-noise-fallback",
+          "label": "Deferred CLUS-03 boundary",
+          "detail": "normalized_distances(60,90,0.03).pkl remains zero-byte at 代码依据/轨迹聚类/normalized_distances(60,90,0.03).pkl, so no fake noise re-clustering evidence is injected into this decision layer."
+        }
+      ],
+      "honestBoundary": "This applied-state preview is a curated, rule-driven offline comparison built from committed forecast outputs. It is not a live optimizer, and it does not reopen CLUS-03 while normalized_distances(60,90,0.03).pkl remains zero-byte."
+    },
+    {
+      "id": "forward-looking-c14-g15",
+      "title": "C14 / G15 pressure window",
+      "emphasis": "Curated scenario #4: G15 shows a 12.5 drop in the applied-state preview.",
+      "sceneId": "dl576",
+      "frameIndex": 576,
+      "time": "2020-01-03T00:00:00",
+      "focusGrid": "G15",
+      "focusRoute": "C14",
+      "selectedModel": "BiLSTM",
+      "selectedHorizon": "1h",
+      "currentTotalFlow": 946.0,
+      "forecastTotalFlow": 1080.46,
+      "focusGridCurrent": 58.0,
+      "focusGridFuture": 39.01,
+      "focusPressureBefore": 39.0,
+      "focusPressureAfter": 26.5,
+      "focusPressureDrop": 12.5,
+      "alertCountBefore": 3,
+      "alertCountAfter": 2,
+      "strategyHeadline": "C14 focus-route check",
+      "strategySummary": "Prioritize G15 on C14, keep G60 / C03 in secondary watch, and keep the chart, alert table, and evidence drawer aligned to the BiLSTM run.",
+      "recommendations": [
+        {
+          "target": "C14",
+          "action": "Prioritize the focus route in the operator readout.",
+          "reason": "G15 carries the strongest 1h hotspot signal in the current BiLSTM run.",
+          "effect": "The focus bridge and alert list remain aligned with the most relevant route."
+        },
+        {
+          "target": "C03",
+          "action": "Keep the secondary route under cross-check.",
+          "reason": "G60 is the next-most active hotspot and can compound congestion if it rises with G15.",
+          "effect": "Operators retain a fallback narrative instead of overfitting to one hotspot only."
+        },
+        {
+          "target": "Evidence drawer",
+          "action": "Cross-check metrics and architecture notes against the active model.",
+          "reason": "The cockpit now exposes model-specific runtime and evidence instead of a deferred placeholder.",
+          "effect": "Model switching remains honest across summary, chart, and evidence layers."
+        }
+      ],
+      "benefits": [
+        {
+          "label": "Focus-grid pressure",
+          "before": "39.0",
+          "after": "26.5"
+        },
+        {
+          "label": "Elevated hotspots",
+          "before": "3",
+          "after": "2"
+        },
+        {
+          "label": "Total-flow delta",
+          "before": "134.5",
+          "after": "104.9"
+        },
+        {
+          "label": "Focus-route load share",
+          "before": "4",
+          "after": "3",
+          "unit": "%"
+        }
+      ],
+      "alertsBefore": [
+        {
+          "grid": "G03",
+          "level": "watch",
+          "current": 27.0,
+          "future": 26.74,
+          "note": "BiLSTM keeps G03 in the hotspot watchlist for the active frame."
+        },
+        {
+          "grid": "G25",
+          "level": "medium",
+          "current": 40.0,
+          "future": 43.18,
+          "note": "BiLSTM keeps G25 in the hotspot watchlist for the active frame."
+        },
+        {
+          "grid": "G60",
+          "level": "medium",
+          "current": 46.0,
+          "future": 49.31,
+          "note": "BiLSTM keeps G60 in the hotspot watchlist for the active frame."
+        },
+        {
+          "grid": "G15",
+          "level": "high",
+          "current": 58.0,
+          "future": 39.01,
+          "note": "BiLSTM keeps G15 in the hotspot watchlist for the active frame."
+        }
+      ],
+      "alertsAfter": [
+        {
+          "grid": "G03",
+          "level": "watch",
+          "current": 25.65,
+          "future": 24.07,
+          "note": "Applied-state values illustrate a coordinated response pass for the current focus route."
+        },
+        {
+          "grid": "G25",
+          "level": "watch",
+          "current": 36.0,
+          "future": 35.41,
+          "note": "Applied-state values illustrate a coordinated response pass for the current focus route."
+        },
+        {
+          "grid": "G60",
+          "level": "medium",
+          "current": 41.4,
+          "future": 40.43,
+          "note": "Applied-state values illustrate a coordinated response pass for the current focus route."
+        },
+        {
+          "grid": "G15",
+          "level": "medium",
+          "current": 48.72,
+          "future": 26.53,
+          "note": "Applied-state values illustrate a coordinated response pass for the current focus route."
+        }
+      ],
+      "evaluationContext": {
+        "rank": 1,
+        "metric": "1h RMSE",
+        "value": 36.448966,
+        "nextModel": "LSTM",
+        "nextModelGap": 4.385639,
+        "summary": "BiLSTM is the shipped 1h RMSE leader at 36.449. The next model is LSTM, trailing by 4.386 RMSE."
+      },
+      "corridorContext": {
+        "headline": "D07-C01 remains the site-wide movement spine",
+        "detail": "D07-C01 leads 15% of runtime corridor tracks in the SouthEast direction. The decision layer uses that as context only and does not claim a one-to-one corridor-to-route mapping."
+      },
+      "evidenceLineage": [
+        {
+          "artifactId": "forecast-selected-runtime",
+          "label": "BiLSTM runtime frame",
+          "detail": "Scene dl576 at 2020-01-03T00:00:00 anchors the selected focus route/grid pair."
+        },
+        {
+          "artifactId": "evaluation-metrics",
+          "label": "1h ranking authority",
+          "detail": "BiLSTM ranks #1 in the shipped 1h RMSE table, ahead of LSTM."
+        },
+        {
+          "artifactId": "clustering-corridor-runtime",
+          "label": "Corridor dominance context",
+          "detail": "D07-C01 leads 199 of 1321 runtime tracks (15%)."
+        },
+        {
+          "artifactId": "clustering-noise-fallback",
+          "label": "Deferred CLUS-03 boundary",
+          "detail": "normalized_distances(60,90,0.03).pkl remains zero-byte at 代码依据/轨迹聚类/normalized_distances(60,90,0.03).pkl, so no fake noise re-clustering evidence is injected into this decision layer."
+        }
+      ],
+      "honestBoundary": "This applied-state preview is a curated, rule-driven offline comparison built from committed forecast outputs. It is not a live optimizer, and it does not reopen CLUS-03 while normalized_distances(60,90,0.03).pkl remains zero-byte."
+    }
+  ]
+}

@@ -8,7 +8,9 @@
     "flow-distance-csv",
     "stgcn-weight",
     "flow-forecast-runtime",
-    "flow-model-config-runtime"
+    "flow-model-config-runtime",
+    "forecast-lstm-weight",
+    "forecast-bilstm-weight"
   ],
   "scenarioId": "demo-live",
   "timeRange": {
@@ -23,7 +25,7 @@
     "BASE-02",
     "BASE-05"
   ],
-  "generatedAt": "2026-03-25T10:42:43+00:00",
+  "generatedAt": "2026-03-26T12:34:03+00:00",
   "bundlePath": "data/modules/forecast/forecast-bundle.json",
   "artifacts": [
     {
@@ -45,6 +47,50 @@
       "path": "data/modules/forecast/forecast-runtime.json",
       "status": "ready",
       "description": "Committed STGCN runtime timeline copied into the module package."
+    },
+    {
+      "artifactId": "forecast-lstm-runtime",
+      "module": "forecast",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "flow-grid-csv",
+        "forecast-lstm-weight"
+      ],
+      "scenarioId": "demo-live",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "FLOW-01",
+        "FLOW-02",
+        "FLOW-04"
+      ],
+      "path": "data/modules/forecast/forecast-lstm-runtime.json",
+      "status": "ready",
+      "description": "Structured LSTM runtime timeline exported on the same replay window as the STGCN bundle."
+    },
+    {
+      "artifactId": "forecast-bilstm-runtime",
+      "module": "forecast",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "flow-grid-csv",
+        "forecast-bilstm-weight"
+      ],
+      "scenarioId": "demo-live",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "FLOW-01",
+        "FLOW-02",
+        "FLOW-04"
+      ],
+      "path": "data/modules/forecast/forecast-bilstm-runtime.json",
+      "status": "ready",
+      "description": "Structured BiLSTM runtime timeline exported on the same replay window as the STGCN bundle."
     },
     {
       "artifactId": "forecast-model-config",
@@ -69,11 +115,55 @@
       "description": "Graph and scaler metadata copied into the forecast module package."
     },
     {
+      "artifactId": "forecast-lstm-model-config",
+      "module": "forecast",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "flow-model-config-runtime",
+        "forecast-lstm-weight"
+      ],
+      "scenarioId": "demo-live",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "FLOW-01",
+        "FLOW-02"
+      ],
+      "path": "data/modules/forecast/forecast-lstm-model-config.json",
+      "status": "ready",
+      "description": "LSTM architecture, scaler, and hotspot metadata aligned to the forecast module runtime."
+    },
+    {
+      "artifactId": "forecast-bilstm-model-config",
+      "module": "forecast",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "flow-model-config-runtime",
+        "forecast-bilstm-weight"
+      ],
+      "scenarioId": "demo-live",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "FLOW-01",
+        "FLOW-02"
+      ],
+      "path": "data/modules/forecast/forecast-bilstm-model-config.json",
+      "status": "ready",
+      "description": "BiLSTM architecture, scaler, and hotspot metadata aligned to the forecast module runtime."
+    },
+    {
       "artifactId": "forecast-metrics",
       "module": "forecast",
       "sourceStage": "exported",
       "derivedFrom": [
-        "forecast-runtime"
+        "forecast-runtime",
+        "forecast-lstm-runtime",
+        "forecast-bilstm-runtime"
       ],
       "scenarioId": "demo-live",
       "timeRange": {
@@ -88,7 +178,7 @@
       ],
       "path": "data/modules/forecast/forecast-metrics.json",
       "status": "ready",
-      "description": "Timeline-aligned STGCN total-flow metrics for 1h, 2h, and 3h horizons."
+      "description": "Timeline-aligned STGCN, LSTM, and BiLSTM total-flow metrics for 1h, 2h, and 3h horizons."
     },
     {
       "artifactId": "forecast-bundle",
@@ -97,6 +187,10 @@
       "derivedFrom": [
         "forecast-runtime",
         "forecast-model-config",
+        "forecast-lstm-runtime",
+        "forecast-bilstm-runtime",
+        "forecast-lstm-model-config",
+        "forecast-bilstm-model-config",
         "forecast-metrics"
       ],
       "scenarioId": "demo-live",
@@ -117,32 +211,15 @@
       "description": "Module entry bundle for forecast data discovery."
     }
   ],
-  "deferred": [
-    {
-      "artifactId": "forecast-lstm-runtime",
-      "reason": "Only notebook definitions exist; there is no committed structured runtime export.",
-      "dependsOn": [
-        "FLOW-01",
-        "FLOW-03",
-        "Phase 8"
-      ]
-    },
-    {
-      "artifactId": "forecast-bilstm-runtime",
-      "reason": "Only notebook definitions exist; there is no committed structured runtime export.",
-      "dependsOn": [
-        "FLOW-01",
-        "FLOW-03",
-        "Phase 8"
-      ]
-    }
-  ],
+  "deferred": [],
   "sources": {
     "flow-grid-csv": "代码依据/流量预测/grid_mmsi_count（流量数据）.csv",
     "flow-adjacency-csv": "代码依据/流量预测/相关性矩阵0.csv",
     "flow-distance-csv": "代码依据/流量预测/距离矩阵0.csv",
     "stgcn-weight": "代码依据/流量预测/save/model_0.pt",
     "flow-forecast-runtime": "demo-web/public/data/flow-forecast.json",
-    "flow-model-config-runtime": "demo-web/public/data/model-config.json"
+    "flow-model-config-runtime": "demo-web/public/data/model-config.json",
+    "forecast-lstm-weight": "demo-web/public/data/modules/forecast/weights/forecast-lstm-model.pt",
+    "forecast-bilstm-weight": "demo-web/public/data/modules/forecast/weights/forecast-bilstm-model.pt"
   }
 }

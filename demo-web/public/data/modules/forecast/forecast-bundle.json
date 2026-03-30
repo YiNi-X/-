@@ -1,19 +1,18 @@
 {
   "artifactId": "forecast-bundle",
   "module": "forecast",
-  "generatedAt": "2026-03-25T10:42:43+00:00",
+  "generatedAt": "2026-03-26T12:34:03+00:00",
   "scenarioId": "demo-live",
   "timeRange": {
     "start": "2020-01-01T00:00:00",
     "end": "2020-01-03T00:00:00"
   },
   "availableModels": [
-    "STGCN"
-  ],
-  "deferredModels": [
+    "STGCN",
     "LSTM",
     "BiLSTM"
   ],
+  "deferredModels": [],
   "horizons": [
     "1h",
     "2h",
@@ -22,6 +21,12 @@
   "entryFiles": {
     "runtime": "data/modules/forecast/forecast-runtime.json",
     "modelConfig": "data/modules/forecast/forecast-model-config.json",
-    "metrics": "data/modules/forecast/forecast-metrics.json"
+    "metrics": "data/modules/forecast/forecast-metrics.json",
+    "runtimeSTGCN": "data/modules/forecast/forecast-runtime.json",
+    "runtimeLSTM": "data/modules/forecast/forecast-lstm-runtime.json",
+    "runtimeBiLSTM": "data/modules/forecast/forecast-bilstm-runtime.json",
+    "modelConfigSTGCN": "data/modules/forecast/forecast-model-config.json",
+    "modelConfigLSTM": "data/modules/forecast/forecast-lstm-model-config.json",
+    "modelConfigBiLSTM": "data/modules/forecast/forecast-bilstm-model-config.json"
   }
 }

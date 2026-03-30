@@ -1,0 +1,110 @@
+{
+  "artifactId": "forward-looking-manifest",
+  "module": "forward-looking",
+  "sourceStage": "exported",
+  "derivedFrom": [
+    "forecast-manifest",
+    "evaluation-manifest",
+    "clustering-manifest",
+    "artifact-index",
+    "overview-manifest"
+  ],
+  "scenarioId": "phase12-forward-looking-v1",
+  "timeRange": {
+    "start": "2020-01-01T00:00:00",
+    "end": "2020-01-03T00:00:00"
+  },
+  "authoritativeFor": [
+    "DECI-01",
+    "DECI-02",
+    "DECI-03",
+    "DECI-04"
+  ],
+  "generatedAt": "2026-03-30T08:10:45+00:00",
+  "bundlePath": "data/modules/forward-looking/forward-looking-bundle.json",
+  "artifacts": [
+    {
+      "artifactId": "forward-looking-summary",
+      "module": "forward-looking",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "forecast-selected-runtime",
+        "evaluation-metrics",
+        "clustering-corridor-runtime",
+        "clustering-noise-fallback"
+      ],
+      "scenarioId": "phase12-forward-looking-v1",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "DECI-01",
+        "DECI-02",
+        "DECI-04"
+      ],
+      "path": "data/modules/forward-looking/forward-looking-summary.json",
+      "status": "ready",
+      "description": "Rule-driven decision summary anchored to the selected forecast ranking authority and corridor context."
+    },
+    {
+      "artifactId": "forward-looking-scenarios",
+      "module": "forward-looking",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "forward-looking-summary",
+        "forecast-selected-runtime"
+      ],
+      "scenarioId": "phase12-forward-looking-v1",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "DECI-01",
+        "DECI-02",
+        "DECI-04"
+      ],
+      "path": "data/modules/forward-looking/forward-looking-scenarios.json",
+      "status": "ready",
+      "description": "Curated scenario records for the current rule-driven focus route and grid evidence pack."
+    },
+    {
+      "artifactId": "forward-looking-bundle",
+      "module": "forward-looking",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "forward-looking-summary",
+        "forward-looking-scenarios"
+      ],
+      "scenarioId": "phase12-forward-looking-v1",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "DECI-01",
+        "DECI-02",
+        "DECI-03",
+        "DECI-04"
+      ],
+      "path": "data/modules/forward-looking/forward-looking-bundle.json",
+      "status": "ready",
+      "description": "Module entry bundle for forward-looking decision data discovery."
+    }
+  ],
+  "sources": {
+    "artifact-index": "demo-web/public/data/modules/artifact-index.json",
+    "forecast-bundle": "demo-web/public/data/modules/forecast/forecast-bundle.json",
+    "forecast-selected-runtime": "demo-web/public/data/modules/forecast/forecast-bilstm-runtime.json",
+    "forecast-manifest": "demo-web/public/data/modules/forecast/manifest.json",
+    "evaluation-metrics": "demo-web/public/data/modules/evaluation/evaluation-metrics.json",
+    "evaluation-manifest": "demo-web/public/data/modules/evaluation/manifest.json",
+    "clustering-corridor-runtime": "demo-web/public/data/modules/clustering/clustering-corridor-runtime.json",
+    "clustering-noise-fallback": "demo-web/public/data/modules/clustering/clustering-noise-fallback.json",
+    "clustering-manifest": "demo-web/public/data/modules/clustering/manifest.json",
+    "overview-summary": "demo-web/public/data/modules/overview/overview-summary.json",
+    "overview-manifest": "demo-web/public/data/modules/overview/manifest.json"
+  },
+  "deferred": []
+}

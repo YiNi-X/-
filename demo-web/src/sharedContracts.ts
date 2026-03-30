@@ -254,7 +254,7 @@ export type TimelineMoment = {
   date: string
 }
 
-export type ModuleId = 'overview' | 'forecast' | 'repair' | 'clustering' | 'evaluation'
+export type ModuleId = 'overview' | 'forecast' | 'repair' | 'clustering' | 'evaluation' | 'forward-looking'
 export type ShellRouteId = 'home' | 'overview' | 'forecast' | 'repair' | 'clustering' | 'evaluation' | 'forward-looking'
 export type ModuleSourceStage = 'raw' | 'cleaned' | 'segmented' | 'compressed' | 'exported' | 'exported-review'
 export type ModuleArtifactStatus = 'ready' | 'review-first' | 'partial' | 'deferred'
@@ -268,6 +268,9 @@ export type ModuleDeferredItem = {
   artifactId: string
   reason: string
   dependsOn: string[]
+  status?: string
+  fileBytes?: number
+  filePath?: string
 }
 
 export type ModuleLineageRecord = {

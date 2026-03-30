@@ -1,0 +1,56 @@
+{
+  "artifactId": "clustering-noise-fallback",
+  "module": "clustering",
+  "scenarioId": "clustered-ais-v1",
+  "generatedAt": "2026-03-30T03:40:42+00:00",
+  "summary": "Honest fallback for deferred CLUS-03. The notebook-grade noise re-clustering result cannot be shipped because normalized_distances(60,90,0.03).pkl exists in the workspace but is still 0 bytes, so this panel only exposes verified pre-reclustering statistics.",
+  "sourceSummary": "demo-web/analysis/review/corridor-review-summary.json",
+  "sourceArtifacts": [
+    "compressed_segments(60,90,0.03).pkl",
+    "segments(60-90).pkl",
+    "shaixuanhou_.csv"
+  ],
+  "deferredArtifact": {
+    "artifactId": "clustering-noise-reclustered",
+    "fileName": "normalized_distances(60,90,0.03).pkl",
+    "fileBytes": 0,
+    "filePath": "代码依据/轨迹聚类/normalized_distances(60,90,0.03).pkl",
+    "status": "zero-byte",
+    "present": true,
+    "lastModified": "2025-09-25T04:03:20+00:00"
+  },
+  "counts": {
+    "rawSegments": 3827,
+    "candidateSegments": 2108,
+    "keptSegments": 1321,
+    "removedSegments": 2506,
+    "rawPoints": 18980,
+    "keptPoints": 9302
+  },
+  "dropReasons": [
+    {
+      "id": "dbscan_noise",
+      "label": "DBSCAN noise",
+      "count": 541,
+      "narrative": "These segments currently remain in the unrecovered noise pool and are the most truthful stand-in for deferred CLUS-03."
+    },
+    {
+      "id": "non_top_corridor",
+      "label": "Non-top corridor",
+      "count": 246,
+      "narrative": "These segments formed minor directional families but were not promoted into the shipped top-K corridor runtime."
+    },
+    {
+      "id": "too_few_points",
+      "label": "Too few points",
+      "count": 1633,
+      "narrative": "These segments failed the minimum support threshold before any trustworthy re-clustering story could begin."
+    },
+    {
+      "id": "too_short",
+      "label": "Too short",
+      "count": 86,
+      "narrative": "These segments were removed because displacement stayed below the current corridor extraction threshold."
+    }
+  ]
+}

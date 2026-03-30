@@ -77,7 +77,17 @@ function App() {
               />
             )
           case 'forward-looking':
-            return <ForwardLookingPage onNavigate={shell.navigate} />
+            return shell.activeModule ? (
+              <ForwardLookingPage key={shell.activeModule.artifactId} entry={shell.activeModule} onNavigate={shell.navigate} />
+            ) : (
+              <PlatformStatusSurface
+                tone="unavailable"
+                title="Forward-looking analysis unavailable"
+                summary="The forward-looking bundle has not been loaded into the shell yet."
+                detail="Return home or retry the selected module once the registry finishes loading."
+                actions={[{ label: 'Return home', onClick: () => shell.navigate('home') }]}
+              />
+            )
           default:
             return null
         }

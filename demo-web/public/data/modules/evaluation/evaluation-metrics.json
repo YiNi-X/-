@@ -2,9 +2,9 @@
   "artifactId": "evaluation-metrics",
   "module": "evaluation",
   "scenarioId": "phase6-evaluation-v1",
-  "generatedAt": "2026-03-25T10:42:55+00:00",
+  "generatedAt": "2026-03-30T06:16:15+00:00",
   "forecast": {
-    "metricScope": "timeline-aligned totalFlow derived from committed STGCN runtime output",
+    "metricScope": "timeline-aligned totalFlow derived from committed STGCN, LSTM, and BiLSTM runtime outputs",
     "supportedMetrics": [
       "mae",
       "rmse",
@@ -33,85 +33,212 @@
             "r2": 0.788904
           }
         }
+      },
+      "LSTM": {
+        "status": "available",
+        "horizons": {
+          "1h": {
+            "sampleCount": 565,
+            "mae": 32.929398,
+            "rmse": 40.834605,
+            "r2": 0.957584
+          },
+          "2h": {
+            "sampleCount": 553,
+            "mae": 54.408047,
+            "rmse": 69.353373,
+            "r2": 0.879485
+          },
+          "3h": {
+            "sampleCount": 541,
+            "mae": 68.376451,
+            "rmse": 83.699619,
+            "r2": 0.825079
+          }
+        }
+      },
+      "BiLSTM": {
+        "status": "available",
+        "horizons": {
+          "1h": {
+            "sampleCount": 565,
+            "mae": 29.696124,
+            "rmse": 36.448966,
+            "r2": 0.966205
+          },
+          "2h": {
+            "sampleCount": 553,
+            "mae": 49.622206,
+            "rmse": 60.311959,
+            "r2": 0.90886
+          },
+          "3h": {
+            "sampleCount": 541,
+            "mae": 67.702606,
+            "rmse": 83.148137,
+            "r2": 0.827376
+          }
+        }
       }
     },
-    "deferredModels": [
-      {
-        "model": "LSTM",
-        "reason": "Only notebook definitions exist in the repository; no committed structured runtime export is available."
-      },
-      {
-        "model": "BiLSTM",
-        "reason": "Only notebook definitions exist in the repository; no committed structured runtime export is available."
-      }
-    ],
+    "deferredModels": [],
     "rankings": {
       "1h": {
         "rmse": [
           {
+            "model": "BiLSTM",
+            "value": 36.448966,
+            "rank": 1
+          },
+          {
+            "model": "LSTM",
+            "value": 40.834605,
+            "rank": 2
+          },
+          {
             "model": "STGCN",
             "value": 47.384377,
-            "rank": 1
+            "rank": 3
           }
         ],
         "mae": [
           {
+            "model": "BiLSTM",
+            "value": 29.696124,
+            "rank": 1
+          },
+          {
+            "model": "LSTM",
+            "value": 32.929398,
+            "rank": 2
+          },
+          {
             "model": "STGCN",
             "value": 36.835611,
-            "rank": 1
+            "rank": 3
           }
         ],
         "r2": [
           {
+            "model": "BiLSTM",
+            "value": 0.966205,
+            "rank": 1
+          },
+          {
+            "model": "LSTM",
+            "value": 0.957584,
+            "rank": 2
+          },
+          {
             "model": "STGCN",
             "value": 0.942885,
-            "rank": 1
+            "rank": 3
           }
         ]
       },
       "2h": {
         "rmse": [
           {
+            "model": "BiLSTM",
+            "value": 60.311959,
+            "rank": 1
+          },
+          {
+            "model": "LSTM",
+            "value": 69.353373,
+            "rank": 2
+          },
+          {
             "model": "STGCN",
             "value": 77.744297,
-            "rank": 1
+            "rank": 3
           }
         ],
         "mae": [
           {
+            "model": "BiLSTM",
+            "value": 49.622206,
+            "rank": 1
+          },
+          {
+            "model": "LSTM",
+            "value": 54.408047,
+            "rank": 2
+          },
+          {
             "model": "STGCN",
             "value": 61.44519,
-            "rank": 1
+            "rank": 3
           }
         ],
         "r2": [
           {
+            "model": "BiLSTM",
+            "value": 0.90886,
+            "rank": 1
+          },
+          {
+            "model": "LSTM",
+            "value": 0.879485,
+            "rank": 2
+          },
+          {
             "model": "STGCN",
             "value": 0.84856,
-            "rank": 1
+            "rank": 3
           }
         ]
       },
       "3h": {
         "rmse": [
           {
+            "model": "BiLSTM",
+            "value": 83.148137,
+            "rank": 1
+          },
+          {
+            "model": "LSTM",
+            "value": 83.699619,
+            "rank": 2
+          },
+          {
             "model": "STGCN",
             "value": 91.948055,
-            "rank": 1
+            "rank": 3
           }
         ],
         "mae": [
           {
+            "model": "BiLSTM",
+            "value": 67.702606,
+            "rank": 1
+          },
+          {
+            "model": "LSTM",
+            "value": 68.376451,
+            "rank": 2
+          },
+          {
             "model": "STGCN",
             "value": 70.876377,
-            "rank": 1
+            "rank": 3
           }
         ],
         "r2": [
           {
+            "model": "BiLSTM",
+            "value": 0.827376,
+            "rank": 1
+          },
+          {
+            "model": "LSTM",
+            "value": 0.825079,
+            "rank": 2
+          },
+          {
             "model": "STGCN",
             "value": 0.788904,
-            "rank": 1
+            "rank": 3
           }
         ]
       }

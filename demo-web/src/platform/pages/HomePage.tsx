@@ -9,35 +9,20 @@ import {
 } from '../../dashboard/dashboardUtils'
 import { useDashboardRuntime } from '../../dashboard/useDashboardRuntime'
 import { useDashboardScene } from '../../dashboard/useDashboardScene'
+import {
+  buildCorridorDominanceSummary,
+  CLUSTERING_CORRIDOR_RUNTIME_PATH,
+  formatSharePercent,
+  type CorridorDominanceSummary,
+} from '../clustering/corridorDominance.ts'
 import { loadPublicJson } from '../../sharedContracts'
+import type { MainCorridorTracksFile } from '../../sharedContracts'
 import type { ShellRouteId } from '../../sharedContracts'
+import type { OverviewSummary } from '../overview/overviewTypes.ts'
 
 type HomePageProps = {
   selectedDatasetId: string
   onNavigate: (routeId: ShellRouteId) => void
-}
-
-type OverviewSummary = {
-  framing: string
-  businessLoop: Array<{ step: string; description: string }>
-  dataScale?: {
-    forecast?: {
-      timelineFrames: number
-      availableModels: string[]
-      deferredModels: string[]
-      horizons: string[]
-    }
-    repair?: {
-      sampleCount: number
-      availableModels: string[]
-    }
-    clustering?: {
-      compressedTracks: number
-      corridorRuntimeCorridors: number
-      rawAisRows: number
-    }
-  }
-  deferredModules?: Array<{ module: string; reason: string }>
 }
 
 type EvaluationMetrics = {
@@ -70,6 +55,7 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
   const [planApplied, setPlanApplied] = useState(false)
   const [overviewSummary, setOverviewSummary] = useState<OverviewSummary | null>(null)
   const [evaluationMetrics, setEvaluationMetrics] = useState<EvaluationMetrics | null>(null)
+  const [corridorDominance, setCorridorDominance] = useState<CorridorDominanceSummary | null>(null)
   const [previewRoute, setPreviewRoute] = useState<ShellRouteId | null>(null)
 
   const strategyEnabled = true
@@ -127,18 +113,15 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
     let cancelled = false
 
     void Promise.all([
-      loadPublicJson<OverviewSummary>('/data/modules/overview/overview-summary.json'),
-      loadPublicJson<EvaluationMetrics>('/data/modules/evaluation/evaluation-metrics.json'),
+      loadPublicJson<OverviewSummary>('/data/modules/overview/overview-summary.json').catch(() => null),
+      loadPublicJson<EvaluationMetrics>('/data/modules/evaluation/evaluation-metrics.json').catch(() => null),
+      loadPublicJson<MainCorridorTracksFile>(CLUSTERING_CORRIDOR_RUNTIME_PATH).catch(() => null),
     ])
-      .then(([overviewData, evaluationData]) => {
+      .then(([overviewData, evaluationData, corridorRuntime]) => {
         if (cancelled) return
         setOverviewSummary(overviewData)
         setEvaluationMetrics(evaluationData)
-      })
-      .catch(() => {
-        if (cancelled) return
-        setOverviewSummary(null)
-        setEvaluationMetrics(null)
+        setCorridorDominance(corridorRuntime ? buildCorridorDominanceSummary(corridorRuntime) : null)
       })
 
     return () => {
@@ -157,13 +140,22 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
 
   const repairLeader = evaluationMetrics?.repair?.aggregateByModel?.slice().sort((left, right) => left.rankByRmse - right.rankByRmse)[0]
   const forecastLeader = evaluationMetrics?.forecast?.rankings?.['1h']?.rmse?.[0]
-  const deferredForwardLooking = overviewSummary?.deferredModules?.[0]
+  const overviewBusinessLoop = overviewSummary?.businessLoop ?? []
+  const overviewModuleEntryPoints = overviewSummary?.moduleEntryPoints ?? []
+  const overviewScenarioEntryPoints = overviewSummary?.scenarioEntryPoints ?? []
+  const overviewFramingPillars = overviewSummary?.framingPillars ?? []
   const forecastFrames = overviewSummary?.dataScale?.forecast?.timelineFrames ?? 0
   const repairSamples = overviewSummary?.dataScale?.repair?.sampleCount ?? 0
   const compressedTracks = overviewSummary?.dataScale?.clustering?.compressedTracks ?? 0
-  const corridorCount = overviewSummary?.dataScale?.clustering?.corridorRuntimeCorridors ?? 0
-  const overviewSteps = overviewSummary?.businessLoop.length ?? 5
-  const forecastDeferred = overviewSummary?.dataScale?.forecast?.deferredModels?.length ?? 2
+  const overviewSteps = overviewBusinessLoop.length || 5
+  const readyOverviewEntries = overviewModuleEntryPoints.filter((item) => item.status === 'ready').length
+  const forecastModelCount = overviewSummary?.dataScale?.forecast?.availableModels?.length ?? 1
+  const corridorLeader = corridorDominance?.leadingCorridor ?? null
+  const leadingDirection = corridorDominance?.leadingDirection ?? null
+  const forwardLookingEntry = overviewModuleEntryPoints.find((item) => item.routeId === 'forward-looking') ?? null
+  const homeScenarioHighlights = overviewScenarioEntryPoints.filter((item) => item.routeId !== 'home').slice(0, 3)
+  const framingLead = overviewFramingPillars[0] ?? null
+  const framingSupport = overviewFramingPillars[2] ?? overviewFramingPillars[1] ?? null
 
   const previewCards: HomePreviewCard[] = [
     {
@@ -174,7 +166,7 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
       primaryLabel: 'Loop steps',
       primaryValue: String(overviewSteps),
       secondaryLabel: 'Data-ready modules',
-      secondaryValue: String(overviewSummary?.businessLoop ? 4 : 0),
+      secondaryValue: String(readyOverviewEntries || 0),
       actionLabel: 'View Details',
       stateLabel: 'Ready',
     },
@@ -185,8 +177,8 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
       summary: `${displayedAlerts.length} hotspot alerts are active in the current scene and the next window projects ${metricNumber(objectiveNext1h)} total flow.`,
       primaryLabel: 'Current total flow',
       primaryValue: metricNumber(objectiveTotalFlow),
-      secondaryLabel: 'Deferred models',
-      secondaryValue: String(forecastDeferred),
+      secondaryLabel: 'Available models',
+      secondaryValue: String(forecastModelCount),
       actionLabel: 'View Details',
       stateLabel: 'Ready',
     },
@@ -206,11 +198,13 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
       routeId: 'clustering',
       kicker: 'Trajectory Clustering',
       title: 'Trajectory Clustering',
-      summary: 'The clustering story moves from raw AIS to segmented, compressed, and corridor-ready layers without forcing the research-only noise stage.',
+      summary: corridorLeader
+        ? `${corridorLeader.corridorId} (${corridorLeader.directionLabel}) now acts as the runtime movement spine, so clustering hands a concrete corridor-dominance story into overview and evaluation.`
+        : 'The clustering story moves from raw AIS to segmented, compressed, and corridor-ready layers without forcing the research-only noise stage.',
       primaryLabel: 'Compressed tracks',
       primaryValue: String(compressedTracks),
-      secondaryLabel: 'Runtime corridors',
-      secondaryValue: String(corridorCount),
+      secondaryLabel: 'Lead corridor',
+      secondaryValue: corridorLeader?.corridorId ?? '--',
       actionLabel: 'View Pipeline',
       stateLabel: 'Ready',
     },
@@ -218,7 +212,9 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
       routeId: 'evaluation',
       kicker: 'Evaluation Center',
       title: 'Evaluation Center',
-      summary: `${forecastLeader?.model ?? 'STGCN'} leads the 1h forecast ranking while ${repairLeader?.modelLabel ?? 'ATT-BILSTM'} leads repair RMSE.`,
+      summary: corridorLeader
+        ? `${forecastLeader?.model ?? 'STGCN'} leads the 1h forecast ranking while ${repairLeader?.modelLabel ?? 'ATT-BILSTM'} leads repair RMSE, with ${corridorLeader.corridorId} anchoring the shared runtime context.`
+        : `${forecastLeader?.model ?? 'STGCN'} leads the 1h forecast ranking while ${repairLeader?.modelLabel ?? 'ATT-BILSTM'} leads repair RMSE.`,
       primaryLabel: 'Timeline frames',
       primaryValue: String(forecastFrames),
       secondaryLabel: 'Top forecast model',
@@ -230,13 +226,15 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
       routeId: 'forward-looking',
       kicker: 'Forward-Looking Analysis',
       title: 'Forward-Looking Analysis',
-      summary: deferredForwardLooking?.reason ?? 'Collaborative decision evidence remains intentionally deferred until a later update.',
-      primaryLabel: 'Status',
-      primaryValue: 'Later update',
-      secondaryLabel: 'Current phase',
-      secondaryValue: 'Reserved',
-      actionLabel: 'See Status',
-      stateLabel: 'Deferred',
+      summary:
+        forwardLookingEntry?.summary ??
+        'Collaborative decision evidence remains intentionally deferred until the curated scenario contract is shipped.',
+      primaryLabel: forwardLookingEntry?.primaryMetric.label ?? 'Status',
+      primaryValue: forwardLookingEntry?.primaryMetric.value ?? 'Later update',
+      secondaryLabel: forwardLookingEntry?.secondaryMetric.label ?? 'Current phase',
+      secondaryValue: forwardLookingEntry?.secondaryMetric.value ?? 'Reserved',
+      actionLabel: forwardLookingEntry ? 'Open Analysis' : 'See Status',
+      stateLabel: forwardLookingEntry ? `${forwardLookingEntry.status[0].toUpperCase()}${forwardLookingEntry.status.slice(1)}` : 'Deferred',
     },
   ]
 
@@ -375,6 +373,29 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
                     Delta {objectiveNext1h - objectiveTotalFlow > 0 ? '+' : ''}
                     {objectiveNext1h - objectiveTotalFlow}
                   </small>
+                </div>
+                <div className="map-control-card corridor-dominance-card">
+                  <span>Corridor dominance</span>
+                  <strong>{corridorLeader ? `${corridorLeader.corridorId} ${formatSharePercent(corridorLeader.share)}` : 'Loading'}</strong>
+                  <small>
+                    {corridorLeader && leadingDirection
+                      ? `${leadingDirection.directionLabel} traffic carries ${formatSharePercent(leadingDirection.share)} of runtime tracks, while the top three corridors cover ${formatSharePercent(corridorDominance?.topThreeShare ?? 0)}.`
+                        : 'Loading the clustering runtime spine for cross-module narration.'}
+                  </small>
+                </div>
+                <div className="map-control-card home-storyline-card">
+                  <span>Offline showcase framing</span>
+                  <strong>{framingLead?.title ?? 'Archived playback is the scene clock'}</strong>
+                  <small>{framingSupport?.detail ?? overviewSummary?.framing ?? 'The site presents archived AIS playback plus offline-computed evidence, not a live AIS backend.'}</small>
+                  {homeScenarioHighlights.length ? (
+                    <div className="home-entry-chip-row">
+                      {homeScenarioHighlights.map((item) => (
+                        <button key={item.id} type="button" className="home-entry-chip" onClick={() => onNavigate(item.routeId)}>
+                          {item.signal}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
                 <div className="map-button-grid home-map-actions">
                   <button type="button" onClick={() => onNavigate('overview')}>

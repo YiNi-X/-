@@ -58,9 +58,9 @@ test('shell routes preserve the locked navigation order and overview remains add
   assert.equal(overviewRoute.navVisible, false)
 
   const forwardLookingRoute = getShellRouteDescriptor('forward-looking')
-  assert.equal(forwardLookingRoute.kind, 'placeholder')
-  assert.equal(forwardLookingRoute.status, 'deferred')
-  assert.match(forwardLookingRoute.notice ?? '', /later update/i)
+  assert.equal(forwardLookingRoute.kind, 'module')
+  assert.equal(forwardLookingRoute.moduleId, 'forward-looking')
+  assert.equal(forwardLookingRoute.entryActionLabel, 'Open Analysis')
 })
 
 test('artifact index parses and normalizes into the shell discovery order', () => {
@@ -69,11 +69,11 @@ test('artifact index parses and normalizes into the shell discovery order', () =
 
   assert.deepEqual(
     discovery.map((entry) => entry.moduleId),
-    ['overview', 'forecast', 'repair', 'clustering', 'evaluation'],
+    ['overview', 'forecast', 'repair', 'clustering', 'evaluation', 'forward-looking'],
   )
   assert.deepEqual(
     discovery.filter((entry) => entry.navVisible).map((entry) => entry.routeId),
-    ['forecast', 'repair', 'clustering', 'evaluation'],
+    ['forecast', 'repair', 'clustering', 'evaluation', 'forward-looking'],
   )
 
   for (const entry of discovery) {
@@ -121,14 +121,20 @@ test('module manifests and bundles parse through the runtime contract layer', ()
 
   assert.deepEqual(readinessByModule, {
     overview: 'ready',
-    forecast: 'partial',
+    forecast: 'ready',
     repair: 'partial',
     clustering: 'partial',
     evaluation: 'ready',
+    'forward-looking': 'ready',
   })
 
   const clusteringEntry = registryEntries.find((entry) => entry.moduleId === 'clustering')
   assert.ok(clusteringEntry)
   assert.equal(clusteringEntry.hasReviewArtifacts, true)
   assert.equal(clusteringEntry.hasDeferredSections, true)
+
+  const forwardLookingEntry = registryEntries.find((entry) => entry.moduleId === 'forward-looking')
+  assert.ok(forwardLookingEntry)
+  assert.equal(forwardLookingEntry.readiness, 'ready')
+  assert.equal(forwardLookingEntry.hasDeferredSections, false)
 })

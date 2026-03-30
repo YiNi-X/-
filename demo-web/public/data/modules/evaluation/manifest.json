@@ -16,11 +16,12 @@
     "EVAL-01",
     "EVAL-02",
     "EVAL-03",
+    "EVAL-04",
     "EVAL-05",
     "BASE-02",
     "BASE-05"
   ],
-  "generatedAt": "2026-03-25T10:42:55+00:00",
+  "generatedAt": "2026-03-30T06:16:15+00:00",
   "bundlePath": "data/modules/evaluation/evaluation-bundle.json",
   "artifacts": [
     {
@@ -47,11 +48,35 @@
       "description": "Unified evaluation metrics derived from the forecast and repair bundles."
     },
     {
+      "artifactId": "evaluation-optimization",
+      "module": "evaluation",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "optimization_history.html",
+        "param_importance.html",
+        "parallel_coord.html",
+        "param_dist.html",
+        "study1_1.pkl"
+      ],
+      "scenarioId": "phase6-evaluation-v1",
+      "timeRange": {
+        "start": "module-derived",
+        "end": "module-derived"
+      },
+      "authoritativeFor": [
+        "EVAL-04"
+      ],
+      "path": "data/modules/evaluation/evaluation-optimization.json",
+      "status": "ready",
+      "description": "Structured optimization-history and parameter-importance evidence derived from committed offline Plotly exports."
+    },
+    {
       "artifactId": "evaluation-bundle",
       "module": "evaluation",
       "sourceStage": "exported",
       "derivedFrom": [
-        "evaluation-metrics"
+        "evaluation-metrics",
+        "evaluation-optimization"
       ],
       "scenarioId": "phase6-evaluation-v1",
       "timeRange": {
@@ -62,6 +87,7 @@
         "EVAL-01",
         "EVAL-02",
         "EVAL-03",
+        "EVAL-04",
         "EVAL-05",
         "BASE-02",
         "BASE-05"
@@ -74,6 +100,12 @@
   "sources": {
     "artifact-index": "demo-web/public/data/modules/artifact-index.json",
     "forecast-manifest": "demo-web/public/data/modules/forecast/manifest.json",
-    "repair-manifest": "demo-web/public/data/modules/repair/manifest.json"
+    "repair-manifest": "demo-web/public/data/modules/repair/manifest.json",
+    "optimization-notebook": "代码依据/轨迹修复/代码/参数优化.ipynb",
+    "optimization-study": "代码依据/轨迹修复/study1_1.pkl",
+    "optimization-history-html": "代码依据/轨迹修复/optimization_history.html",
+    "param-importance-html": "代码依据/轨迹修复/param_importance.html",
+    "parallel-coord-html": "代码依据/轨迹修复/parallel_coord.html",
+    "param-dist-html": "代码依据/轨迹修复/param_dist.html"
   }
 }

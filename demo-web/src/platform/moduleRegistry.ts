@@ -18,7 +18,7 @@ import type {
 import { cloneArtifactIndexEntry } from './moduleContracts.ts'
 import { getModuleRouteDescriptor } from './routeRegistry.ts'
 
-const MODULE_DISCOVERY_ORDER: ModuleId[] = ['overview', 'forecast', 'repair', 'clustering', 'evaluation']
+const MODULE_DISCOVERY_ORDER: ModuleId[] = ['overview', 'forecast', 'repair', 'clustering', 'evaluation', 'forward-looking']
 const DEFAULT_DEFERRED_MESSAGE = 'This capability will be connected in a later update.'
 
 function cloneTimeRange(timeRange: ModulePackageTimeRange): ModulePackageTimeRange {

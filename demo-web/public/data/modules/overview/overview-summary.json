@@ -2,47 +2,92 @@
   "artifactId": "overview-summary",
   "module": "overview",
   "scenarioId": "phase6-overview-v1",
-  "generatedAt": "2026-03-25T10:47:59+00:00",
-  "framing": "Archived AIS playback plus offline-computed inference; not a live AIS backend.",
+  "generatedAt": "2026-03-30T08:10:45+00:00",
+  "framing": "Archived AIS playback plus offline-computed inference from committed research exports; not a live AIS backend or online optimizer.",
+  "framingPillars": [
+    {
+      "id": "archived-scene-clock",
+      "kicker": "Playback",
+      "title": "Archived AIS playback is the scene clock",
+      "detail": "Every module reuses the same committed historical harbor window instead of claiming a live stream."
+    },
+    {
+      "id": "offline-inference",
+      "kicker": "Inference",
+      "title": "Forecast, repair, clustering, and tuning all come from offline exports",
+      "detail": "The website packages committed JSON and Plotly outputs from local research artifacts rather than rerunning notebooks in the browser."
+    },
+    {
+      "id": "truth-boundary",
+      "kicker": "Boundary",
+      "title": "This showcase is not a live AIS backend or online optimizer",
+      "detail": "The interface can feel realtime, but its truth boundary remains archived playback plus offline-computed evidence with explicit deferred states."
+    }
+  ],
   "businessLoop": [
     {
       "step": "Archived AIS Playback",
-      "description": "Use committed historical AIS playback as the common scene clock.",
+      "description": "Use committed historical AIS playback as the common scene clock for every later evidence surface.",
       "sourceArtifacts": [
         "forecast-runtime",
         "clustering-raw-cleaned-ais"
-      ]
+      ],
+      "routeId": "home",
+      "status": "ready"
     },
     {
       "step": "Trajectory Clustering and Corridor Extraction",
-      "description": "Explain movement structure from raw to segmented, compressed, and corridor layers.",
+      "description": "Explain movement structure from raw to segmented, compressed, and corridor layers before other modules interpret traffic patterns.",
       "sourceArtifacts": [
         "clustering-summary",
-        "clustering-stage-previews"
-      ]
+        "clustering-stage-previews",
+        "clustering-corridor-runtime"
+      ],
+      "routeId": "clustering",
+      "status": "ready"
     },
     {
       "step": "Flow Prediction",
-      "description": "Project near-future traffic change across the archived playback timeline.",
+      "description": "Project near-future traffic change across the archived playback timeline using the committed multi-model forecast bundles.",
       "sourceArtifacts": [
         "forecast-bundle",
         "forecast-metrics"
-      ]
+      ],
+      "routeId": "forecast",
+      "status": "ready"
     },
     {
       "step": "Trajectory Repair",
-      "description": "Show how damaged sample tracks are reconstructed and evaluated.",
+      "description": "Show how damaged sample tracks are reconstructed and compared against curated reference trajectories.",
       "sourceArtifacts": [
         "repair-bundle",
+        "repair-samples",
         "repair-metrics-export"
-      ]
+      ],
+      "routeId": "repair",
+      "status": "ready"
     },
     {
-      "step": "Evaluation and Decision Readiness",
-      "description": "Use metrics and review-first evidence to prepare later decision support work.",
+      "step": "Evaluation Center",
+      "description": "Bring forecast, repair, clustering context, and offline tuning evidence into one traceable cross-task evidence center.",
       "sourceArtifacts": [
-        "evaluation-metrics"
-      ]
+        "evaluation-metrics",
+        "evaluation-optimization"
+      ],
+      "routeId": "evaluation",
+      "status": "ready"
+    },
+    {
+      "step": "Collaborative Decision",
+      "description": "Package rule-driven collaborative-decision scenarios on top of forecast, evaluation, and clustering evidence, with the interactive focus surface and before/after switching now shipped on top of the committed offline evidence.",
+      "sourceArtifacts": [
+        "forward-looking-summary",
+        "forward-looking-scenarios",
+        "evaluation-metrics",
+        "clustering-corridor-runtime"
+      ],
+      "routeId": "forward-looking",
+      "status": "ready"
     }
   ],
   "modules": [
@@ -78,6 +123,7 @@
         "EVAL-01",
         "EVAL-02",
         "EVAL-03",
+        "EVAL-04",
         "EVAL-05",
         "BASE-02",
         "BASE-05"
@@ -100,6 +146,23 @@
         "FLOW-04",
         "BASE-02",
         "BASE-05"
+      ]
+    },
+    {
+      "module": "forward-looking",
+      "status": "ready",
+      "manifestPath": "data/modules/forward-looking/manifest.json",
+      "bundlePath": "data/modules/forward-looking/forward-looking-bundle.json",
+      "scenarioId": "phase12-forward-looking-v1",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "DECI-01",
+        "DECI-02",
+        "DECI-03",
+        "DECI-04"
       ]
     },
     {
@@ -127,12 +190,11 @@
     "forecast": {
       "timelineFrames": 577,
       "availableModels": [
-        "STGCN"
-      ],
-      "deferredModels": [
+        "STGCN",
         "LSTM",
         "BiLSTM"
       ],
+      "deferredModels": [],
       "horizons": [
         "1h",
         "2h",
@@ -184,11 +246,197 @@
       "hausdorffDistance"
     ]
   },
-  "deferredModules": [
+  "moduleEntryPoints": [
     {
-      "module": "collaborative-decision",
-      "status": "later-phase",
-      "reason": "Phase 6 stabilizes evidence packages first; strategy evidence remains intentionally deferred."
+      "routeId": "forecast",
+      "label": "Flow Prediction",
+      "status": "ready",
+      "scenarioId": "demo-live",
+      "summary": "BiLSTM leads the shipped 1h RMSE ranking across 3 forecast models and 3 horizons.",
+      "primaryMetric": {
+        "label": "Horizons",
+        "value": "3"
+      },
+      "secondaryMetric": {
+        "label": "1h leader",
+        "value": "BiLSTM"
+      },
+      "evidence": [
+        "forecast-bundle",
+        "forecast-metrics",
+        "evaluation-metrics"
+      ],
+      "requirementCodes": [
+        "FLOW-01",
+        "FLOW-02",
+        "FLOW-03",
+        "FLOW-04",
+        "BASE-02",
+        "BASE-05"
+      ]
+    },
+    {
+      "routeId": "repair",
+      "label": "Trajectory Repair",
+      "status": "ready",
+      "scenarioId": "repair-curated-v1",
+      "summary": "3 curated repair samples are shipped, with ATT-BILSTM currently leading the aggregate RMSE comparison.",
+      "primaryMetric": {
+        "label": "Curated samples",
+        "value": "3"
+      },
+      "secondaryMetric": {
+        "label": "RMSE leader",
+        "value": "ATT-BILSTM"
+      },
+      "evidence": [
+        "repair-bundle",
+        "repair-samples",
+        "evaluation-metrics"
+      ],
+      "requirementCodes": [
+        "REPR-01",
+        "REPR-02",
+        "REPR-03",
+        "REPR-04",
+        "REPR-05",
+        "BASE-02",
+        "BASE-05"
+      ]
+    },
+    {
+      "routeId": "clustering",
+      "label": "Trajectory Clustering",
+      "status": "ready",
+      "scenarioId": "clustered-ais-v1",
+      "summary": "16 runtime corridors and 1321 corridor tracks keep clustering connected to one dominant movement spine led by D07-C01.",
+      "primaryMetric": {
+        "label": "Runtime corridors",
+        "value": "16"
+      },
+      "secondaryMetric": {
+        "label": "Lead corridor",
+        "value": "D07-C01"
+      },
+      "evidence": [
+        "clustering-summary",
+        "clustering-corridor-runtime",
+        "clustering-noise-fallback"
+      ],
+      "requirementCodes": [
+        "CLUS-01",
+        "CLUS-02",
+        "CLUS-04",
+        "BASE-02",
+        "BASE-05"
+      ]
+    },
+    {
+      "routeId": "evaluation",
+      "label": "Evaluation Center",
+      "status": "ready",
+      "scenarioId": "phase6-evaluation-v1",
+      "summary": "The evaluation center now combines forecast or repair rankings with 13 completed optimization checkpoints from the shipped offline tuning study.",
+      "primaryMetric": {
+        "label": "Traceable codes",
+        "value": "7"
+      },
+      "secondaryMetric": {
+        "label": "Top parameter",
+        "value": "Batch size"
+      },
+      "evidence": [
+        "evaluation-metrics",
+        "evaluation-optimization",
+        "evaluation-manifest"
+      ],
+      "requirementCodes": [
+        "EVAL-01",
+        "EVAL-02",
+        "EVAL-03",
+        "EVAL-04",
+        "EVAL-05",
+        "BASE-02",
+        "BASE-05"
+      ]
+    },
+    {
+      "routeId": "forward-looking",
+      "label": "Forward-Looking Analysis",
+      "status": "ready",
+      "scenarioId": "phase12-forward-looking-v1",
+      "summary": "4 curated BiLSTM 1h scenarios now connect focus-route decisions to evaluation authority and corridor dominance.",
+      "primaryMetric": {
+        "label": "Curated scenarios",
+        "value": "4"
+      },
+      "secondaryMetric": {
+        "label": "Authority",
+        "value": "BiLSTM 1h"
+      },
+      "evidence": [
+        "forward-looking-summary",
+        "forward-looking-scenarios",
+        "evaluation-metrics",
+        "clustering-corridor-runtime"
+      ],
+      "requirementCodes": [
+        "DECI-01",
+        "DECI-02",
+        "DECI-03",
+        "DECI-04"
+      ]
     }
-  ]
+  ],
+  "scenarioEntryPoints": [
+    {
+      "id": "archived-playback-window",
+      "routeId": "home",
+      "label": "Archived playback window",
+      "signal": "2020-01-01T00:00:00 -> 2020-01-03T00:00:00",
+      "summary": "Start from the command-center replay rather than generic logs so every module shares the same archived scene clock.",
+      "detail": "577 timeline frames and 3 forecast horizons are already packaged for the same historical harbor window."
+    },
+    {
+      "id": "forecast-entry",
+      "routeId": "forecast",
+      "label": "Forecast entry",
+      "signal": "BiLSTM | 1h leader",
+      "summary": "Jump directly into the strongest shipped 1h ranking before comparing hotspot or route-level behavior.",
+      "detail": "Available models: STGCN, LSTM, BiLSTM. Supported horizons: 1h, 2h, 3h."
+    },
+    {
+      "id": "repair-entry",
+      "routeId": "repair",
+      "label": "Repair entry",
+      "signal": "repair-target-1-sample-1",
+      "summary": "Begin from the first curated damaged trajectory sample instead of a notebook-only experiment snapshot.",
+      "detail": "3 curated samples ship with ATT-BILSTM currently leading aggregate RMSE."
+    },
+    {
+      "id": "corridor-entry",
+      "routeId": "clustering",
+      "label": "Corridor entry",
+      "signal": "D07-C01 runtime leader",
+      "summary": "Follow the dominant corridor family that now anchors the site-wide movement story.",
+      "detail": "1321 runtime tracks are grouped into 16 shipped corridors."
+    },
+    {
+      "id": "evaluation-entry",
+      "routeId": "evaluation",
+      "label": "Evaluation entry",
+      "signal": "Trial 93 best",
+      "summary": "The evaluation center now holds both cross-task rankings and the shipped offline tuning story.",
+      "detail": "13 completed checkpoints, best objective 2.666e-08, top importance Batch size."
+    },
+    {
+      "id": "forward-looking-entry",
+      "routeId": "forward-looking",
+      "label": "Decision entry",
+      "signal": "4 scenarios | BiLSTM",
+      "summary": "Open the curated decision layer to inspect focus-route scenarios tied back to forecast rankings and corridor dominance.",
+      "detail": "Current scenario pack covers C03, C08, C12, C14. Corridor context stays honest and CLUS-03 remains deferred because normalized_distances(60,90,0.03).pkl is still zero-byte."
+    }
+  ],
+  "deferredModules": []
 }

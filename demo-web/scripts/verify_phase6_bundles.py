@@ -22,6 +22,7 @@ REQUIRED_MANIFEST_FIELDS = {
 }
 REQUIRED_ARTIFACT_FIELDS = REQUIRED_MANIFEST_FIELDS | {"path", "status", "description"}
 REQUIRED_MODULES = {"forecast", "repair", "clustering", "evaluation", "overview"}
+EXPECTED_FORECAST_MODELS = {"STGCN", "LSTM", "BiLSTM"}
 REQUIRED_REVIEW_FILES = {
     REVIEW_DIR / "forecast-total-flow-review.png",
     REVIEW_DIR / "repair-target-1-review.png",
@@ -80,14 +81,35 @@ def validate_manifest(module: str, index_entry: dict[str, Any], errors: list[str
 
 
 def validate_forecast(errors: list[str]) -> None:
-    runtime = read_json(MODULES_DIR / "forecast" / "forecast-runtime.json")
+    bundle = read_json(MODULES_DIR / "forecast" / "forecast-bundle.json")
     metrics = read_json(MODULES_DIR / "forecast" / "forecast-metrics.json")
-    check_finite(runtime, "forecast.runtime", errors)
+    check_finite(bundle, "forecast.bundle", errors)
     check_finite(metrics, "forecast.metrics", errors)
-    expect(len(runtime["timeline"]) == len(runtime["series"]["totalFlow"]), "Forecast timeline length does not match totalFlow series length", errors)
-    expect(set(metrics["models"]["STGCN"]["horizons"].keys()) == {"1h", "2h", "3h"}, "Forecast metrics missing expected horizons", errors)
-    for horizon, payload in metrics["models"]["STGCN"]["horizons"].items():
-        expect(payload["sampleCount"] > 0, f"Forecast metric sampleCount invalid for {horizon}", errors)
+    expect(set(bundle["availableModels"]) == EXPECTED_FORECAST_MODELS, "Forecast bundle missing expected models", errors)
+    expect(bundle.get("deferredModels", []) == [], "Forecast bundle should not keep deferred models after 08-01A", errors)
+    expect(set(metrics["models"].keys()) == EXPECTED_FORECAST_MODELS, "Forecast metrics missing expected models", errors)
+    expect(metrics.get("deferredModels", []) == [], "Forecast metrics should not keep deferred models after 08-01A", errors)
+
+    for model_name in EXPECTED_FORECAST_MODELS:
+        runtime_key = f"runtime{model_name}"
+        config_key = f"modelConfig{model_name}"
+        runtime_path = resolve_public(bundle["entryFiles"].get(runtime_key, bundle["entryFiles"]["runtime"]))
+        config_path = resolve_public(bundle["entryFiles"].get(config_key, bundle["entryFiles"]["modelConfig"]))
+        expect(runtime_path.exists(), f"Forecast runtime missing for {model_name}: {runtime_path}", errors)
+        expect(config_path.exists(), f"Forecast model config missing for {model_name}: {config_path}", errors)
+        if not runtime_path.exists() or not config_path.exists():
+            continue
+
+        runtime = read_json(runtime_path)
+        model_config = read_json(config_path)
+        check_finite(runtime, f"forecast.runtime.{model_name}", errors)
+        check_finite(model_config, f"forecast.modelConfig.{model_name}", errors)
+        expect(runtime["meta"]["model"] == model_name, f"Forecast runtime model mismatch for {model_name}", errors)
+        expect(model_config["meta"]["modelName"] == model_name, f"Forecast model config mismatch for {model_name}", errors)
+        expect(len(runtime["timeline"]) == len(runtime["series"]["totalFlow"]), f"Forecast timeline length does not match totalFlow series length for {model_name}", errors)
+        expect(set(metrics["models"][model_name]["horizons"].keys()) == {"1h", "2h", "3h"}, f"Forecast metrics missing expected horizons for {model_name}", errors)
+        for horizon, payload in metrics["models"][model_name]["horizons"].items():
+            expect(payload["sampleCount"] > 0, f"Forecast metric sampleCount invalid for {model_name} {horizon}", errors)
 
 
 def validate_repair(errors: list[str]) -> None:

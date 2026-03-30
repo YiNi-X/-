@@ -110,7 +110,7 @@ test('module loader discovers registry metadata without eagerly loading every mo
   assert.equal(discoveryResult.source, 'network')
   assert.deepEqual(
     discoveryResult.entries.map((entry) => entry.moduleId),
-    ['overview', 'forecast', 'repair', 'clustering', 'evaluation'],
+    ['overview', 'forecast', 'repair', 'clustering', 'evaluation', 'forward-looking'],
   )
   assert.equal(calls.artifactIndex, 1)
   assert.deepEqual(calls.manifest, [])
@@ -144,6 +144,20 @@ test('module loader lazy-loads only the selected module and reuses cached entrie
   assert.deepEqual(calls.manifest, ['data/modules/forecast/manifest.json', 'data/modules/repair/manifest.json'])
   assert.deepEqual(calls.bundle, ['data/modules/forecast/forecast-bundle.json', 'data/modules/repair/repair-bundle.json'])
   assert.deepEqual(loader.listCachedModuleIds(), ['forecast', 'repair'])
+
+  const forwardLookingResult = await loader.loadModule('forward-looking')
+  assert.equal(forwardLookingResult.ok, true)
+  assert.deepEqual(calls.manifest, [
+    'data/modules/forecast/manifest.json',
+    'data/modules/repair/manifest.json',
+    'data/modules/forward-looking/manifest.json',
+  ])
+  assert.deepEqual(calls.bundle, [
+    'data/modules/forecast/forecast-bundle.json',
+    'data/modules/repair/repair-bundle.json',
+    'data/modules/forward-looking/forward-looking-bundle.json',
+  ])
+  assert.deepEqual(loader.listCachedModuleIds(), ['forecast', 'repair', 'forward-looking'])
 })
 
 test('module loader propagates deferred metadata and review markers from the selected module package', async () => {
@@ -154,6 +168,11 @@ test('module loader propagates deferred metadata and review markers from the sel
   assert.equal(clusteringResult.entry.hasDeferredSections, true)
   assert.equal(clusteringResult.entry.hasReviewArtifacts, true)
   assert.ok(clusteringResult.entry.deferredItems.some((item) => item.artifactId === 'clustering-noise-reclustered'))
+
+  const forwardLookingResult = await loader.loadModule('forward-looking')
+  assert.equal(forwardLookingResult.ok, true)
+  assert.equal(forwardLookingResult.entry.readiness, 'ready')
+  assert.deepEqual(forwardLookingResult.entry.deferredItems, [])
 })
 
 test('module loader surfaces registry, manifest, and bundle failures with explicit stages', async () => {

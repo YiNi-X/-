@@ -1,0 +1,623 @@
+{
+  "artifactId": "evaluation-optimization",
+  "module": "evaluation",
+  "scenarioId": "phase6-evaluation-v1",
+  "generatedAt": "2026-03-30T06:16:15+00:00",
+  "studyId": "study1_1",
+  "studyLabel": "Trajectory repair offline study",
+  "summary": "Optimization history is packaged from committed Plotly exports instead of a live notebook rerun. The shipped offline study records 100 trial slots, 13 completed objective points, and a best visible objective of 2.666e-08 at trial 93. 87 non-complete trial slots stay explicit rather than being backfilled with synthetic values.",
+  "objective": {
+    "metricLabel": "Objective Value",
+    "direction": "lower",
+    "totalTrialSlots": 100,
+    "completedTrials": 13,
+    "nonCompletedTrialSlots": 87,
+    "infeasibleTrials": 0,
+    "firstCompletedTrial": 0,
+    "firstCompletedValue": 8.558282642110801e-08,
+    "bestTrial": 93,
+    "bestValue": 2.6657397214658123e-08,
+    "improvementRatio": 0.688519317140905,
+    "improvementCount": 3,
+    "completedPoints": [
+      {
+        "trial": 0,
+        "value": 8.558282642110801e-08
+      },
+      {
+        "trial": 2,
+        "value": 2.2161867119708545e-07
+      },
+      {
+        "trial": 8,
+        "value": 6.472512538574068e-08
+      },
+      {
+        "trial": 9,
+        "value": 2.1583091459163362e-07
+      },
+      {
+        "trial": 11,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 18,
+        "value": 2.788123182249037e-07
+      },
+      {
+        "trial": 20,
+        "value": 1.1716330892394749e-07
+      },
+      {
+        "trial": 27,
+        "value": 8.445765722078806e-08
+      },
+      {
+        "trial": 33,
+        "value": 6.840927604622764e-08
+      },
+      {
+        "trial": 41,
+        "value": 2.0995576912744708e-07
+      },
+      {
+        "trial": 79,
+        "value": 1.245954665595069e-06
+      },
+      {
+        "trial": 93,
+        "value": 2.6657397214658123e-08
+      },
+      {
+        "trial": 94,
+        "value": 6.24343445767101e-08
+      }
+    ],
+    "bestCurvePoints": [
+      {
+        "trial": 0,
+        "value": 8.558282642110801e-08
+      },
+      {
+        "trial": 1,
+        "value": 8.558282642110801e-08
+      },
+      {
+        "trial": 2,
+        "value": 8.558282642110801e-08
+      },
+      {
+        "trial": 3,
+        "value": 8.558282642110801e-08
+      },
+      {
+        "trial": 4,
+        "value": 8.558282642110801e-08
+      },
+      {
+        "trial": 5,
+        "value": 8.558282642110801e-08
+      },
+      {
+        "trial": 6,
+        "value": 8.558282642110801e-08
+      },
+      {
+        "trial": 7,
+        "value": 8.558282642110801e-08
+      },
+      {
+        "trial": 8,
+        "value": 6.472512538574068e-08
+      },
+      {
+        "trial": 9,
+        "value": 6.472512538574068e-08
+      },
+      {
+        "trial": 10,
+        "value": 6.472512538574068e-08
+      },
+      {
+        "trial": 11,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 12,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 13,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 14,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 15,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 16,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 17,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 18,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 19,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 20,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 21,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 22,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 23,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 24,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 25,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 26,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 27,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 28,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 29,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 30,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 31,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 32,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 33,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 34,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 35,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 36,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 37,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 38,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 39,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 40,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 41,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 42,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 43,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 44,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 45,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 46,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 47,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 48,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 49,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 50,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 51,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 52,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 53,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 54,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 55,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 56,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 57,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 58,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 59,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 60,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 61,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 62,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 63,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 64,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 65,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 66,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 67,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 68,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 69,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 70,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 71,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 72,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 73,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 74,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 75,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 76,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 77,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 78,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 79,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 80,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 81,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 82,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 83,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 84,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 85,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 86,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 87,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 88,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 89,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 90,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 91,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 92,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 93,
+        "value": 2.6657397214658123e-08
+      },
+      {
+        "trial": 94,
+        "value": 2.6657397214658123e-08
+      },
+      {
+        "trial": 95,
+        "value": 2.6657397214658123e-08
+      },
+      {
+        "trial": 96,
+        "value": 2.6657397214658123e-08
+      },
+      {
+        "trial": 97,
+        "value": 2.6657397214658123e-08
+      },
+      {
+        "trial": 98,
+        "value": 2.6657397214658123e-08
+      },
+      {
+        "trial": 99,
+        "value": 2.6657397214658123e-08
+      }
+    ],
+    "checkpoints": [
+      {
+        "trial": 0,
+        "value": 8.558282642110801e-08
+      },
+      {
+        "trial": 8,
+        "value": 6.472512538574068e-08
+      },
+      {
+        "trial": 11,
+        "value": 6.194988778649256e-08
+      },
+      {
+        "trial": 93,
+        "value": 2.6657397214658123e-08
+      }
+    ]
+  },
+  "importance": {
+    "parameters": [
+      {
+        "id": "batch_size",
+        "label": "Batch size",
+        "importance": 0.3768478325393562,
+        "rank": 1
+      },
+      {
+        "id": "lr",
+        "label": "Learning rate",
+        "importance": 0.30772425733314246,
+        "rank": 2
+      },
+      {
+        "id": "num_epochs",
+        "label": "Epochs",
+        "importance": 0.14454144194802634,
+        "rank": 3
+      },
+      {
+        "id": "num_layers",
+        "label": "Layers",
+        "importance": 0.11204839435186581,
+        "rank": 4
+      },
+      {
+        "id": "hidden_dim",
+        "label": "Hidden dim",
+        "importance": 0.05883807382760919,
+        "rank": 5
+      }
+    ],
+    "topTwoShare": 0.6845720898724987
+  },
+  "bestParameters": [
+    {
+      "id": "batch_size",
+      "label": "Batch size",
+      "value": 37.0,
+      "displayValue": "37",
+      "observedMin": 35.0,
+      "observedMax": 63.0,
+      "observedMinDisplay": "35",
+      "observedMaxDisplay": "63",
+      "scale": "linear"
+    },
+    {
+      "id": "hidden_dim",
+      "label": "Hidden dim",
+      "value": 58.0,
+      "displayValue": "58",
+      "observedMin": 47.0,
+      "observedMax": 96.0,
+      "observedMinDisplay": "47",
+      "observedMaxDisplay": "96",
+      "scale": "linear"
+    },
+    {
+      "id": "lr",
+      "label": "Learning rate",
+      "value": 0.008057921957255585,
+      "displayValue": "0.00806",
+      "observedMin": 0.002086117726891207,
+      "observedMax": 0.008832259360614799,
+      "observedMinDisplay": "0.00209",
+      "observedMaxDisplay": "0.00883",
+      "scale": "log10"
+    },
+    {
+      "id": "num_epochs",
+      "label": "Epochs",
+      "value": 134.0,
+      "displayValue": "134",
+      "observedMin": 59.0,
+      "observedMax": 146.0,
+      "observedMinDisplay": "59",
+      "observedMaxDisplay": "146",
+      "scale": "linear"
+    },
+    {
+      "id": "num_layers",
+      "label": "Layers",
+      "value": 6.0,
+      "displayValue": "6",
+      "observedMin": 3.0,
+      "observedMax": 6.0,
+      "observedMinDisplay": "3",
+      "observedMaxDisplay": "6",
+      "scale": "linear"
+    }
+  ],
+  "supportingViews": [
+    {
+      "id": "history-html",
+      "label": "Optimization history HTML",
+      "path": "代码依据/轨迹修复/optimization_history.html",
+      "detail": "Raw Plotly export for the completed objective points and best-value line."
+    },
+    {
+      "id": "importance-html",
+      "label": "Parameter importance HTML",
+      "path": "代码依据/轨迹修复/param_importance.html",
+      "detail": "Raw Plotly export for the ranked hyperparameter importance view."
+    },
+    {
+      "id": "parallel-coordinates",
+      "label": "Parallel coordinates HTML",
+      "path": "代码依据/轨迹修复/parallel_coord.html",
+      "detail": "Completed-trial parameter coupling across objective value and the tuned knobs."
+    },
+    {
+      "id": "parameter-slice",
+      "label": "Parameter slice HTML",
+      "path": "代码依据/轨迹修复/param_dist.html",
+      "detail": "Feasible-trial slices for each tuned parameter against objective value."
+    }
+  ],
+  "traceability": {
+    "optimizationNotebook": "代码依据/轨迹修复/代码/参数优化.ipynb",
+    "optimizationStudy": "代码依据/轨迹修复/study1_1.pkl",
+    "optimizationHistoryHtml": "代码依据/轨迹修复/optimization_history.html",
+    "paramImportanceHtml": "代码依据/轨迹修复/param_importance.html",
+    "parallelCoordHtml": "代码依据/轨迹修复/parallel_coord.html",
+    "paramDistHtml": "代码依据/轨迹修复/param_dist.html"
+  }
+}

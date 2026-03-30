@@ -22,7 +22,7 @@
     "BASE-02",
     "BASE-05"
   ],
-  "generatedAt": "2026-03-25T10:42:54+00:00",
+  "generatedAt": "2026-03-30T03:40:43+00:00",
   "bundlePath": "data/modules/clustering/clustering-bundle.json",
   "artifacts": [
     {
@@ -117,6 +117,28 @@
       "path": "data/modules/clustering/clustering-bundle.json",
       "status": "ready",
       "description": "Module entry bundle for clustering data discovery."
+    },
+    {
+      "artifactId": "clustering-noise-fallback",
+      "module": "clustering",
+      "sourceStage": "exported",
+      "derivedFrom": [
+        "clustering-compressed-pkl",
+        "clustering-corridor-review"
+      ],
+      "scenarioId": "clustered-ais-v1",
+      "timeRange": {
+        "start": "2020-01-01T00:00:00",
+        "end": "2020-01-03T00:00:00"
+      },
+      "authoritativeFor": [
+        "CLUS-02",
+        "BASE-02",
+        "BASE-05"
+      ],
+      "path": "data/modules/clustering/clustering-noise-fallback.json",
+      "status": "deferred",
+      "description": "Pre-reclustering noise-pool evidence plus zero-byte artifact state for the honest deferred CLUS-03 boundary."
     }
   ],
   "reviewFiles": [
@@ -129,16 +151,20 @@
     "clustering-segmented-pkl": "代码依据/轨迹聚类/segments(60-90).pkl",
     "clustering-compressed-pkl": "代码依据/轨迹聚类/compressed_segments(60,90,0.03).pkl",
     "clustering-corridor-runtime": "demo-web/public/data/main-corridor-tracks.json",
-    "clustering-corridor-review": "demo-web/analysis/review/corridor-review-tracks.json"
+    "clustering-corridor-review": "demo-web/analysis/review/corridor-review-tracks.json",
+    "clustering-noise-distance-pkl": "代码依据/轨迹聚类/normalized_distances(60,90,0.03).pkl"
   },
   "deferred": [
     {
       "artifactId": "clustering-noise-reclustered",
-      "reason": "normalized_distances(60,90,0.03).pkl is unreadable and the notebook-grade noise re-clustering path is not stable in the current environment.",
+      "reason": "normalized_distances(60,90,0.03).pkl exists at 代码依据/轨迹聚类/normalized_distances(60,90,0.03).pkl but is 0 bytes, so the notebook-grade noise re-clustering path has no authoritative distance matrix to load.",
       "dependsOn": [
         "CLUS-03",
         "Phase 10"
-      ]
+      ],
+      "status": "zero-byte",
+      "fileBytes": 0,
+      "filePath": "代码依据/轨迹聚类/normalized_distances(60,90,0.03).pkl"
     }
   ]
 }

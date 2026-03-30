@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import argparse
 import ast
+import json
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
 
+from forecast_sequence_models import export_sequence_model_artifacts
 from phase6_bundle_common import (
     MODULES_DIR,
     PUBLIC_DATA_DIR,
@@ -31,6 +33,7 @@ REPAIR_REQUIREMENTS = ["REPR-01", "REPR-02", "REPR-03", "REPR-04", "REPR-05", "B
 FORECAST_SCENARIO_ID = "demo-live"
 REPAIR_SCENARIO_ID = "repair-curated-v1"
 FORECAST_HORIZON_STEPS = {"1h": 12, "2h": 24, "3h": 36}
+FORECAST_MODEL_ORDER = ["STGCN", "LSTM", "BiLSTM"]
 MODEL_NAME_MAP = {
     "ATT-BILSTM": "att-bilstm",
     "BILSTM": "bilstm",
@@ -79,41 +82,40 @@ def metric_triplet(actual: np.ndarray, predicted: np.ndarray) -> dict[str, Any]:
     }
 
 
-def compute_forecast_metrics(forecast_runtime: dict[str, Any]) -> dict[str, Any]:
-    timeline = forecast_runtime["timeline"]
+def model_entry_key(prefix: str, model_name: str) -> str:
+    return f"{prefix}{model_name.replace('-', '').replace(' ', '')}"
+
+
+def compute_forecast_metrics(forecast_runtimes: dict[str, dict[str, Any]]) -> dict[str, Any]:
     metrics: dict[str, Any] = {
         "module": "forecast",
         "scenarioId": FORECAST_SCENARIO_ID,
-        "metricBasis": "timeline-aligned totalFlow derived from committed STGCN runtime output",
+        "metricBasis": "timeline-aligned totalFlow derived from committed STGCN, LSTM, and BiLSTM runtime outputs",
         "generatedAt": iso_now(),
-        "models": {
-            "STGCN": {
-                "status": "available",
-                "horizons": {},
-            }
-        },
-        "deferredModels": [
-            {
-                "model": "LSTM",
-                "reason": "Only notebook definitions exist in the repository; no committed structured runtime export is available.",
-            },
-            {
-                "model": "BiLSTM",
-                "reason": "Only notebook definitions exist in the repository; no committed structured runtime export is available.",
-            },
-        ],
+        "models": {},
+        "deferredModels": [],
     }
 
-    current_totals = np.asarray([entry["current"]["totalFlow"] for entry in timeline], dtype=float)
-    for horizon, step_count in FORECAST_HORIZON_STEPS.items():
-        predicted = np.asarray([entry["forecast"][horizon]["totalFlow"] for entry in timeline[:-step_count]], dtype=float)
-        actual = current_totals[step_count:]
-        metrics["models"]["STGCN"]["horizons"][horizon] = metric_triplet(actual, predicted)
+    for model_name in FORECAST_MODEL_ORDER:
+        runtime = forecast_runtimes.get(model_name)
+        if not runtime:
+            continue
+        timeline = runtime["timeline"]
+        current_totals = np.asarray([entry["current"]["totalFlow"] for entry in timeline], dtype=float)
+        metrics["models"][model_name] = {"status": "available", "horizons": {}}
+        for horizon, step_count in FORECAST_HORIZON_STEPS.items():
+            predicted = np.asarray([entry["forecast"][horizon]["totalFlow"] for entry in timeline[:-step_count]], dtype=float)
+            actual = current_totals[step_count:]
+            metrics["models"][model_name]["horizons"][horizon] = metric_triplet(actual, predicted)
 
     return metrics
 
 
 def build_forecast_package(dry_run: bool) -> list[str]:
+    return build_forecast_package_801a(dry_run)
+
+
+def build_forecast_package_legacy(dry_run: bool) -> list[str]:
     forecast_src = PUBLIC_DATA_DIR / "flow-forecast.json"
     model_config_src = PUBLIC_DATA_DIR / "model-config.json"
     forecast_runtime = pd.read_json(forecast_src).to_dict() if False else None
@@ -263,6 +265,262 @@ def build_forecast_package(dry_run: bool) -> list[str]:
     )
     write_artifact_index(index)
     return [repo_rel(runtime_dest), repo_rel(config_dest), repo_rel(metrics_dest), repo_rel(bundle_dest), repo_rel(manifest_dest)]
+
+
+def build_forecast_package_801a(dry_run: bool) -> list[str]:
+    forecast_src = PUBLIC_DATA_DIR / "flow-forecast.json"
+    model_config_src = PUBLIC_DATA_DIR / "model-config.json"
+    forecast_data = json.loads(forecast_src.read_text(encoding="utf-8"))
+    model_config = json.loads(model_config_src.read_text(encoding="utf-8"))
+
+    flow_csv = find_first(["grid_mmsi_count*.csv"])
+    flow_dir = flow_csv.parent
+    adjacency_csv = next(path for path in sorted(flow_dir.glob("*.csv")) if "相关性矩阵" in path.name)
+    distance_csv = next(path for path in sorted(flow_dir.glob("*.csv")) if "距离矩阵" in path.name)
+    weight_path = find_first(["model_0.pt"])
+
+    module_dir = MODULES_DIR / "forecast"
+    runtime_dest = module_dir / "forecast-runtime.json"
+    config_dest = module_dir / "forecast-model-config.json"
+    lstm_runtime_dest = module_dir / "forecast-lstm-runtime.json"
+    bilstm_runtime_dest = module_dir / "forecast-bilstm-runtime.json"
+    lstm_config_dest = module_dir / "forecast-lstm-model-config.json"
+    bilstm_config_dest = module_dir / "forecast-bilstm-model-config.json"
+    metrics_dest = module_dir / "forecast-metrics.json"
+    bundle_dest = module_dir / "forecast-bundle.json"
+    manifest_dest = module_dir / "manifest.json"
+
+    if dry_run:
+        print("[dry-run] forecast package")
+        print(f"  module dir: {module_dir}")
+        print(f"  runtime: {runtime_dest.name}")
+        print(f"  model config: {config_dest.name}")
+        print(f"  runtime (lstm): {lstm_runtime_dest.name}")
+        print(f"  runtime (bilstm): {bilstm_runtime_dest.name}")
+        print(f"  model config (lstm): {lstm_config_dest.name}")
+        print(f"  model config (bilstm): {bilstm_config_dest.name}")
+        print(f"  metrics: {metrics_dest.name}")
+        print(f"  bundle: {bundle_dest.name}")
+        print(f"  manifest: {manifest_dest.name}")
+        return [
+            str(runtime_dest),
+            str(config_dest),
+            str(lstm_runtime_dest),
+            str(bilstm_runtime_dest),
+            str(lstm_config_dest),
+            str(bilstm_config_dest),
+            str(metrics_dest),
+            str(bundle_dest),
+            str(manifest_dest),
+        ]
+
+    ensure_dir(module_dir)
+    copy_json(forecast_src, runtime_dest)
+    copy_json(model_config_src, config_dest)
+
+    flow_df = pd.read_csv(flow_csv, index_col=0)
+    flow_df.index = pd.to_datetime(flow_df.index)
+    flow_df = flow_df.sort_index()
+
+    sequence_artifacts = export_sequence_model_artifacts(
+        flow_df=flow_df,
+        base_runtime=forecast_data,
+        base_model_config=model_config,
+        module_dir=module_dir,
+        flow_source_rel=repo_rel(flow_csv),
+        generated_by="demo-web/scripts/export_phase6_primary_bundles.py",
+    )
+
+    forecast_runtimes = {"STGCN": forecast_data}
+    runtime_paths = {"STGCN": f"data/modules/forecast/{runtime_dest.name}"}
+    model_config_paths = {"STGCN": f"data/modules/forecast/{config_dest.name}"}
+    extra_sources: dict[str, str] = {}
+
+    for artifact in sequence_artifacts:
+        runtime_output_path = module_dir / artifact.runtime_file
+        config_output_path = module_dir / artifact.config_file
+        write_json(runtime_output_path, artifact.runtime)
+        write_json(config_output_path, artifact.model_config)
+        forecast_runtimes[artifact.model] = artifact.runtime
+        runtime_paths[artifact.model] = f"data/modules/forecast/{artifact.runtime_file}"
+        model_config_paths[artifact.model] = f"data/modules/forecast/{artifact.config_file}"
+        extra_sources[f"forecast-{artifact.model.lower()}-weight"] = repo_rel(artifact.weight_path)
+
+    metrics = compute_forecast_metrics(forecast_runtimes)
+    available_models = [model_name for model_name in FORECAST_MODEL_ORDER if model_name in forecast_runtimes]
+    bundle = {
+        "artifactId": "forecast-bundle",
+        "module": "forecast",
+        "generatedAt": iso_now(),
+        "scenarioId": FORECAST_SCENARIO_ID,
+        "timeRange": build_time_range(forecast_data["meta"]["windowStart"], forecast_data["meta"]["windowEnd"]),
+        "availableModels": available_models,
+        "deferredModels": [],
+        "horizons": list(forecast_data["meta"]["horizons"]),
+        "entryFiles": {
+            "runtime": f"data/modules/forecast/{runtime_dest.name}",
+            "modelConfig": f"data/modules/forecast/{config_dest.name}",
+            "metrics": f"data/modules/forecast/{metrics_dest.name}",
+            **{model_entry_key("runtime", model_name): path for model_name, path in runtime_paths.items()},
+            **{model_entry_key("modelConfig", model_name): path for model_name, path in model_config_paths.items()},
+        },
+    }
+    manifest = {
+        "artifactId": "forecast-manifest",
+        "module": "forecast",
+        "sourceStage": "exported",
+        "derivedFrom": [
+            "flow-grid-csv",
+            "flow-adjacency-csv",
+            "flow-distance-csv",
+            "stgcn-weight",
+            "flow-forecast-runtime",
+            "flow-model-config-runtime",
+            "forecast-lstm-weight",
+            "forecast-bilstm-weight",
+        ],
+        "scenarioId": FORECAST_SCENARIO_ID,
+        "timeRange": bundle["timeRange"],
+        "authoritativeFor": FORECAST_REQUIREMENTS,
+        "generatedAt": iso_now(),
+        "bundlePath": f"data/modules/forecast/{bundle_dest.name}",
+        "artifacts": [
+            artifact_record(
+                artifact_id="forecast-runtime",
+                module="forecast",
+                source_stage="exported",
+                derived_from=["flow-forecast-runtime"],
+                scenario_id=FORECAST_SCENARIO_ID,
+                time_range=bundle["timeRange"],
+                authoritative_for=["FLOW-02", "FLOW-04"],
+                path=f"data/modules/forecast/{runtime_dest.name}",
+                description="Committed STGCN runtime timeline copied into the module package.",
+            ),
+            artifact_record(
+                artifact_id="forecast-lstm-runtime",
+                module="forecast",
+                source_stage="exported",
+                derived_from=["flow-grid-csv", "forecast-lstm-weight"],
+                scenario_id=FORECAST_SCENARIO_ID,
+                time_range=bundle["timeRange"],
+                authoritative_for=["FLOW-01", "FLOW-02", "FLOW-04"],
+                path=f"data/modules/forecast/{lstm_runtime_dest.name}",
+                description="Structured LSTM runtime timeline exported on the same replay window as the STGCN bundle.",
+            ),
+            artifact_record(
+                artifact_id="forecast-bilstm-runtime",
+                module="forecast",
+                source_stage="exported",
+                derived_from=["flow-grid-csv", "forecast-bilstm-weight"],
+                scenario_id=FORECAST_SCENARIO_ID,
+                time_range=bundle["timeRange"],
+                authoritative_for=["FLOW-01", "FLOW-02", "FLOW-04"],
+                path=f"data/modules/forecast/{bilstm_runtime_dest.name}",
+                description="Structured BiLSTM runtime timeline exported on the same replay window as the STGCN bundle.",
+            ),
+            artifact_record(
+                artifact_id="forecast-model-config",
+                module="forecast",
+                source_stage="exported",
+                derived_from=["flow-model-config-runtime", "flow-adjacency-csv", "flow-distance-csv"],
+                scenario_id=FORECAST_SCENARIO_ID,
+                time_range=bundle["timeRange"],
+                authoritative_for=["FLOW-01", "FLOW-02"],
+                path=f"data/modules/forecast/{config_dest.name}",
+                description="Graph and scaler metadata copied into the forecast module package.",
+            ),
+            artifact_record(
+                artifact_id="forecast-lstm-model-config",
+                module="forecast",
+                source_stage="exported",
+                derived_from=["flow-model-config-runtime", "forecast-lstm-weight"],
+                scenario_id=FORECAST_SCENARIO_ID,
+                time_range=bundle["timeRange"],
+                authoritative_for=["FLOW-01", "FLOW-02"],
+                path=f"data/modules/forecast/{lstm_config_dest.name}",
+                description="LSTM architecture, scaler, and hotspot metadata aligned to the forecast module runtime.",
+            ),
+            artifact_record(
+                artifact_id="forecast-bilstm-model-config",
+                module="forecast",
+                source_stage="exported",
+                derived_from=["flow-model-config-runtime", "forecast-bilstm-weight"],
+                scenario_id=FORECAST_SCENARIO_ID,
+                time_range=bundle["timeRange"],
+                authoritative_for=["FLOW-01", "FLOW-02"],
+                path=f"data/modules/forecast/{bilstm_config_dest.name}",
+                description="BiLSTM architecture, scaler, and hotspot metadata aligned to the forecast module runtime.",
+            ),
+            artifact_record(
+                artifact_id="forecast-metrics",
+                module="forecast",
+                source_stage="exported",
+                derived_from=["forecast-runtime", "forecast-lstm-runtime", "forecast-bilstm-runtime"],
+                scenario_id=FORECAST_SCENARIO_ID,
+                time_range=bundle["timeRange"],
+                authoritative_for=["FLOW-03", "EVAL-01", "EVAL-02", "EVAL-05"],
+                path=f"data/modules/forecast/{metrics_dest.name}",
+                description="Timeline-aligned STGCN, LSTM, and BiLSTM total-flow metrics for 1h, 2h, and 3h horizons.",
+            ),
+            artifact_record(
+                artifact_id="forecast-bundle",
+                module="forecast",
+                source_stage="exported",
+                derived_from=[
+                    "forecast-runtime",
+                    "forecast-model-config",
+                    "forecast-lstm-runtime",
+                    "forecast-bilstm-runtime",
+                    "forecast-lstm-model-config",
+                    "forecast-bilstm-model-config",
+                    "forecast-metrics",
+                ],
+                scenario_id=FORECAST_SCENARIO_ID,
+                time_range=bundle["timeRange"],
+                authoritative_for=FORECAST_REQUIREMENTS,
+                path=f"data/modules/forecast/{bundle_dest.name}",
+                description="Module entry bundle for forecast data discovery.",
+            ),
+        ],
+        "deferred": [],
+        "sources": {
+            "flow-grid-csv": repo_rel(flow_csv),
+            "flow-adjacency-csv": repo_rel(adjacency_csv),
+            "flow-distance-csv": repo_rel(distance_csv),
+            "stgcn-weight": repo_rel(weight_path),
+            "flow-forecast-runtime": repo_rel(forecast_src),
+            "flow-model-config-runtime": repo_rel(model_config_src),
+            **extra_sources,
+        },
+    }
+
+    write_json(metrics_dest, metrics)
+    write_json(bundle_dest, bundle)
+    write_json(manifest_dest, manifest)
+
+    index = upsert_module_index(
+        {
+            "module": "forecast",
+            "status": "ready",
+            "manifestPath": f"data/modules/forecast/{manifest_dest.name}",
+            "bundlePath": f"data/modules/forecast/{bundle_dest.name}",
+            "scenarioId": FORECAST_SCENARIO_ID,
+            "timeRange": bundle["timeRange"],
+            "authoritativeFor": FORECAST_REQUIREMENTS,
+        }
+    )
+    write_artifact_index(index)
+    return [
+        repo_rel(runtime_dest),
+        repo_rel(config_dest),
+        repo_rel(lstm_runtime_dest),
+        repo_rel(bilstm_runtime_dest),
+        repo_rel(lstm_config_dest),
+        repo_rel(bilstm_config_dest),
+        repo_rel(metrics_dest),
+        repo_rel(bundle_dest),
+        repo_rel(manifest_dest),
+    ]
 
 
 def load_repair_frame(path: Path) -> pd.DataFrame:

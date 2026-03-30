@@ -1,13 +1,14 @@
 {
   "artifactId": "evaluation-bundle",
   "module": "evaluation",
-  "generatedAt": "2026-03-25T10:42:55+00:00",
+  "generatedAt": "2026-03-30T06:16:15+00:00",
   "scenarioId": "phase6-evaluation-v1",
   "timeRange": {
     "start": "module-derived",
     "end": "module-derived"
   },
   "entryFiles": {
-    "metrics": "data/modules/evaluation/evaluation-metrics.json"
+    "metrics": "data/modules/evaluation/evaluation-metrics.json",
+    "optimization": "data/modules/evaluation/evaluation-optimization.json"
   }
 }

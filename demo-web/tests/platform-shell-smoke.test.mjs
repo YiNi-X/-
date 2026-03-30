@@ -49,17 +49,17 @@ test('homepage preview cards cover every module entry and keep click as the prim
     assert.match(homeSource, new RegExp(`routeId: '${routeId}'`), `Expected a homepage preview card for ${routeId}`)
   }
   assert.match(homeSource, /onClick=\{\(\) => onNavigate\(card\.routeId\)\}/)
-  assert.match(homeSource, /View Details|View Trajectory|Compare Results|See Status/)
+  assert.match(homeSource, /View Details|View Trajectory|Compare Results|See Status|Open Analysis/)
 })
 
-test('baseline module pages keep deferred language local to the affected sections', () => {
+test('deferred language stays local to the modules and sections that are still honestly deferred', () => {
   const forecastSource = readSource('src/platform/pages/ForecastPage.tsx')
   const clusteringSource = readSource('src/platform/pages/ClusteringPage.tsx')
   const forwardSource = readSource('src/platform/pages/ForwardLookingPage.tsx')
 
   assert.match(forecastSource, /Not available in this version/)
-  assert.match(clusteringSource, /Later update|Not available in this version/)
-  assert.match(forwardSource, /later update/i)
+  assert.match(clusteringSource, /Deferred CLUS-03|Recovery Checklist|Later phase/i)
+  assert.match(forwardSource, /Rule-driven collaborative decision|Before\/after toggle|No live optimizer/i)
 })
 
 test('package smoke script includes the new platform shell coverage', () => {

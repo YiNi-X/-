@@ -44,6 +44,14 @@ const moduleRouteBlueprints: Record<ModuleId, ModuleRouteBlueprint> = {
     navVisible: true,
     entryActionLabel: 'Compare Results',
   },
+  'forward-looking': {
+    label: 'Forward-Looking Analysis',
+    navLabel: 'Forward-Looking',
+    description: 'Rule-driven collaborative decision scenarios tied back to forecast, evaluation, and corridor evidence.',
+    shellOrder: 6,
+    navVisible: true,
+    entryActionLabel: 'Open Analysis',
+  },
 }
 
 const homeRoute: ShellRouteDescriptor = {
@@ -56,19 +64,6 @@ const homeRoute: ShellRouteDescriptor = {
   navVisible: true,
   entryActionLabel: 'Return Home',
   status: 'ready',
-}
-
-const forwardLookingRoute: ShellRouteDescriptor = {
-  id: 'forward-looking',
-  kind: 'placeholder',
-  label: 'Forward-Looking Analysis',
-  navLabel: 'Forward-Looking',
-  description: 'Collaborative decision analysis remains reserved for a later update.',
-  shellOrder: 6,
-  navVisible: true,
-  entryActionLabel: 'See Status',
-  status: 'deferred',
-  notice: 'This capability will be connected in a later update.',
 }
 
 export const SHELL_ROUTE_ORDER: ShellRouteId[] = [
@@ -91,7 +86,7 @@ export const PRIMARY_SHELL_ROUTE_IDS: ShellRouteId[] = [
 ]
 
 export function isModuleRouteId(routeId: ShellRouteId): routeId is ModuleId {
-  return routeId !== 'home' && routeId !== 'forward-looking'
+  return routeId !== 'home'
 }
 
 export function getModuleRouteDescriptor(moduleId: ModuleId): ShellRouteDescriptor {
@@ -114,8 +109,6 @@ export function getShellRouteDescriptor(routeId: ShellRouteId): ShellRouteDescri
   switch (routeId) {
     case 'home':
       return { ...homeRoute }
-    case 'forward-looking':
-      return { ...forwardLookingRoute }
     default:
       return getModuleRouteDescriptor(routeId)
   }

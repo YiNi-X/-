@@ -7,7 +7,8 @@
     "repair-manifest",
     "clustering-manifest",
     "evaluation-manifest",
-    "artifact-index"
+    "artifact-index",
+    "forward-looking-manifest"
   ],
   "scenarioId": "phase6-overview-v1",
   "timeRange": {
@@ -21,7 +22,7 @@
     "BASE-02",
     "BASE-05"
   ],
-  "generatedAt": "2026-03-25T10:47:59+00:00",
+  "generatedAt": "2026-03-30T08:10:45+00:00",
   "bundlePath": "data/modules/overview/overview-bundle.json",
   "artifacts": [
     {
@@ -30,10 +31,16 @@
       "sourceStage": "exported",
       "derivedFrom": [
         "forecast-bundle",
+        "forecast-runtime",
         "repair-bundle",
+        "repair-samples",
         "clustering-summary",
+        "clustering-corridor-runtime",
         "evaluation-metrics",
-        "artifact-index"
+        "evaluation-optimization",
+        "artifact-index",
+        "forward-looking-summary",
+        "forward-looking-scenarios"
       ],
       "scenarioId": "phase6-overview-v1",
       "timeRange": {
@@ -76,8 +83,16 @@
   "sources": {
     "artifact-index": "demo-web/public/data/modules/artifact-index.json",
     "forecast-bundle": "demo-web/public/data/modules/forecast/forecast-bundle.json",
+    "forecast-runtime": "demo-web/public/data/modules/forecast/forecast-runtime.json",
     "repair-bundle": "demo-web/public/data/modules/repair/repair-bundle.json",
+    "repair-samples": "demo-web/public/data/modules/repair/repair-samples.json",
+    "clustering-summary": "demo-web/public/data/modules/clustering/clustering-summary.json",
+    "clustering-corridor-runtime": "demo-web/public/data/modules/clustering/clustering-corridor-runtime.json",
     "clustering-manifest": "demo-web/public/data/modules/clustering/manifest.json",
-    "evaluation-manifest": "demo-web/public/data/modules/evaluation/manifest.json"
+    "evaluation-metrics": "demo-web/public/data/modules/evaluation/evaluation-metrics.json",
+    "evaluation-optimization": "demo-web/public/data/modules/evaluation/evaluation-optimization.json",
+    "evaluation-manifest": "demo-web/public/data/modules/evaluation/manifest.json",
+    "forward-looking-summary": "demo-web/public/data/modules/forward-looking/forward-looking-summary.json",
+    "forward-looking-manifest": "demo-web/public/data/modules/forward-looking/manifest.json"
   }
 }

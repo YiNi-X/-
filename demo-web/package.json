@@ -8,7 +8,7 @@
     "editor": "vite --open /route-editor.html",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "smoke": "node --test tests/smoke.test.mjs tests/platform-shell-smoke.test.mjs",
+    "smoke": "node --experimental-test-isolation=none --test tests/smoke.test.mjs tests/platform-shell-smoke.test.mjs tests/forecast-module.test.mjs tests/repair-module.test.mjs tests/clustering-module.test.mjs tests/evaluation-module.test.mjs tests/overview-module.test.mjs tests/forward-looking-module.test.mjs",
     "test": "npm run smoke",
     "verify": "npm run lint && npm run test && npm run build",
     "verify:phase6": "python scripts/verify_phase6_bundles.py && npm run verify",

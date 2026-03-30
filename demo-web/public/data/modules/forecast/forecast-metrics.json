@@ -1,8 +1,8 @@
 {
   "module": "forecast",
   "scenarioId": "demo-live",
-  "metricBasis": "timeline-aligned totalFlow derived from committed STGCN runtime output",
-  "generatedAt": "2026-03-25T10:42:43+00:00",
+  "metricBasis": "timeline-aligned totalFlow derived from committed STGCN, LSTM, and BiLSTM runtime outputs",
+  "generatedAt": "2026-03-26T12:34:03+00:00",
   "models": {
     "STGCN": {
       "status": "available",
@@ -26,16 +26,53 @@
           "r2": 0.788904
         }
       }
+    },
+    "LSTM": {
+      "status": "available",
+      "horizons": {
+        "1h": {
+          "sampleCount": 565,
+          "mae": 32.929398,
+          "rmse": 40.834605,
+          "r2": 0.957584
+        },
+        "2h": {
+          "sampleCount": 553,
+          "mae": 54.408047,
+          "rmse": 69.353373,
+          "r2": 0.879485
+        },
+        "3h": {
+          "sampleCount": 541,
+          "mae": 68.376451,
+          "rmse": 83.699619,
+          "r2": 0.825079
+        }
+      }
+    },
+    "BiLSTM": {
+      "status": "available",
+      "horizons": {
+        "1h": {
+          "sampleCount": 565,
+          "mae": 29.696124,
+          "rmse": 36.448966,
+          "r2": 0.966205
+        },
+        "2h": {
+          "sampleCount": 553,
+          "mae": 49.622206,
+          "rmse": 60.311959,
+          "r2": 0.90886
+        },
+        "3h": {
+          "sampleCount": 541,
+          "mae": 67.702606,
+          "rmse": 83.148137,
+          "r2": 0.827376
+        }
+      }
     }
   },
-  "deferredModels": [
-    {
-      "model": "LSTM",
-      "reason": "Only notebook definitions exist in the repository; no committed structured runtime export is available."
-    },
-    {
-      "model": "BiLSTM",
-      "reason": "Only notebook definitions exist in the repository; no committed structured runtime export is available."
-    }
-  ]
+  "deferredModels": []
 }

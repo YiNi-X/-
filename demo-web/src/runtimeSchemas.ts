@@ -30,7 +30,7 @@ const runtimePathSchema = z.string().trim().transform(normalizeRuntimePath).pipe
 const datasetIdSchema = z.string().trim().regex(DATASET_ID_PATTERN, 'Dataset ids may only contain letters, numbers, "_" or "-"')
 const alertLevelSchema = z.enum(['high', 'medium', 'watch'])
 const horizonKeySchema = z.enum(['1h', '2h', '3h'])
-const moduleIdSchema = z.enum(['overview', 'forecast', 'repair', 'clustering', 'evaluation'])
+const moduleIdSchema = z.enum(['overview', 'forecast', 'repair', 'clustering', 'evaluation', 'forward-looking'])
 const moduleSourceStageSchema = z.enum(['raw', 'cleaned', 'segmented', 'compressed', 'exported', 'exported-review'])
 const moduleArtifactStatusSchema = z.enum(['ready', 'review-first', 'partial', 'deferred'])
 
@@ -397,6 +397,9 @@ const moduleDeferredItemSchema = z
     artifactId: nonEmptyStringSchema,
     reason: nonEmptyStringSchema,
     dependsOn: z.array(nonEmptyStringSchema).default([]),
+    status: nonEmptyStringSchema.optional(),
+    fileBytes: nonNegativeIntegerSchema.optional(),
+    filePath: z.string().optional(),
   })
   .strict()
 
