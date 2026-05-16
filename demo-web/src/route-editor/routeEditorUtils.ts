@@ -24,7 +24,6 @@ export const CLEANED_TRACKS_PATH = 'data/main-corridor-tracks.json'
 export const STUDY_BOUNDS = { minLon: 113.558356434, maxLon: 113.95835643400001, minLat: 22.155739805, maxLat: 22.635739805 }
 export const MAP_VIEWBOX = { width: 1920, height: 1080 }
 export const BACKGROUND_PRESETS: BackgroundPreset[] = [
-  { id: 'port-map', label: 'Static Port Map', src: 'static-port-map.jpg' },
   { id: 'blank', label: 'No Background', src: '' },
 ]
 export const CORRIDOR_COLORS = ['#3a86ff', '#00bbf9', '#06d6a0', '#80ed99', '#ffd166', '#f4a261', '#ef476f', '#9b5de5', '#4cc9f0', '#f72585']

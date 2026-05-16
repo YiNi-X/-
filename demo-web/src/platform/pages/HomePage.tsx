@@ -30,6 +30,7 @@ import type { MainCorridorTracksFile } from '../../sharedContracts'
 import type { ShellRouteId } from '../../sharedContracts'
 import type { OverviewSummary } from '../overview/overviewTypes.ts'
 import { localizeOverviewSummary, localizeReadinessLabel } from '../zhCopy.ts'
+import { BaiduMapLayer } from '../BaiduMapLayer.tsx'
 
 type HomePageProps = {
   selectedDatasetId: string
@@ -503,7 +504,7 @@ export function HomePage({ selectedDatasetId, onNavigate }: HomePageProps) {
         <section className="frame map-frame">
           <div className="map-stage home-map-stage">
             <div className="home-map-layer" style={mapLayerStyle}>
-              <img src="/static-port-map.jpg" alt="静态港口底图" className="map-image" />
+              <BaiduMapLayer studyArea={studyArea} />
             </div>
             <div className="map-grid"></div>
 
